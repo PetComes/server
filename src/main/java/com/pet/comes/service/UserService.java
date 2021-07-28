@@ -30,6 +30,7 @@ public class UserService {
     /* 회원가입 API -- Heather */
     public ResponseEntity signUp(UserJoinDto userJoinDto) {
 
+        //name, email, nickname non-null
         if(userJoinDto.getName() == null || userJoinDto.getEmail() == null || userJoinDto.getNickname() == null) {
             return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED), HttpStatus.OK);
         }
@@ -41,7 +42,14 @@ public class UserService {
                     user.getEmail() + " : " + message.DUPLICATED_EMAIL), HttpStatus.OK);
         }
 
+        isExist = userRepository.findByNickname(userJoinDto.getNickname());
+        if(isExist.isPresent()) {
+            return new ResponseEntity(NoDataResponse.response(status.DUPLICATED_NICKNAME,
+                    user.getEmail() + " : " + message.DUPLICATED_NICKNAME), HttpStatus.OK);
+        }
+
         userRepository.save(user);
-        return new ResponseEntity(DataResponse.response(status.SUCCESS, message.SUCCESS, user.getId()), HttpStatus.OK);
+        return new ResponseEntity(DataResponse.response(status.SUCCESS,
+                "회원가입 " + message.SUCCESS, user.getId()), HttpStatus.OK);
     }
 }

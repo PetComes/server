@@ -11,4 +11,5 @@ public class ResponseMessage {
     public String SUCCESS = "성공";
     public String DUPLICATED_EMAIL = "사용할 수 없는 이메일입니다.(중복)";
     public String NOT_ENTERED = "입력되지 않은 필수 항목이 있습니다.";
+    public String DUPLICATED_NICKNAME = "사용할 수 없는 닉네임입니다.(중복)";
 }

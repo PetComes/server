@@ -8,19 +8,19 @@ import lombok.Data;
 public class DataResponse<T> {
     private int status;
     private String responseMessage;
-    private T data;
+    private T response;
 
     public DataResponse(final int status, final String responseMessage, T data) {
         this.status = status;
         this.responseMessage = responseMessage;
-        this.data = data;
+        this.response = data;
     }
 
     public static<T> DataResponse<T> response(final int status, final String responseMessage, T data) {
         return DataResponse.<T>builder()
                 .status(status)
                 .responseMessage(responseMessage)
-                .data(data)
+                .response(data)
                 .build();
     }
 }

@@ -31,7 +31,6 @@ public class User { //extends Timestamped
     private String imageUrl;
 
     public User(UserJoinDto userJoinDto) {
-        this.status = userJoinDto.getStatus();
         this.name = userJoinDto.getName();
         this.email = userJoinDto.getEmail();
         this.password = userJoinDto.getPassword();
