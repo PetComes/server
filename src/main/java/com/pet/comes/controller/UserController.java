@@ -24,4 +24,6 @@ public class UserController {
     public ResponseEntity signUp(@RequestBody UserJoinDto userJoinDto) {
         return userService.signUp(userJoinDto);
     }
+
+
 }
