@@ -19,7 +19,7 @@ public class Diary extends Timestamped {
 
     private Long userId;
 
-    @Column(columnDefinition = "TEXT",nullable = false) //
+    @Column(columnDefinition = "TEXT") //
     private String Text;
 
     private int howManyDogs;

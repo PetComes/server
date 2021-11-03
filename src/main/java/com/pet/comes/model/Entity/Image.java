@@ -18,7 +18,7 @@ public class Image {
 
     private Long diaryId;
 
-    @Column(columnDefinition = "TEXT",nullable = false) //
+    @Column(columnDefinition = "TEXT") //
     private String url;
 
     public Image(@RequestBody ImageReqDto imageReqDto){
