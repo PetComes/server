@@ -1,4 +1,4 @@
-package com.pet.comes.model;
+package com.pet.comes.model.Status;
 
 public enum UserStatus {
     NORMAL,

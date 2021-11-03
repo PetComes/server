@@ -1,6 +1,6 @@
 package com.pet.comes.dto;
 
-import com.pet.comes.model.UserStatus;
+import com.pet.comes.model.Status.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

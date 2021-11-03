@@ -1,7 +1,7 @@
 package com.pet.comes.service;
 
 import com.pet.comes.dto.UserJoinDto;
-import com.pet.comes.model.User;
+import com.pet.comes.model.Entity.User;
 import com.pet.comes.repository.UserRepository;
 import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
@@ -52,4 +52,6 @@ public class UserService {
         return new ResponseEntity(DataResponse.response(status.SUCCESS,
                 "회원가입 " + message.SUCCESS, user.getId()), HttpStatus.OK);
     }
+
+
 }
