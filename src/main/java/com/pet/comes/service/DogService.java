@@ -19,7 +19,7 @@ public class DogService {
         this.status = status;
         this.message = message;
     }
-    
+
 
 
 }

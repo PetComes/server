@@ -1,4 +1,4 @@
-package com.pet.comes.dto;
+package com.pet.comes.dto.Req;
 
 import com.pet.comes.model.Type.SexType;
 import lombok.Getter;

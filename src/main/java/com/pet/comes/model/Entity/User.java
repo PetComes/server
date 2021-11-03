@@ -1,6 +1,6 @@
 package com.pet.comes.model.Entity;
 
-import com.pet.comes.dto.UserJoinDto;
+import com.pet.comes.dto.Join.UserJoinDto;
 import com.pet.comes.model.Timestamped;
 import com.pet.comes.model.Type.SocialType;
 import com.pet.comes.model.Status.UserStatus;

@@ -1,8 +1,7 @@
 package com.pet.comes.model.Entity;
 
-import com.pet.comes.dto.PetReqDto;
+import com.pet.comes.dto.Req.PetReqDto;
 import com.pet.comes.model.Status.DogStatus;
-import com.pet.comes.model.Timestamped;
 import com.pet.comes.model.Type.SexType;
 import com.pet.comes.model.Type.WeightType;
 import lombok.Getter;
@@ -16,7 +15,7 @@ import javax.persistence.*;
 @Getter
 @Entity
 @NoArgsConstructor
-public class Dog extends Timestamped {
+public class Dog {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -27,28 +26,20 @@ public class Dog extends Timestamped {
     @Enumerated(value = EnumType.STRING)
     private WeightType type = WeightType.M; // 유형(대,중,소)
 
-    @Column(nullable = false)
     private String kindOf; // 견종
 
-    @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
     private int age;
 
-    @Column(nullable = false)
     private String imageUrl;
 
-    @Column(nullable = false)
     private String birthday;
 
-    @Column(nullable = false)
     private String breedId; // 견종
 
-    @Column(nullable = false)
     private float weight;
 
-    @Column(nullable = false)
     private float height;
 
     @Enumerated(value = EnumType.STRING)
@@ -57,7 +48,6 @@ public class Dog extends Timestamped {
     @Column(nullable = false, columnDefinition = "TINYINT", length=1) // DBMS의 테이블과 매핑시 오류방지
     private int isNeutered; // 중성화 여부
 
-    @Column(nullable = false)
     private Long registerationNo ; // 반려견 등록번호
 
 
