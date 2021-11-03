@@ -1,6 +1,6 @@
 package com.pet.comes.repository;
 
-import com.pet.comes.model.User;
+import com.pet.comes.model.Entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

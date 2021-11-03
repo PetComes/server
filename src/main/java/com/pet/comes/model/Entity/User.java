@@ -1,6 +1,9 @@
-package com.pet.comes.model;
+package com.pet.comes.model.Entity;
 
-import com.pet.comes.dto.UserJoinDto;
+import com.pet.comes.dto.Join.UserJoinDto;
+import com.pet.comes.model.Timestamped;
+import com.pet.comes.model.Type.SocialType;
+import com.pet.comes.model.Status.UserStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,7 +14,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @Entity
-public class User { //extends Timestamped
+public class User extends Timestamped { //extends Timestamped
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

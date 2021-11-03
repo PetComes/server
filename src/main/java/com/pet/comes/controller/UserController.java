@@ -1,13 +1,10 @@
 package com.pet.comes.controller;
 
-import com.pet.comes.dto.UserJoinDto;
+import com.pet.comes.dto.Join.UserJoinDto;
 import com.pet.comes.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/")
@@ -24,4 +21,8 @@ public class UserController {
     public ResponseEntity signUp(@RequestBody UserJoinDto userJoinDto) {
         return userService.signUp(userJoinDto);
     }
+
+
+
+
 }
