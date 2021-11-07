@@ -1,9 +1,9 @@
 package com.pet.comes.model.Entity;
 
 import com.pet.comes.dto.Req.PetReqDto;
-import com.pet.comes.model.Status.DogStatus;
-import com.pet.comes.model.Type.SexType;
-import com.pet.comes.model.Type.WeightType;
+import com.pet.comes.model.EnumType.DogStatus;
+import com.pet.comes.model.EnumType.SexType;
+import com.pet.comes.model.EnumType.WeightType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.web.bind.annotation.RequestBody;

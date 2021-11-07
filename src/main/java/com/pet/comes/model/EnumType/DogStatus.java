@@ -1,4 +1,4 @@
-package com.pet.comes.model.Status;
+package com.pet.comes.model.EnumType;
 
 public enum DogStatus {
     WITH, // 같이 살고 있음

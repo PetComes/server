@@ -17,7 +17,7 @@ public class ActivatedBadge {
 
     private String badgeId;
 
-    private String date; //
+    private String date; // Time
 
     private String status; // 상태 예시 알려주세요 ~
 
