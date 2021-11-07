@@ -1,4 +1,4 @@
-package com.pet.comes.model.Type;
+package com.pet.comes.model.EnumType;
 
 public enum WeightType {
     B, // 대형견

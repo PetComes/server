@@ -1,9 +1,10 @@
 package com.pet.comes.model.Entity;
 
 import com.pet.comes.dto.Join.UserJoinDto;
+import com.pet.comes.model.EnumType.SocialType;
+import com.pet.comes.model.EnumType.UserStatus;
 import com.pet.comes.model.Timestamped;
-import com.pet.comes.model.Type.SocialType;
-import com.pet.comes.model.Status.UserStatus;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

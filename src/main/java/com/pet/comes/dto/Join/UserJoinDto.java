@@ -1,6 +1,6 @@
 package com.pet.comes.dto.Join;
 
-import com.pet.comes.model.Status.UserStatus;
+import com.pet.comes.model.EnumType.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

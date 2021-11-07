@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -23,6 +24,7 @@ public class Diary extends Timestamped {
     private String Text;
 
     private int howManyDogs;
+
     private Long addressId;
 
     @Column(nullable = false, columnDefinition = "TINYINT", length=1) // DBMS의 테이블과 매핑시 오류방지
