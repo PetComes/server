@@ -14,9 +14,6 @@ configurations {
     }
 }
 // mainClass 를 지정해서 시작 포인트를 지정
-bootJar {
-    mainClass = 'com.example.PetcomesApplication'
-}
 
 repositories {
     mavenCentral()
