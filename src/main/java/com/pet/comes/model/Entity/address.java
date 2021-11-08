@@ -11,7 +11,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class address {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
     @Column(columnDefinition = "TEXT")

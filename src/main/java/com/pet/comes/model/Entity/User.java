@@ -15,7 +15,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @Entity
-public class User extends Timestamped { //extends Timestamped
+public class User {//extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +32,11 @@ public class User extends Timestamped { //extends Timestamped
     private String password;
     private String nickname;
     private String introduction;
+
+    @Column(columnDefinition = "TEXT")
     private String imageUrl;
+
+    private String code;
 
     public User(UserJoinDto userJoinDto) {
         this.name = userJoinDto.getName();
