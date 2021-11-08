@@ -1,0 +1,54 @@
+spring:
+  profiles:
+    active: local
+
+---
+
+spring:
+  profiles:
+    group:
+      "local": "localdb,common"
+      "dev": "devdb,common"
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: "devdb"
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://petcomes.cnccg3mescgh.ap-northeast-2.rds.amazonaws.com:3306/petcomes?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    username: petcomes
+    password: petcomes
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: "localdb"
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/petComes?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    username: Heather
+    password: HeatherMySQL
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: "common"
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+    database-platform: org.hibernate.dialect.MySQL5Dialect
+    open-in-view: false
+
+
+
