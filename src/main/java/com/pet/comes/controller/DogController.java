@@ -1,29 +1,30 @@
 package com.pet.comes.controller;
 
-import com.pet.comes.model.Entity.Dog;
+import com.pet.comes.dto.Join.UserJoinDto;
+import com.pet.comes.dto.Req.DogReqDto;
 import com.pet.comes.repository.DogRepository;
+import com.pet.comes.service.DogService;
+import com.pet.comes.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Optional;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequiredArgsConstructor
-@RequestMapping("/dog/")
+@RequestMapping("/dog")
 public class DogController {
 
-    @Autowired
-    private final DogRepository dogRepository;
 
-    @GetMapping("diary/{id}")
-    public Optional<Dog> dogDiary(@PathVariable Long id) {
-        Optional<Dog> dog = dogRepository.findById(id);
-        return dog;
+    private final DogService dogService;
+
+    @Autowired
+    public DogController(DogService dogService) {
+        this.dogService = dogService;
     }
 
+    @PostMapping("")
+    public ResponseEntity addDog(@RequestBody DogReqDto dogReqDto) {
+        return dogService.addDog(dogReqDto);
+    }
 
 }

@@ -1,6 +1,6 @@
 package com.pet.comes.model.Entity;
 
-import com.pet.comes.dto.Req.PetReqDto;
+import com.pet.comes.dto.Req.DogReqDto;
 import com.pet.comes.model.EnumType.DogStatus;
 import com.pet.comes.model.EnumType.SexType;
 import com.pet.comes.model.EnumType.WeightType;
@@ -36,14 +36,14 @@ public class Dog {
 
     private String birthday;
 
-    private String breedId; // 견종
+    private int breedId; // 견종
 
     private float weight;
 
     private float height;
 
     @Enumerated(value = EnumType.STRING)
-    private SexType sexType = SexType.M; // default M : 수컷이 더 많아서
+    private final SexType sex = SexType.M; // default M : 수컷이 더 많아서
 
     @Column(nullable = false, columnDefinition = "TINYINT", length=1) // DBMS의 테이블과 매핑시 오류방지
     private int isNeutered; // 중성화 여부
@@ -53,7 +53,7 @@ public class Dog {
 
 
 
-    public Dog(@RequestBody PetReqDto petReqDto) {
+    public Dog(@RequestBody DogReqDto petReqDto) {
         this.kindOf = petReqDto.getKindOf();
         this.name = petReqDto.getName();
         this.age = petReqDto.getAge();
@@ -66,7 +66,7 @@ public class Dog {
         this.registerationNo = petReqDto.getRegisterationNo();
     }
 
-    public void update(PetReqDto petReqDto) {
+    public void update(DogReqDto petReqDto) {
     }
 
 

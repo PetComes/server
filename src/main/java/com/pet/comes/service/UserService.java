@@ -51,6 +51,7 @@ public class UserService {
         userRepository.save(user);
         return new ResponseEntity(DataResponse.response(status.SUCCESS,
                 "회원가입 " + message.SUCCESS, user.getId()), HttpStatus.OK);
+
     }
 
 
