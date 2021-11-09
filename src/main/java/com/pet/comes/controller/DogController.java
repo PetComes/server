@@ -22,9 +22,9 @@ public class DogController {
         this.dogService = dogService;
     }
 
-    @PostMapping("")
-    public ResponseEntity addDog(@RequestBody DogReqDto dogReqDto) {
-        return dogService.addDog(dogReqDto);
+    @PostMapping("/{userId}")
+    public ResponseEntity addDog(@PathVariable Long userId , @RequestBody DogReqDto dogReqDto) {
+        return dogService.addDog(userId,dogReqDto);
     }
 
 }
