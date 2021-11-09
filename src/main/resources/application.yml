@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: devdb
+    active: localdb
 server:
   port: 8082
 
