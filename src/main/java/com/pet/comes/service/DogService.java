@@ -2,6 +2,7 @@ package com.pet.comes.service;
 
 import com.pet.comes.dto.Req.DogReqDto;
 import com.pet.comes.model.Entity.Dog;
+import com.pet.comes.model.Entity.Family;
 import com.pet.comes.repository.DogRepository;
 import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
@@ -37,6 +38,8 @@ public class DogService {
         Dog dog = new Dog(dogReqDto);
         //Optional<Dog>
 
+
+//        Family family = new Family(dog);
         dogRepository.save(dog);
         return new ResponseEntity(DataResponse.response(status.SUCCESS,
                 "반려견정보입력력" + message.SUCCESS, dog.getId()), HttpStatus.OK);
