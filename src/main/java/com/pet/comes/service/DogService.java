@@ -19,7 +19,6 @@ public class DogService {
     private final DogRepository dogRepository;
     private final Status status;
     private final ResponseMessage message;
-    FamilyService familyService;
 
     @Autowired
     public DogService(DogRepository dogRepository, Status status, ResponseMessage message){
@@ -48,7 +47,7 @@ public class DogService {
 
 
         return new ResponseEntity(DataResponse.response(status.SUCCESS,
-                "반려견정보입력력" + message.SUCCESS, dog.getId()), HttpStatus.OK);
+                "반려견정보입력" + message.SUCCESS, dog.getId()), HttpStatus.OK);
 
 
     }

@@ -1,5 +1,6 @@
 package com.pet.comes.model.Entity;
 
+import com.pet.comes.model.EnumType.WeightType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,6 +20,5 @@ public class Breed {
 
     @Enumerated(value = EnumType.STRING)
     private WeightType weightType = WeightType.M;
-
 
 }
