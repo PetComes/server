@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@MappedSuperclass
-@EntityListeners(AuditingEntityListener.class)
+@MappedSuperclass // Entity 클래스들이 해당 추상 클래스를 상속할 경우 @CreatedDate.. 등을 column으로 인식
+@EntityListeners(AuditingEntityListener.class) // Auditing : 감시, 자동으로 시간을 매핑하여 DB 테이블에 넣어줌.
 public abstract class Timestamped {
     @CreatedDate
     private LocalDateTime createdAt;
