@@ -1,13 +1,8 @@
 package com.pet.comes.service;
 
 import com.pet.comes.dto.FamilyDto;
-import com.pet.comes.dto.Req.DogReqDto;
-import com.pet.comes.model.Entity.Dog;
-import com.pet.comes.model.Entity.Family;
-import com.pet.comes.repository.DogRepository;
 import com.pet.comes.repository.FamilyRepository;
 import com.pet.comes.response.DataResponse;
-import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
 import com.pet.comes.response.Status;
 import org.springframework.beans.factory.annotation.Autowired;

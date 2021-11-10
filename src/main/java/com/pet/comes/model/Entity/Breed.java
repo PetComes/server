@@ -1,7 +1,5 @@
 package com.pet.comes.model.Entity;
 
-import com.pet.comes.model.EnumType.SocialType;
-import com.pet.comes.model.EnumType.WeightType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

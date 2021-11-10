@@ -33,10 +33,8 @@ public class User extends Timestamped {
 
     private String code;
 
-
     @Enumerated(value = EnumType.STRING)
     private SocialType socialType = SocialType.NOT;
-
 
     @ManyToOne
     @JoinColumn(name="family_id")
