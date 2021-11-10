@@ -33,7 +33,7 @@ public class FamilyService {
 
 
         return new ResponseEntity(DataResponse.response(status.SUCCESS,
-                "반려견정보입력력" + message.SUCCESS, dog.getId()), HttpStatus.OK);
+                "반려견정보입력력" + message.SUCCESS, familyDto.getFamilyId()), HttpStatus.OK);
 
 
     }

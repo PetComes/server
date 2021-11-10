@@ -1,8 +1,12 @@
 spring:
   profiles:
+<<<<<<< HEAD
     active: localdb
 server:
   port: 8082
+=======
+    active: local
+>>>>>>> 730682769406a2a2f368ba880e55b37e4d97bf76
 
 ---
 
@@ -32,9 +36,15 @@ spring:
       on-profile: "localdb"
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
+<<<<<<< HEAD
     url: jdbc:mysql://127.0.0.1:3306/petcomes?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
     username: root
     password: gm040404@
+=======
+    url: jdbc:mysql://127.0.0.1:3306/petComes?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    username: Heather
+    password: HeatherMySQL
+>>>>>>> 730682769406a2a2f368ba880e55b37e4d97bf76
 
 ---
 
