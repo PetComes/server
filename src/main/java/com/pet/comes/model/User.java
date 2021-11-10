@@ -3,11 +3,9 @@ package com.pet.comes.model;
 import com.pet.comes.dto.UserJoinDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 
-@Setter
 @Getter
 @NoArgsConstructor
 @Entity
@@ -20,15 +18,22 @@ public class User extends Timestamped {
     @Enumerated(value = EnumType.STRING)
     private UserStatus status = UserStatus.NORMAL;
 
-    @Enumerated(value = EnumType.STRING)
-    private SocialType socialType = SocialType.NOT;
-
     private String name;
     private String email;
     private String password;
     private String nickname;
     private String introduction;
     private String imageUrl;
+
+    @Enumerated(value = EnumType.STRING)
+    private SocialType socialType = SocialType.NOT;
+
+    private String code;
+
+    @ManyToOne
+    @JoinColumn(name="family_id")
+    private Family family;        //단방향 연관관계
+
 
     public User(UserJoinDto userJoinDto) {
         this.name = userJoinDto.getName();
