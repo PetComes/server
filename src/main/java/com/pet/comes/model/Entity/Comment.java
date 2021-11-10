@@ -7,20 +7,21 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @IdClass(Comment.class)
-public class Comment extends Timestamped implements Serializable {
+public class Comment  implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long userId;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long diaryId;
+
+    private LocalDateTime commentedAt;
 
     @Column(columnDefinition = "TEXT")
     private String text;

@@ -1,6 +1,6 @@
 package com.pet.comes.model.EnumType;
 
-public enum SexType {
+public enum Sex {
     F,
     M
 }

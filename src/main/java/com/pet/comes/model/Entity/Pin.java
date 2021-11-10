@@ -15,11 +15,9 @@ import java.io.Serializable;
 public class Pin extends Timestamped implements Serializable  {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long userId;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private long diaryId;
     
     private String pinedAt;

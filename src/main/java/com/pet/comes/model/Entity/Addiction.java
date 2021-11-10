@@ -11,8 +11,7 @@ import javax.persistence.*;
 public class Addiction {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int scheduleId; // 일정 id
+    private Long scheduleId; // 일정 id
 
     private String title;  // 추가항목의 이름 ex) 위치
 

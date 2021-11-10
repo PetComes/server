@@ -1,31 +1,21 @@
 package com.pet.comes.model.Entity;
 
-
-import com.pet.comes.model.Timestamped;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
-import java.io.Serializable;
-import java.sql.Time;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Getter
-@NoArgsConstructor
-@IdClass(Family.class) // PK 2개일때
-public class Family extends Timestamped implements Serializable { // @Idclass 있을 시 Serializable 인터페이스 구현
+public class Family {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long userId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long familyId;
+    private Long dogId;
 
-    private int isUser; // 가족 id 가 유저이면 1, 강아지면 0
+    @OneToMany(mappedBy = "family")
+    private List<Dog> dogs = new ArrayList<Dog>();
 
-
-
-
+    private LocalDateTime createdAt;
 }
