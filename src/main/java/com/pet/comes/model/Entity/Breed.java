@@ -21,5 +21,4 @@ public class Breed {
     @Enumerated(value = EnumType.STRING)
     private DogSize weightType = DogSize.M;
 
-
 }

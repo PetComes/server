@@ -10,6 +10,7 @@ public class Family {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "family_id")
     private Long id;
 
     private Long dogId;

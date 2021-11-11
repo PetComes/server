@@ -1,16 +1,19 @@
 package com.pet.comes.model.Entity;
 
+import com.pet.comes.dto.Req.DogReqDto;
 import com.pet.comes.model.*;
 import com.pet.comes.model.EnumType.DogSize;
 import com.pet.comes.model.EnumType.DogStatus;
 import com.pet.comes.model.EnumType.Sex;
+
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
-@Getter
 @Entity
+@Getter
+@NoArgsConstructor
 public class Dog extends Timestamped {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -23,16 +26,15 @@ public class Dog extends Timestamped {
     @Enumerated(value=EnumType.STRING)
     private DogStatus status;
 
-    private Long breedId;
+    private int breedId;
 
     @Enumerated(value=EnumType.STRING)
     private DogSize size;
 
     private String name;
     private int age;
-    private LocalDateTime birthday;
+    private String birthday;
     private String imageUrl;
-    private float height;
     private float weight;
 
     @Enumerated(value=EnumType.STRING)
@@ -41,4 +43,13 @@ public class Dog extends Timestamped {
     private int isNeutered;
     private Long registrationNo;
     private Long modifiedBy;
+
+    public Dog(DogReqDto dogReqDto){
+        this.breedId = dogReqDto.getBreedId();
+        this.name = dogReqDto.getName();
+        this.age = dogReqDto.getAge();
+        this.weight = dogReqDto.getWeight();
+        this.birthday = dogReqDto.getBirthday();
+    }
+
 }
