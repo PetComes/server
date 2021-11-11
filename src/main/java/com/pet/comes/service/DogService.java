@@ -1,6 +1,7 @@
 package com.pet.comes.service;
 
 import com.pet.comes.dto.Req.DogReqDto;
+import com.pet.comes.model.Entity.Dog;
 import com.pet.comes.repository.DogRepository;
 import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
@@ -29,7 +30,7 @@ public class DogService {
 
 
 
-    public ResponseEntity addDog(Long userId,DogReqDto dogReqDto ){
+    public ResponseEntity addDog(Long userId, DogReqDto dogReqDto ){
         if(dogReqDto.getName() == null  || dogReqDto.getAge() > 20 ){
             return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED), HttpStatus.OK);
 

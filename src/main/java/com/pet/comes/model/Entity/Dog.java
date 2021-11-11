@@ -4,10 +4,12 @@ import com.pet.comes.model.*;
 import com.pet.comes.model.EnumType.DogSize;
 import com.pet.comes.model.EnumType.DogStatus;
 import com.pet.comes.model.EnumType.Sex;
+import lombok.Getter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Getter
 @Entity
 public class Dog extends Timestamped {
     @Id

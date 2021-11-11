@@ -1,5 +1,6 @@
 package com.pet.comes.model.Entity;
 
+import com.pet.comes.model.EnumType.DogSize;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,7 +19,7 @@ public class Breed {
     private String name;
 
     @Enumerated(value = EnumType.STRING)
-    private WeightType weightType = WeightType.M;
+    private DogSize weightType = DogSize.M;
 
 
 }
