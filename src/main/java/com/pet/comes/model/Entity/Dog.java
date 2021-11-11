@@ -26,6 +26,7 @@ public class Dog extends Timestamped {
     @Enumerated(value=EnumType.STRING)
     private DogStatus status;
 
+
     private int breedId;
 
     @Enumerated(value=EnumType.STRING)
