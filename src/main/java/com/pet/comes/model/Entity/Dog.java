@@ -53,6 +53,16 @@ public class Dog extends Timestamped {
         this.birthday = dogReqDto.getBirthday();
     }
 
+    public Dog(DogReqDto dogReqDto, Family family){
+        this.breedId = dogReqDto.getBreedId();
+        this.name = dogReqDto.getName();
+        this.age = dogReqDto.getAge();
+        this.weight = dogReqDto.getWeight();
+        this.birthday = dogReqDto.getBirthday();
+        this.family = family;
+    }
+
+
 
 
 }

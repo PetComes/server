@@ -7,10 +7,12 @@ import com.pet.comes.model.Timestamped;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity
 public class User extends Timestamped {
@@ -48,5 +50,9 @@ public class User extends Timestamped {
         this.nickname = userJoinDto.getNickname();
         this.introduction = userJoinDto.getIntroduction();
         this.imageUrl = userJoinDto.getImageUrl();
+    }
+
+    public void setFamilyId(Family family) {
+        this.family = family;
     }
 }
