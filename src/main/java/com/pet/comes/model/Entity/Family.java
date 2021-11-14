@@ -23,9 +23,7 @@ public class Family {
     @OneToMany(mappedBy = "family")
     private List<Dog> dogs = new ArrayList<Dog>(); // 양방향
 
-    public void setDogs(Dog dog) {
-        dogs.add(dog);
-    }
+
 
     private LocalDateTime createdAt;
 

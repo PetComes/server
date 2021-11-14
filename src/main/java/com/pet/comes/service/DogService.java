@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
-
 @Service
 public class DogService {
 
@@ -26,37 +25,43 @@ public class DogService {
     private final ResponseMessage message;
     private final FamilyRepository familyRepository;
     private final UserService userService;
+    private final UserRepository userRepository;
 
     @Autowired
-    public DogService(UserService userService, FamilyRepository familyRepository,DogRepository dogRepository,Status status, ResponseMessage message){
+    public DogService(UserRepository userRepository, UserService userService, FamilyRepository familyRepository, DogRepository dogRepository, Status status, ResponseMessage message) {
         this.dogRepository = dogRepository;
         this.familyRepository = familyRepository;
-        this.userService =userService;
+        this.userRepository = userRepository;
+        this.userService = userService;
         this.status = status;
         this.message = message;
     }
 
+    public Long addFamily(Long userId){
 
+        return userRepository.findById(userId).get().getFamily().getId();
+    }
 
-    public ResponseEntity addDog(Long userId,DogReqDto dogReqDto ){
-        if(dogReqDto.getName() == null  || dogReqDto.getAge() > 25 ){
+    public ResponseEntity addDog(Long userId, DogReqDto dogReqDto) {
+        if (dogReqDto.getName() == null || dogReqDto.getAge() > 25) {
 
             return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED), HttpStatus.OK);
 
         }
 
+        Long familyId = addFamily(userId);
+        Family family = familyRepository.findById(familyId).orElseGet(Family::new); // 없으면 Family 만들어주기
 
-        Family family = new Family(); // dog 생성시 family 객체 생성
+       userService.setFamilyId(userId,family); // User -> Family 관계 매핑
 
-        Dog dog =  new Dog(dogReqDto,family); // dog -> family 관계 매핑
-        family.setDogs(dog); // family -> dog 관계 매핑
+        Dog dog = new Dog(dogReqDto, family); // dog -> family 관계 매핑
+
+        family.getDogs().add(dog); // family -> dog 관계 매핑
 
         familyRepository.save(family); // dog <-> family 관계 매핑 끝난 family 객체 DB 반영
-        userService.setFamilyId(userId, family); // User -> Family 관계 매핑
 
 
         dogRepository.save(dog);
-
 
 
         return new ResponseEntity(DataResponse.response(status.SUCCESS,
@@ -64,7 +69,6 @@ public class DogService {
 
 
     }
-
 
 
 }
