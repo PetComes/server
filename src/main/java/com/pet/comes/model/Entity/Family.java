@@ -21,14 +21,9 @@ public class Family {
 //    private Long dogId;
 
     @OneToMany(mappedBy = "family")
-    private List<Dog> dogs = new ArrayList<Dog>();
+    private List<Dog> dogs = new ArrayList<Dog>(); // 양방향
 
-//    @Override
-//    public String toString(){
-//        return "family {"+
-//                ",id: " + id +
-//                "}";
-//    }
+
     public void setDogs(Dog dog) { // 양방향 매핑
         // 무한루프 참고 : https://velog.io/@gillog/JPA-%EC%96%91%EB%B0%A9%ED%96%A5-%EB%A7%A4%ED%95%91%EA%B3%BC-%EC%97%B0%EA%B4%80-%EA%B4%80%EA%B3%84-%EC%A3%BC%EC%9D%B8
         this.dogs.add(dog);
@@ -37,6 +32,7 @@ public class Family {
             dog.setFamily(this);
         }
     }
+
 
     private LocalDateTime createdAt;
 
