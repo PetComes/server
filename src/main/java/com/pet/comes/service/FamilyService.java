@@ -2,6 +2,7 @@ package com.pet.comes.service;
 
 import com.pet.comes.dto.FamilyDto;
 import com.pet.comes.model.Entity.Family;
+import com.pet.comes.model.Entity.User;
 import com.pet.comes.repository.FamilyRepository;
 import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.ResponseMessage;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class FamilyService {
@@ -30,9 +33,12 @@ public class FamilyService {
         familyRepository.save(family);
         return new ResponseEntity(DataResponse.response(status.SUCCESS,
                 "가족등록완료" + message.SUCCESS, family.getId()), HttpStatus.OK);
-
-
     }
+//    public ResponseEntity familyUsers(List<User> familys){
+//
+//    }
+
+
 
 
 }
