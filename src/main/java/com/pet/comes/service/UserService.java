@@ -105,8 +105,9 @@ public class UserService {
         Optional<User> user = userRepository.findById(id);
 
         if (user.isPresent()) {
-            Long familyId = user.get().getFamily().getId();
-            List<User> myfamilys =userRepository.findAllByFamilyId(familyId);
+            Family family = user.get().getFamily();
+//            int familyId = tmpfamilyId.intValue();
+            List<User> myfamilys =userRepository.findAllByFamily(family);
             List<MyFamilyDto> myfamilyDtos = new ArrayList<>();
 
             for(User tmpUser :myfamilys){
@@ -120,7 +121,7 @@ public class UserService {
         }
 
         return new ResponseEntity(NoDataResponse.response(
-                404, new ResponseMessage().NOT_VALID_ACCOUNT
+                404, "내 가족 목록 조회 : "+ new ResponseMessage().NOT_VALID_ACCOUNT
         ), HttpStatus.NOT_FOUND);
     }
 
