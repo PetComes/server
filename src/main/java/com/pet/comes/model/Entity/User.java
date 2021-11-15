@@ -22,7 +22,7 @@ public class User extends Timestamped {
     private Long id;
 
     @Enumerated(value = EnumType.STRING)
-    private UserStatus status = UserStatus.NORMAL;
+    private final UserStatus status = UserStatus.NORMAL;
 
     private String name;
     private String email;
