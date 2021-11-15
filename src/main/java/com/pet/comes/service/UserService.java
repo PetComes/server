@@ -33,7 +33,7 @@ public class UserService {
 
 
     @Transactional // 해당 메소드가 호출될 때 바뀐 내용을 DB에 반영
-    public Long setFamilyId(Long id,Family family) {
+    public Long setFamilyId(Long id, Family family) {
         User user = userRepository.findById(id).orElseThrow( // 예외처리 : 만약에 없다면 ?
                 () -> new IllegalArgumentException("아이디가 존재하지 않습니다.") // 파라미터가 잘 못 들어왔을 때
         );
@@ -42,24 +42,36 @@ public class UserService {
         return user.getId();
     }
 
+    public Family userFamily(Long userId) {
+
+
+        Family family = userRepository.findById(userId).get().getFamily();
+        if(family == null){
+            family = new Family();
+        }
+
+        return family;
+
+    }
+
 
     /* 회원가입 API -- Heather */
     public ResponseEntity signUp(UserJoinDto userJoinDto) {
 
         //name, email, nickname non-null
-        if(userJoinDto.getName() == null || userJoinDto.getEmail() == null || userJoinDto.getNickname() == null) {
+        if (userJoinDto.getName() == null || userJoinDto.getEmail() == null || userJoinDto.getNickname() == null) {
             return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED), HttpStatus.OK);
         }
 
         User user = new User(userJoinDto);
         Optional<User> isExist = userRepository.findByEmail(userJoinDto.getEmail());
-        if(isExist.isPresent()) {
+        if (isExist.isPresent()) {
             return new ResponseEntity(NoDataResponse.response(status.DUPLICATED_EMAIL,
                     user.getEmail() + " : " + message.DUPLICATED_EMAIL), HttpStatus.OK);
         }
 
         isExist = userRepository.findByNickname(userJoinDto.getNickname());
-        if(isExist.isPresent()) {
+        if (isExist.isPresent()) {
             return new ResponseEntity(NoDataResponse.response(status.DUPLICATED_NICKNAME,
                     user.getEmail() + " : " + message.DUPLICATED_NICKNAME), HttpStatus.OK);
         }

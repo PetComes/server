@@ -54,5 +54,6 @@ public class User extends Timestamped {
 
     public void setFamilyId(Family family) {
         this.family = family;
+
     }
 }

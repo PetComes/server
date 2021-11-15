@@ -46,11 +46,12 @@ public class DogService {
         }
 
 
-        Family family = new Family(); // dog 생성시 family 객체 생성
+//        Family family ;//= new Family(); // dog 생성시 family 객체 생성
+        Family family = userService.userFamily(userId);
 
-        Dog dog =  new Dog(dogReqDto,family); // dog -> family 관계 매핑
-        family.setDogs(dog); // family -> dog 관계 매핑
-
+        Dog dog =  new Dog(dogReqDto);
+        dog.setFamily(family);// dog -> family 관계 매핑
+        family.getDogs().add(dog);// family -> dog 관계 매핑
         familyRepository.save(family); // dog <-> family 관계 매핑 끝난 family 객체 DB 반영
         userService.setFamilyId(userId, family); // User -> Family 관계 매핑
 

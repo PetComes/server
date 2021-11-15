@@ -52,13 +52,10 @@ public class Dog extends Timestamped {
         this.birthday = dogReqDto.getBirthday();
     }
 
-    public Dog(DogReqDto dogReqDto, Family family){
-        this.breedId = dogReqDto.getBreedId();
-        this.name = dogReqDto.getName();
-        this.age = dogReqDto.getAge();
-        this.weight = dogReqDto.getWeight();
-        this.birthday = dogReqDto.getBirthday();
+
+    public void setFamily(Family family){ // 양방향 매핑
         this.family = family;
+        family.getDogs().add(this);
     }
 
 
