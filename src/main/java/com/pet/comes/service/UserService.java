@@ -2,6 +2,7 @@ package com.pet.comes.service;
 
 import com.pet.comes.dto.Join.UserJoinDto;
 import com.pet.comes.dto.MyAccountDto;
+import com.pet.comes.dto.MyFamilyDto;
 import com.pet.comes.model.Entity.Family;
 import com.pet.comes.model.Entity.User;
 import com.pet.comes.repository.UserRepository;
@@ -13,20 +14,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
+import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final FamilyService familyService;
     private final Status status;
     private final ResponseMessage message;
 
     @Autowired
-    public UserService(UserRepository userRepository, Status status, ResponseMessage message) {
+    public UserService(UserRepository userRepository, FamilyService familyService, Status status, ResponseMessage message) {
         this.userRepository = userRepository;
+        this.familyService = familyService;
         this.status = status;
         this.message = message;
     }
@@ -51,22 +58,6 @@ public class UserService {
         }
         return family;
     }
-
-    public ResponseEntity myAccount(Long id) {
-        Optional<User> user = userRepository.findById(id);
-        MyAccountDto myAccountDto = new MyAccountDto(user.get());
-
-        if (user.isPresent()) {
-            return new ResponseEntity(DataResponse.response(
-                    200, "내 계정정보 조회 "+new ResponseMessage().SUCCESS, myAccountDto
-            ), HttpStatus.OK);
-        }
-        return new ResponseEntity(NoDataResponse.response(
-                404, new ResponseMessage().NOT_VALID_ACCOUNT
-        ), HttpStatus.NOT_FOUND);
-
-    }
-
 
     /* 회원가입 API -- Heather */
     public ResponseEntity signUp(UserJoinDto userJoinDto) {
@@ -95,5 +86,42 @@ public class UserService {
 
     }
 
+    public ResponseEntity myAccount(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        MyAccountDto myAccountDto = new MyAccountDto(user.get());
+
+        if (user.isPresent()) {
+            return new ResponseEntity(DataResponse.response(
+                    200, "내 계정정보 조회 " + new ResponseMessage().SUCCESS, myAccountDto
+            ), HttpStatus.OK);
+        }
+        return new ResponseEntity(NoDataResponse.response(
+                404, new ResponseMessage().NOT_VALID_ACCOUNT
+        ), HttpStatus.NOT_FOUND);
+
+    }
+
+    public ResponseEntity myFamily(Long id) {
+        Optional<User> user = userRepository.findById(id);
+
+        if (user.isPresent()) {
+            Long familyId = user.get().getFamily().getId();
+            List<User> myfamilys =userRepository.findAllByFamilyId(familyId);
+            List<MyFamilyDto> myfamilyDtos = new ArrayList<>();
+
+            for(User tmpUser :myfamilys){
+                MyFamilyDto familyDto = new MyFamilyDto(tmpUser);
+                myfamilyDtos.add(familyDto);
+            }
+
+            return new ResponseEntity(DataResponse.response(
+                    200, "내 가족 목록 조회 " + new ResponseMessage().SUCCESS, myfamilyDtos
+            ), HttpStatus.OK);
+        }
+
+        return new ResponseEntity(NoDataResponse.response(
+                404, new ResponseMessage().NOT_VALID_ACCOUNT
+        ), HttpStatus.NOT_FOUND);
+    }
 
 }
