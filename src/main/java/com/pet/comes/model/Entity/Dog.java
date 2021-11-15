@@ -45,6 +45,15 @@ public class Dog extends Timestamped {
     private Long registrationNo;
     private Long modifiedBy;
 
+//    @Override
+//    public String toString(){
+//        return "Dog{"+
+//                "createdAt: "+getCreatedAt() +
+//                ",modifiedAt: " +getModifiedBy() +
+//                ",id: " + id +
+//                "}";
+//    }
+
     public Dog(DogReqDto dogReqDto){
         this.breedId = dogReqDto.getBreedId();
         this.name = dogReqDto.getName();
@@ -53,13 +62,16 @@ public class Dog extends Timestamped {
         this.birthday = dogReqDto.getBirthday();
     }
 
-    public Dog(DogReqDto dogReqDto, Family family){
-        this.breedId = dogReqDto.getBreedId();
-        this.name = dogReqDto.getName();
-        this.age = dogReqDto.getAge();
-        this.weight = dogReqDto.getWeight();
-        this.birthday = dogReqDto.getBirthday();
+
+    public void setFamily(Family family){ // 양방향 매핑
+        // 양뱡향에서 다대일측(Dog) 에서 기존 연관관계를 끊기
+        if(this.family != null) { // 기존의 family가 있으면
+            this.family.getDogs().remove(this); // Family의 dog에서 삭제
+        }
         this.family = family;
+        if(!family.getDogs().contains(this)) { // 무한 루프 방지
+            family.setDogs(this);
+        }
     }
 
 

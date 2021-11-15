@@ -30,10 +30,10 @@ public class UserController {
     }
 
     @GetMapping("account/{id}")
-    public Optional<User> myAccount(@PathVariable Long id) {
-        Optional<User> user = userService.myAccount(id);
-        return user;
+    public ResponseEntity myAccount(@PathVariable Long id){
+        return userService.myAccount(id);
     }
+
 
 
 }

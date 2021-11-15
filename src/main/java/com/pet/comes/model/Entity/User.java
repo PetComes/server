@@ -39,11 +39,11 @@ public class User extends Timestamped {
     private SocialType socialType = SocialType.NOT;
 
     @ManyToOne
-    @JoinColumn(name="family_id")
+    @JoinColumn(name = "family_id")
     private Family family;        //단방향 연관관계
 
 
-  public User(UserJoinDto userJoinDto) {
+    public User(UserJoinDto userJoinDto) {
         this.name = userJoinDto.getName();
         this.email = userJoinDto.getEmail();
         this.password = userJoinDto.getPassword();
@@ -53,6 +53,13 @@ public class User extends Timestamped {
     }
 
     public void setFamilyId(Family family) {
-        this.family = family;
+        if (this.family == null) {
+            this.family = family;
+        }
+
+//        if(!family.getDogs().contains(this)) { // 무한 루프 방지
+//            family.setDogs(this);
+//        }
+
     }
 }
