@@ -8,7 +8,6 @@ import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
 import com.pet.comes.response.Status;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
