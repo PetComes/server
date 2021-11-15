@@ -22,6 +22,10 @@ public class UserController {
         return userService.signUp(userJoinDto);
     }
 
+    @GetMapping("account/{id}")
+    public ResponseEntity myAccount(@PathVariable Long id){
+        return userService.myAccount(id);
+    }
 
 
 

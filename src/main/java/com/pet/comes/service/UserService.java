@@ -1,6 +1,7 @@
 package com.pet.comes.service;
 
 import com.pet.comes.dto.Join.UserJoinDto;
+import com.pet.comes.dto.MyAccountDto;
 import com.pet.comes.model.Entity.Family;
 import com.pet.comes.model.Entity.User;
 import com.pet.comes.repository.UserRepository;
@@ -37,20 +38,33 @@ public class UserService {
         User user = userRepository.findById(id).orElseThrow( // 예외처리 : 만약에 없다면 ?
                 () -> new IllegalArgumentException("아이디가 존재하지 않습니다.") // 파라미터가 잘 못 들어왔을 때
         );
+
         user.setFamilyId(family);
         userRepository.save(user);
         return user.getId();
     }
 
+    /* 강아지 등록 API : 해당 User family 유무 확인--Tony */
     public Family userFamily(Long userId) {
-
-
         Family family = userRepository.findById(userId).get().getFamily();
-        if(family == null){
+        if (family == null) {
             family = new Family();
         }
-
         return family;
+    }
+
+    public ResponseEntity myAccount(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        MyAccountDto myAccountDto = new MyAccountDto(user.get());
+
+        if (user.isPresent()) {
+            return new ResponseEntity(DataResponse.response(
+                    200, "내 계정정보 조회 "+new ResponseMessage().SUCCESS, myAccountDto
+            ), HttpStatus.OK);
+        }
+        return new ResponseEntity(NoDataResponse.response(
+                404, new ResponseMessage().NOT_VALID_ACCOUNT
+        ), HttpStatus.NOT_FOUND);
 
     }
 
