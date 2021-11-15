@@ -46,7 +46,7 @@ public class UserService {
 
 
         user.setFamilyId(family); // family_id 주입
-        familyRepository.save(family); // dog <-> family 관계 매핑 끝난 family 객체 DB 반영
+//        familyRepository.save(family); // dog <-> family 관계 매핑 끝난 family 객체 DB 반영
         userRepository.save(user); // user -> family 관계 매핑 끝난 user 객체 DB 반영
         return user.getFamily();
 

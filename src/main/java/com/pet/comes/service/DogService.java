@@ -37,9 +37,8 @@ public class DogService {
         this.message = message;
     }
 
-    public Long addFamily(Long userId){
+    public void addFamily(Long userId) {
 
-        return userRepository.findById(userId).get().getFamily().getId();
     }
 
     public ResponseEntity addDog(Long userId, DogReqDto dogReqDto) {
@@ -49,23 +48,46 @@ public class DogService {
 
         }
 
-        Long familyId = addFamily(userId);
-        Family family = familyRepository.findById(familyId).orElseGet(Family::new); // 없으면 Family 만들어주기
+//        Long familyId = addFamily(userId);
+//        Family family = familyRepository.findById(familyId).orElseGet(Family::new); // 없으면 Family 만들어주기
 
-       userService.setFamilyId(userId,family); // User -> Family 관계 매핑
+        Family family = new Family();
+        Dog dog= new Dog();
+        try { // 해당 User와 관계를 맺고 있는 family 객체가 있는지
 
-        Dog dog = new Dog(dogReqDto, family); // dog -> family 관계 매핑
+            family = userRepository.findById(userId).get().getFamily();
+            userService.setFamilyId(userId, family); // User -> Family 관계 매핑
+            dog = new Dog(dogReqDto, family); // dog -> family 관계 매핑
 
-        family.getDogs().add(dog); // family -> dog 관계 매핑
+            System.out.println("TRY 시도 ---------");
+        } catch (NullPointerException e) { // 없다면
+            family = new Family();
+            userService.setFamilyId(userId, family); // User -> Family 관계 매핑
+            dog = new Dog(dogReqDto, family); // dog -> family 관계 매핑
 
-        familyRepository.save(family); // dog <-> family 관계 매핑 끝난 family 객체 DB 반영
+            System.out.println("CATCH : NULL 시도 ---------");
+
+        }catch (IllegalArgumentException I){
+            family = new Family();
+            userService.setFamilyId(userId,family);
+            dog = new Dog(dogReqDto, family); // dog -> family 관계 매핑
+
+            System.out.println("CATCH : ILLe 시도 ---------");
+
+        }finally {
+            familyRepository.save(family); // dog <-> family 관계 매핑 끝난 family 객체 DB 반영
+            dogRepository.save(dog);
+        }
 
 
-        dogRepository.save(dog);
+//        Dog dog = new Dog(dogReqDto, family); // dog -> family 관계 매핑
+
+//        family.getDogs().add(dog); // family -> dog 관계 매핑
+
 
 
         return new ResponseEntity(DataResponse.response(status.SUCCESS,
-                "반려견정보입력" + message.SUCCESS, dog.getId()), HttpStatus.OK);
+                "반려견정보입력" + message.SUCCESS,dogReqDto.getName()), HttpStatus.OK);
 
 
     }
