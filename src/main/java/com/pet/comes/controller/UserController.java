@@ -34,6 +34,10 @@ public class UserController {
         return userService.myAccount(id);
     }
 
+    @GetMapping("list/family/{id}")
+    public ResponseEntity myFamily(@PathVariable Long id){
+        return userService.myFamily(id);
+    }
 
 
 }
