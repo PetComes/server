@@ -1,4 +1,4 @@
-package com.pet.comes.dto;
+package com.pet.comes.dto.Rep;
 
 import com.pet.comes.model.Entity.User;
 import lombok.AllArgsConstructor;
@@ -9,13 +9,13 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor
-public class MyFamilyDto {
+public class MyFamilyRepDto {
     private  Long id;
     private  String name;
     private  String imageUrl;
 
 
-    public MyFamilyDto(User user){
+    public MyFamilyRepDto(User user){
             this.id = user.getId();
             this.name = user.getName();
             this.imageUrl = user.getImageUrl();;

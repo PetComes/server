@@ -1,8 +1,8 @@
 package com.pet.comes.service;
 
 import com.pet.comes.dto.Join.UserJoinDto;
-import com.pet.comes.dto.MyAccountDto;
-import com.pet.comes.dto.MyFamilyDto;
+import com.pet.comes.dto.Rep.MyAccountRepDto;
+import com.pet.comes.dto.Rep.MyFamilyRepDto;
 import com.pet.comes.model.Entity.Family;
 import com.pet.comes.model.Entity.User;
 import com.pet.comes.repository.UserRepository;
@@ -14,9 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,11 +86,11 @@ public class UserService {
 
     public ResponseEntity myAccount(Long id) {
         Optional<User> user = userRepository.findById(id);
-        MyAccountDto myAccountDto = new MyAccountDto(user.get());
+        MyAccountRepDto myAccountRepDto = new MyAccountRepDto(user.get());
 
         if (user.isPresent()) {
             return new ResponseEntity(DataResponse.response(
-                    200, "내 계정정보 조회 " + new ResponseMessage().SUCCESS, myAccountDto
+                    200, "내 계정정보 조회 " + new ResponseMessage().SUCCESS, myAccountRepDto
             ), HttpStatus.OK);
         }
         return new ResponseEntity(NoDataResponse.response(
@@ -108,15 +106,15 @@ public class UserService {
             Family family = user.get().getFamily();
 //            int familyId = tmpfamilyId.intValue();
             List<User> myfamilys =userRepository.findAllByFamily(family);
-            List<MyFamilyDto> myfamilyDtos = new ArrayList<>();
+            List<MyFamilyRepDto> myfamilyRepDtos = new ArrayList<>();
 
             for(User tmpUser :myfamilys){
-                MyFamilyDto familyDto = new MyFamilyDto(tmpUser);
-                myfamilyDtos.add(familyDto);
+                MyFamilyRepDto familyDto = new MyFamilyRepDto(tmpUser);
+                myfamilyRepDtos.add(familyDto);
             }
 
             return new ResponseEntity(DataResponse.response(
-                    200, "내 가족 목록 조회 " + new ResponseMessage().SUCCESS, myfamilyDtos
+                    200, "내 가족 목록 조회 " + new ResponseMessage().SUCCESS, myfamilyRepDtos
             ), HttpStatus.OK);
         }
 

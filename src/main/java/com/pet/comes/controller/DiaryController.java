@@ -18,8 +18,14 @@ public class DiaryController {
         this.diaryService = diaryService;
     }
 
-    @PostMapping("/write")
+    @PostMapping()
     public ResponseEntity writeDiary(@RequestBody DiaryReqDto diaryReqDto){
         return diaryService.writeDiary(diaryReqDto);
     }
+
+    @GetMapping("/{dogId}")
+    public ResponseEntity dogDiaryList(@PathVariable Long dogId){
+        return diaryService.dogDiaryList(dogId);
+    }
+
 }

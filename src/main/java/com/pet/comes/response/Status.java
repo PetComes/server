@@ -17,5 +17,7 @@ public class Status {
     public int DUPLICATED_EMAIL = 301;
     public int NOT_ENTERED = 302;
     public int DUPLICATED_NICKNAME = 303;
+    public int INVALID_ID = 304;
+
 
 }

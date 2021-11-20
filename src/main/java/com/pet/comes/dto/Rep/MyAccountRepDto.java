@@ -1,4 +1,4 @@
-package com.pet.comes.dto;
+package com.pet.comes.dto.Rep;
 
 import com.pet.comes.model.Entity.Family;
 import com.pet.comes.model.Entity.User;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Getter
-public class MyAccountDto {
+public class MyAccountRepDto {
     private UserStatus status;
     private String name;
     private String email;
@@ -23,7 +23,7 @@ public class MyAccountDto {
     private LocalDateTime modifiedAt;
     private Long familyId;
 
-    public MyAccountDto(User user){
+    public MyAccountRepDto(User user){
         this.status = user.getStatus();
         this.name = user.getName();
         this.email = user.getEmail();
