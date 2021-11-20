@@ -12,13 +12,12 @@ import java.time.LocalDateTime;
 public class DiaryReqDto {
 
     private final Long userId;
-    private final String Text;
+    private final Long dogId;
     private final int howManyDogs;
-    private final Long addressId;
     private final int isPublic; // 1: 공개 , 0 : 비공개
-    private final int isDeleted; // 1: 삭제 , 0 : 정상
-    private LocalDateTime registedAt;
-    private LocalDateTime modifiedAt;
-
+    private final String Text;
+    private final Long addressId;
+    private final int isDeleted; // default : 0
+    private final String imageUrl;
 
 }
