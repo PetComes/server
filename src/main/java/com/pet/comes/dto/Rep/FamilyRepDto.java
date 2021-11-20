@@ -1,4 +1,4 @@
-package com.pet.comes.dto;
+package com.pet.comes.dto.Rep;
 
 
 import lombok.Getter;
@@ -8,7 +8,7 @@ import javax.persistence.Id;
 
 @Getter
 @RequiredArgsConstructor
-public class FamilyDto {
+public class FamilyRepDto {
 
     private final Long userId;
 
