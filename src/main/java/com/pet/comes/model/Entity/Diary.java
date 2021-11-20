@@ -62,4 +62,13 @@ public class Diary {//extends Timestamped {
         this.imageUrl = diaryReqDto.getImageUrl();
     }
 
+    public void modify(DiaryReqDto diaryReqDto){
+        this.howManyDogs = diaryReqDto.getHowManyDogs();
+        this.isPublic = diaryReqDto.getIsPublic();
+        this.Text = diaryReqDto.getText();
+        this.addressId = diaryReqDto.getAddressId();
+        this.isDeleted = diaryReqDto.getIsDeleted();
+        this.imageUrl = diaryReqDto.getImageUrl();
+    }
+
 }
