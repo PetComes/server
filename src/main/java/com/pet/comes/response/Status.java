@@ -18,6 +18,6 @@ public class Status {
     public int NOT_ENTERED = 302;
     public int DUPLICATED_NICKNAME = 303;
     public int INVALID_ID = 304;
-
+    public int DB_INVALID_VALUE = 500;
 
 }

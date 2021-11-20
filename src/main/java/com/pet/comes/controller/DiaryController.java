@@ -37,4 +37,10 @@ public class DiaryController {
     public ResponseEntity deleteDiary(@PathVariable Long diaryId){
         return diaryService.deleteDiary(diaryId);
     }
+
+    @PutMapping("/toggle/{diaryId}")
+    public ResponseEntity toggleDiary(@PathVariable Long diaryId){
+        return diaryService.toggleDiary(diaryId);
+    }
+
 }

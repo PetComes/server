@@ -23,18 +23,13 @@ public class FamilyService {
         this.status = status;
         this.message = message;
     }
-
+    /*Dog 생성시 family 생성  -- Tony */
     public ResponseEntity addFamily(Family family){
 
         familyRepository.save(family);
         return new ResponseEntity(DataResponse.response(status.SUCCESS,
                 "가족등록완료" + message.SUCCESS, family.getId()), HttpStatus.OK);
     }
-//    public ResponseEntity familyUsers(List<User> familys){
-//
-//    }
-
-
 
 
 }

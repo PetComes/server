@@ -26,7 +26,7 @@ public class DiaryService {
     private final ResponseMessage message;
 
     @Autowired
-    public DiaryService( DiaryRepository diaryRepository, Status status, ResponseMessage message) {
+    public DiaryService(DiaryRepository diaryRepository, Status status, ResponseMessage message) {
         this.diaryRepository = diaryRepository;
         this.status = status;
         this.message = message;
@@ -36,8 +36,8 @@ public class DiaryService {
     public ResponseEntity dogDiaryList(Long dogId) {
 
         List<Diary> diaryList = diaryRepository.findAllByDogId(dogId);
-        if(diaryList.isEmpty())
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NO_DIARIES ), HttpStatus.OK);
+        if (diaryList.isEmpty())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NO_DIARIES), HttpStatus.OK);
 
 
         List<DiaryListRepDto> diaryListRepDtoList = new ArrayList<>();
@@ -49,7 +49,7 @@ public class DiaryService {
             text = diary.getText();
             commentCount = 12; // 임의의 값 : 아직 comment 관련 api 만들지않아서
             pinCount = 2; // 임의의 값 : 아직 pin 관련 api 만들지 않아서
-            DiaryListRepDto diaryListRepDto = new DiaryListRepDto(createdAt,text,commentCount,pinCount);
+            DiaryListRepDto diaryListRepDto = new DiaryListRepDto(createdAt, text, commentCount, pinCount);
             diaryListRepDtoList.add(diaryListRepDto);
         }
         return new ResponseEntity(DataResponse.response(status.SUCCESS, "다이어리들 불어오기 " + message.SUCCESS, diaryListRepDtoList), HttpStatus.OK);
@@ -67,32 +67,53 @@ public class DiaryService {
     }
 
     /* 다이어리 수정 API -- Tony */
-    public ResponseEntity modifyDiary(Long diaryId,DiaryReqDto diaryReqDto){
+    public ResponseEntity modifyDiary(Long diaryId, DiaryReqDto diaryReqDto) {
         Optional<Diary> tmpDiary = diaryRepository.findById(diaryId);
 
-        if(!tmpDiary.isPresent()){
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "수정할 " + message.NO_DIARY ), HttpStatus.OK);
-        }
-        else if(diaryReqDto.getText()==null )
-            return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, "다이어리들 불어오기 " + message.NOT_ENTERED +" : 반려견에게 어떤 일이 있었는지 작성해주세요 !" ), HttpStatus.OK);
+        if (!tmpDiary.isPresent()) {
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "수정할 " + message.NO_DIARY), HttpStatus.OK);
+        } else if (diaryReqDto.getText() == null)
+            return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, "다이어리들 불어오기 " + message.NOT_ENTERED + " : 반려견에게 어떤 일이 있었는지 작성해주세요 !"), HttpStatus.OK);
 
         tmpDiary.get().modify(diaryReqDto);
 
         diaryRepository.save(tmpDiary.get());
 
-        return new ResponseEntity(DataResponse.response(status.SUCCESS,  message.SUCCESS+": 다이어리 수정", diaryId), HttpStatus.OK);
+        return new ResponseEntity(DataResponse.response(status.SUCCESS, message.SUCCESS + ": 다이어리 수정", diaryId), HttpStatus.OK);
 
     }
 
-    /*다이어리 삭제 API -- Tony */
-    public ResponseEntity deleteDiary(Long diaryId){
+    /* 다이어리 삭제 API -- Tony */
+    public ResponseEntity deleteDiary(Long diaryId) {
         Optional<Diary> tmpDiary = diaryRepository.findById(diaryId);
-        if(!tmpDiary.isPresent()){
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "삭제할 " + message.NO_DIARY ), HttpStatus.OK);
+        if (!tmpDiary.isPresent()) {
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "삭제할 " + message.NO_DIARY), HttpStatus.OK);
         }
         diaryRepository.delete(tmpDiary.get());
 
-        return new ResponseEntity(DataResponse.response(status.SUCCESS,  message.SUCCESS+": 다이어리 삭제", diaryId), HttpStatus.OK);
+        return new ResponseEntity(DataResponse.response(status.SUCCESS, message.SUCCESS + ": 다이어리 삭제", diaryId), HttpStatus.OK);
+
+    }
+
+    /* 다이어리 공유 설정 변경 API -- Tony */
+    public ResponseEntity toggleDiary(Long diaryId) {
+        Optional<Diary> tmpDiary = diaryRepository.findById(diaryId);
+        if (!tmpDiary.isPresent()) {
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "삭제할 " + message.NO_DIARY), HttpStatus.OK);
+        }
+        Diary diary = tmpDiary.get();
+        int isPublic = diary.getIsPublic();
+
+        if (isPublic == 1) {
+            diary.toggle(0);
+        } else if (isPublic == 0)
+            diary.toggle(1);
+        else
+            return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, "토글실패 : 1 또는 0 이외의 값 "), HttpStatus.OK);
+
+        diaryRepository.save(diary);
+
+        return new ResponseEntity(DataResponse.response(status.SUCCESS, message.SUCCESS + ": 공개/비공개 토글 성공 : "+isPublic, isPublic), HttpStatus.OK);
 
     }
 
