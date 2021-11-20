@@ -71,7 +71,7 @@ public class DiaryService {
         Optional<Diary> tmpDiary = diaryRepository.findById(diaryId);
 
         if(!tmpDiary.isPresent()){
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "다이어리들 불어오기 " + message.NO_DIARY ), HttpStatus.OK);
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "수정할 " + message.NO_DIARY ), HttpStatus.OK);
         }
         else if(diaryReqDto.getText()==null )
             return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, "다이어리들 불어오기 " + message.NOT_ENTERED +" : 반려견에게 어떤 일이 있었는지 작성해주세요 !" ), HttpStatus.OK);
@@ -81,6 +81,18 @@ public class DiaryService {
         diaryRepository.save(tmpDiary.get());
 
         return new ResponseEntity(DataResponse.response(status.SUCCESS,  message.SUCCESS+": 다이어리 수정", diaryId), HttpStatus.OK);
+
+    }
+
+    /*다이어리 삭제 API -- Tony */
+    public ResponseEntity deleteDiary(Long diaryId){
+        Optional<Diary> tmpDiary = diaryRepository.findById(diaryId);
+        if(!tmpDiary.isPresent()){
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "삭제할 " + message.NO_DIARY ), HttpStatus.OK);
+        }
+        diaryRepository.delete(tmpDiary.get());
+
+        return new ResponseEntity(DataResponse.response(status.SUCCESS,  message.SUCCESS+": 다이어리 삭제", diaryId), HttpStatus.OK);
 
     }
 

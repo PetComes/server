@@ -32,4 +32,9 @@ public class DiaryController {
     public ResponseEntity modifyDiary(@PathVariable Long diaryId,@RequestBody DiaryReqDto diaryReqDto ){
         return  diaryService.modifyDiary(diaryId,diaryReqDto);
     }
+
+    @DeleteMapping("/{diaryId}")
+    public ResponseEntity deleteDiary(@PathVariable Long diaryId){
+        return diaryService.deleteDiary(diaryId);
+    }
 }
