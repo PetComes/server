@@ -28,4 +28,8 @@ public class DiaryController {
         return diaryService.dogDiaryList(dogId);
     }
 
+    @PutMapping("/{diaryId}")
+    public ResponseEntity modifyDiary(@PathVariable Long diaryId,@RequestBody DiaryReqDto diaryReqDto ){
+        return  diaryService.modifyDiary(diaryId,diaryReqDto);
+    }
 }

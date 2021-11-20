@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DiaryService {
@@ -63,6 +64,24 @@ public class DiaryService {
         Diary diary = new Diary(diaryReqDto);
         diaryRepository.save(diary);
         return new ResponseEntity(DataResponse.response(status.SUCCESS, "다이어리 작성 " + message.SUCCESS, diary.getId()), HttpStatus.OK);
+    }
+
+    /* 다이어리 수정 API -- Tony */
+    public ResponseEntity modifyDiary(Long diaryId,DiaryReqDto diaryReqDto){
+        Optional<Diary> tmpDiary = diaryRepository.findById(diaryId);
+
+        if(!tmpDiary.isPresent()){
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "다이어리들 불어오기 " + message.NO_DIARY ), HttpStatus.OK);
+        }
+        else if(diaryReqDto.getText()==null )
+            return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, "다이어리들 불어오기 " + message.NOT_ENTERED +" : 반려견에게 어떤 일이 있었는지 작성해주세요 !" ), HttpStatus.OK);
+
+        tmpDiary.get().modify(diaryReqDto);
+
+        diaryRepository.save(tmpDiary.get());
+
+        return new ResponseEntity(DataResponse.response(status.SUCCESS,  message.SUCCESS+": 다이어리 수정", diaryId), HttpStatus.OK);
+
     }
 
 }
