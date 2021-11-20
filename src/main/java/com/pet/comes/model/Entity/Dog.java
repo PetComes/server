@@ -35,7 +35,11 @@ public class Dog extends Timestamped {
     private String name;
     private int age;
     private String birthday;
+
+
+    @Column(columnDefinition = "TEXT")
     private String imageUrl;
+
     private float weight;
 
     @Enumerated(value=EnumType.STRING)
@@ -60,6 +64,7 @@ public class Dog extends Timestamped {
         this.age = dogReqDto.getAge();
         this.weight = dogReqDto.getWeight();
         this.birthday = dogReqDto.getBirthday();
+        this.imageUrl = dogReqDto.getImageUrl();
     }
 
 
