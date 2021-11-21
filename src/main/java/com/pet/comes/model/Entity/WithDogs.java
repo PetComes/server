@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "With_Dogs") // DB테이블과 이름 다를 때
+@Table(name = "with_dogs") // DB테이블과 이름 다를 때
 public class WithDogs {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

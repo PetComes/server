@@ -15,6 +15,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @Entity
+@Table(name = "user")
 public class User extends Timestamped {
 
     @Id

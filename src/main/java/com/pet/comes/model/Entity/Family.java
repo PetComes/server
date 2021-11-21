@@ -2,6 +2,7 @@ package com.pet.comes.model.Entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -11,6 +12,8 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@EntityListeners(AuditingEntityListener.class) // Auditing : 감시, 자동으로 시간을 매핑하여 DB 테이블에 넣어줌.
+@Table(name = "family")
 public class Family {
 
     @Id
