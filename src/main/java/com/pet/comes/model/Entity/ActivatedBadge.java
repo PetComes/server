@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "Activated_Badge") // DB테이블과 이름 다를 때
+@Table(name = "activated_badge") // DB테이블과 이름 다를 때
 public class ActivatedBadge {
 
     @Id

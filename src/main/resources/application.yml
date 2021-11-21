@@ -1,8 +1,8 @@
 spring:
   profiles:
-    active: tonydb
+    active: devdb
 server:
-  port: 8083
+  port: 8081
 
 ---
 

@@ -10,6 +10,7 @@ import javax.persistence.*;
 @Getter
 @Entity
 @NoArgsConstructor
+@Table(name = "image")
 public class Image {
 
     @Id

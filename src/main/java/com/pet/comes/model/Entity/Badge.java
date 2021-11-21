@@ -10,6 +10,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
+@Table(name = "badge")
 public class Badge extends Timestamped {
 
     @Id

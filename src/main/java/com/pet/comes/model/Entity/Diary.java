@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class) // Auditing : 감시, 자동으로 시간을 매핑하여 DB 테이블에 넣어줌.
+@Table(name = "diary")
 public class Diary {//extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

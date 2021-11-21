@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor
+@Table(name = "dog")
 public class Dog extends Timestamped {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
