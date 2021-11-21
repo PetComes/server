@@ -20,7 +20,7 @@ public class Dog extends Timestamped {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name="family_id")
+    @JoinColumn(name="family_id") // 주인이 아닌 Dog는 왜래키를 관리할 수 없음.(읽기만 가능)
     private Family family;
 
     @Enumerated(value=EnumType.STRING)
