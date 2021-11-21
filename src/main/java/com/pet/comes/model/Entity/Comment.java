@@ -19,16 +19,18 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @NoArgsConstructor
-@IdClass(CommentID.class) // 식별자 클래스를 매핑
+//@IdClass(CommentID.class) // 식별자 클래스를 매핑
 @EntityListeners(AuditingEntityListener.class) // Auditing : 감시, 자동으로 시간을 매핑하여 DB 테이블에 넣어줌.
-@Table(name = "Comment")
-public class Comment  implements Serializable {
+@Table(name = "comment")
+public class Comment  { //implements Serializable {
 
     @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    private Long commentId;
+
     @Column(name = "user_id")
     private Long userId;
 
-    @Id
     @Column(name = "diary_id")
     private Long diaryId;
 
