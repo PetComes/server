@@ -20,7 +20,7 @@ public class Family {
 
 //    private Long dogId;
 
-    @OneToMany(mappedBy = "family")
+    @OneToMany(mappedBy = "family") // 연관관계 주인 : 주인만이 왜래 키를 관리(등록,삭제,수정) 가능, 주인이 아닌 엔티티는 읽기만 가능
     private List<Dog> dogs = new ArrayList<Dog>(); // 양방향
 
 
