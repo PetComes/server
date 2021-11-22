@@ -7,6 +7,9 @@ import com.pet.comes.model.EnumType.DogStatus;
 import com.pet.comes.model.EnumType.Sex;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -14,8 +17,9 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class) // Auditing : 감시, 자동으로 시간을 매핑하여 DB 테이블에 넣어줌.
 @Table(name = "dog")
-public class Dog extends Timestamped {
+public class Dog  {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
@@ -46,8 +50,14 @@ public class Dog extends Timestamped {
     @Enumerated(value=EnumType.STRING)
     private Sex sex;
 
+
+    @LastModifiedDate
+    private LocalDateTime modifiedAt;
+
     private int isNeutered;
-    private Long registrationNo;
+
+    private Long registerationNo;
+
     private Long modifiedBy;
 
 //    @Override
@@ -59,13 +69,16 @@ public class Dog extends Timestamped {
 //                "}";
 //    }
 
-    public Dog(DogReqDto dogReqDto){
+    public Dog(Long userId,DogReqDto dogReqDto){
         this.breedId = dogReqDto.getBreedId();
         this.name = dogReqDto.getName();
         this.age = dogReqDto.getAge();
         this.weight = dogReqDto.getWeight();
         this.birthday = dogReqDto.getBirthday();
         this.imageUrl = dogReqDto.getImageUrl();
+        this.isNeutered = dogReqDto.getIsNeutered();
+        this.registerationNo = dogReqDto.getRegisterationNo();
+        this.modifiedBy = userId;
     }
 
 

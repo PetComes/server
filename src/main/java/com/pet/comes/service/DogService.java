@@ -44,7 +44,7 @@ public class DogService {
 
         Family family = userService.userFamily(userId);
 
-        Dog dog = new Dog(dogReqDto);
+        Dog dog = new Dog(userId,dogReqDto);
         dog.setFamily(family);// dog -> family 관계 매핑
         family.setDogs(dog);// family -> dog 관계 매핑
         familyService.addFamily(family);

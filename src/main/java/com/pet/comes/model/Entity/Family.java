@@ -2,6 +2,7 @@ package com.pet.comes.model.Entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -22,6 +23,8 @@ public class Family {
     private Long id;
 
 //    private Long dogId;
+    @CreatedDate
+    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "family") // 연관관계 주인 : 주인만이 왜래 키를 관리(등록,삭제,수정) 가능, 주인이 아닌 엔티티는 읽기만 가능
     private List<Dog> dogs = new ArrayList<Dog>(); // 양방향
@@ -37,7 +40,6 @@ public class Family {
     }
 
 
-    private LocalDateTime createdAt;
 
 
 }
