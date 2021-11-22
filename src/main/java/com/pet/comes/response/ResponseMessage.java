@@ -15,6 +15,7 @@ public class ResponseMessage {
     public String NOT_VALID_ACCOUNT = "계정 정보를 불러올 수 없습니다."; // accountId validation
     public String NO_DIARIES = "해당 강아지에대한 다이어리가 없습니다.";
     public String NO_DIARY = "다이어리가 없습니다.";
+    public String NO_COMMENT = "아직 댓글이 없습니다.";
 
 
 }

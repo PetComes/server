@@ -12,4 +12,5 @@ public class CommentReqDto {
     private final String text;
     private final Long commentCommentId;
 
+
 }

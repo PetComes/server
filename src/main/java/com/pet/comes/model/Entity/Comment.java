@@ -3,10 +3,12 @@ package com.pet.comes.model.Entity;
 
 import com.pet.comes.dto.Req.CommentReqDto;
 import com.pet.comes.model.IdClass.CommentID;
+import com.pet.comes.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -28,8 +30,9 @@ public class Comment  { //implements Serializable {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long commentId;
 
-    @Column(name = "user_id")
-    private Long userId;
+    @OneToOne(fetch = FetchType.LAZY) //
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "diary_id")
     private Long diaryId;
@@ -45,8 +48,8 @@ public class Comment  { //implements Serializable {
 
 
 
-    public Comment(CommentReqDto commentReqDto){
-        this.userId = commentReqDto.getUserId();
+    public Comment(CommentReqDto commentReqDto,User user){
+        this.user =user;
         this.diaryId = commentReqDto.getDiaryId();
         this.text = commentReqDto.getText();
         this.commentCommentId = commentReqDto.getCommentCommentId();

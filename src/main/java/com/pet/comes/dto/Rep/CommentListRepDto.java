@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentWriteRepDto {
+public class CommentListRepDto {
 
-    private String username;
+    private String nickname;
     private String imageurl;
     private String text;
     private String aftertime;
