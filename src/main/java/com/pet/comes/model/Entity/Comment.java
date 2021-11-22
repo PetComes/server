@@ -40,9 +40,15 @@ public class Comment  { //implements Serializable {
     @Column(columnDefinition = "TEXT")
     private String text;
 
+    @Column(name = "comment_comment_id")
+    private Long commentCommentId;
+
+
+
     public Comment(CommentReqDto commentReqDto){
         this.userId = commentReqDto.getUserId();
         this.diaryId = commentReqDto.getDiaryId();
         this.text = commentReqDto.getText();
+        this.commentCommentId = commentReqDto.getCommentCommentId();
     }
 }

@@ -40,6 +40,6 @@ public class CommentService {
         commentRepository.save(comment);
 
         return new ResponseEntity(DataResponse.response(status.SUCCESS,
-                "다이러리 댓글 작성 " + message.SUCCESS + "해당 댓글 다이어리 id : ", comment.getDiaryId()), HttpStatus.OK);
+                "다이러리 댓글 작성 " + message.SUCCESS + "해당 댓글 다이어리 id : "+comment.getDiaryId(), comment.getDiaryId()), HttpStatus.OK);
     }
 }
