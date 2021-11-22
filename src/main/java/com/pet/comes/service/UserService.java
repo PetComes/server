@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,6 +85,7 @@ public class UserService {
 
     }
 
+    /* 내 계정정보 조회 API -- Tony */
     public ResponseEntity myAccount(Long id) {
         Optional<User> user = userRepository.findById(id);
         MyAccountRepDto myAccountRepDto = new MyAccountRepDto(user.get());
@@ -98,7 +100,7 @@ public class UserService {
         ), HttpStatus.NOT_FOUND);
 
     }
-
+    /* 내 가족 목록 조회 API -- Tony */
     public ResponseEntity myFamily(Long id) {
         Optional<User> user = userRepository.findById(id);
 

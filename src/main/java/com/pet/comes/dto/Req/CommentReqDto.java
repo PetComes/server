@@ -10,5 +10,7 @@ public class CommentReqDto {
     private final Long userId;
     private final Long diaryId;
     private final String text;
+    private final Long commentCommentId;
+
 
 }
