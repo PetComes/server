@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Table(name = "with_dogs") // DB테이블과 이름 다를 때
 public class WithDogs {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long diaryId;
 
     private Long dogId;
