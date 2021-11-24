@@ -53,7 +53,7 @@ public class UserService {
     public Family userFamily(Long userId) {
         Family family = userRepository.findById(userId).get().getFamily();
         if (family == null) {
-            family = new Family();
+            family = new Family(); // new ~ 는 비영속 : 엔티티 객체를 생성했지만 아직 영속성 컨텍스트에 저장하지 않은 상태
         }
         return family;
     }
@@ -88,9 +88,9 @@ public class UserService {
     /* 내 계정정보 조회 API -- Tony */
     public ResponseEntity myAccount(Long id) {
         Optional<User> user = userRepository.findById(id);
-        MyAccountRepDto myAccountRepDto = new MyAccountRepDto(user.get());
 
         if (user.isPresent()) {
+            MyAccountRepDto myAccountRepDto = new MyAccountRepDto(user.get());
             return new ResponseEntity(DataResponse.response(
                     200, "내 계정정보 조회 " + new ResponseMessage().SUCCESS, myAccountRepDto
             ), HttpStatus.OK);

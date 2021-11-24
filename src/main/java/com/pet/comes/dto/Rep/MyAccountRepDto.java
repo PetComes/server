@@ -1,5 +1,6 @@
 package com.pet.comes.dto.Rep;
 
+import com.pet.comes.model.Entity.Dog;
 import com.pet.comes.model.Entity.Family;
 import com.pet.comes.model.Entity.User;
 import com.pet.comes.model.EnumType.UserStatus;
@@ -8,6 +9,8 @@ import lombok.Data;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 @Getter
@@ -21,9 +24,9 @@ public class MyAccountRepDto {
     private String imageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
-    private Long familyId;
+    private List<String> dogsName;
 
-    public MyAccountRepDto(User user){
+    public MyAccountRepDto(User user) {
         this.status = user.getStatus();
         this.name = user.getName();
         this.email = user.getEmail();
@@ -33,7 +36,19 @@ public class MyAccountRepDto {
         this.imageUrl = user.getImageUrl();
         this.createdAt = user.getCreatedAt();
         this.modifiedAt = user.getModifiedAt();
-        this.familyId = user.getFamily().getId();
-//        this.family = user.getFamily(); //
+
+        Family family = user.getFamily();
+        List<String> tmp = new ArrayList<>();
+
+        if (family == null) {
+            tmp.add("반려견을 추가해보세요 !");
+            this.dogsName = tmp;
+        } else {
+            List<Dog> dogs = family.getDogs();
+            for (int i = 0; i < dogs.size(); i++) {
+                tmp.add(dogs.get(i).getName());
+            }
+            this.dogsName = tmp;
+        }
     }
 }

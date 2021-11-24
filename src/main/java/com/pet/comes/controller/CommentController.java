@@ -25,7 +25,7 @@ public class CommentController {
     }
 
     @GetMapping("/{diaryId}")
-    public ResponseEntity readComment(@PathVariable Long diaryId){
+    public ResponseEntity readComments(@PathVariable Long diaryId){
         return commentService.readComment(diaryId);
     }
 }

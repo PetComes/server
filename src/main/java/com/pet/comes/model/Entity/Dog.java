@@ -24,9 +24,9 @@ public class Dog  {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name="family_id") // 주인이 아닌 Dog는 왜래키를 관리할 수 없음.(읽기만 가능)
-    private Family family;
+    @ManyToOne // ManyToOne : default fetchType = LAZY
+    @JoinColumn(name="family_id")
+    private Family family; // 외래키 : Dog.family 가 연관관계의 주인임. 주인만이 외래 키를 관리(등록,삭제,수정) 가능, 주인이 아닌 엔티티는 읽기만 가능
 
     @Enumerated(value=EnumType.STRING)
     private DogStatus status;
@@ -82,7 +82,7 @@ public class Dog  {
     }
 
 
-    public void setFamily(Family family){ // 양방향 매핑
+    public void setFamily(Family family){ // 양방향 매핑 : 양방향 관계는 항상 서로를 참조해야됨.
         // 양뱡향에서 다대일측(Dog) 에서 기존 연관관계를 끊기
         if(this.family != null) { // 기존의 family가 있으면
             this.family.getDogs().remove(this); // Family의 dog에서 삭제

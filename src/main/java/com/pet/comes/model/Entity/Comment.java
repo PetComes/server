@@ -30,7 +30,7 @@ public class Comment  { //implements Serializable {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long commentId;
 
-    @OneToOne(fetch = FetchType.LAZY) //
+    @OneToOne(fetch = FetchType.LAZY) // OneToOne default FetchType = EAGER
     @JoinColumn(name = "user_id")
     private User user;
 
