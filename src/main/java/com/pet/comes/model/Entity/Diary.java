@@ -25,7 +25,9 @@ public class Diary {//extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="user_id")
+    private User user;
 
     private Long dogId;
 
@@ -53,7 +55,6 @@ public class Diary {//extends Timestamped {
     private int isDeleted; // 1: 삭제 , 0 : 정상
 
     public Diary(@RequestBody DiaryReqDto diaryReqDto) {
-        this.userId = diaryReqDto.getUserId();
         this.dogId = diaryReqDto.getDogId();
         this.Text = diaryReqDto.getText();
         this.howManyDogs = diaryReqDto.getHowManyDogs();
@@ -76,4 +77,12 @@ public class Diary {//extends Timestamped {
         this.isPublic = isPublic;
     }
 
+    public void setUser(User user){
+        if(this.user !=null){
+            this.user.getDiaries().remove(this);
+        }
+        this.user =user;
+        if(!user.getDiaries().contains(this))
+            user.setDiaries(this);
+    }
 }

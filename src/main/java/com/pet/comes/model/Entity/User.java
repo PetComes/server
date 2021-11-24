@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,6 +22,7 @@ public class User extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
 
     @Enumerated(value = EnumType.STRING)
@@ -39,10 +42,12 @@ public class User extends Timestamped {
     @Enumerated(value = EnumType.STRING)
     private SocialType socialType = SocialType.NOT;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "family_id")
     private Family family;        //단방향 연관관계
 
+    @OneToMany(mappedBy = "user")
+    private List<Diary> diaries = new ArrayList<Diary>();
 
     public User(UserJoinDto userJoinDto) {
         this.name = userJoinDto.getName();
@@ -57,10 +62,12 @@ public class User extends Timestamped {
         if (this.family == null) {
             this.family = family;
         }
+    }
 
-//        if(!family.getDogs().contains(this)) { // 무한 루프 방지
-//            family.setDogs(this);
-//        }
+    public void setDiaries(Diary diary){
+        this.diaries.add(diary);
 
+        if(diary.getUser() != this)
+            diary.setUser(this);
     }
 }

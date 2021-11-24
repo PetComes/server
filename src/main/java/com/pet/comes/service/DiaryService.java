@@ -4,7 +4,11 @@ package com.pet.comes.service;
 import com.pet.comes.dto.Rep.DiaryListRepDto;
 import com.pet.comes.dto.Req.DiaryReqDto;
 import com.pet.comes.model.Entity.Diary;
+import com.pet.comes.model.Entity.Dog;
+import com.pet.comes.model.Entity.User;
 import com.pet.comes.repository.DiaryRepository;
+import com.pet.comes.repository.DogRepository;
+import com.pet.comes.repository.UserRepository;
 import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
@@ -22,12 +26,14 @@ import java.util.Optional;
 @Service
 public class DiaryService {
     private final DiaryRepository diaryRepository;
+    private final UserRepository userRepository;
     private final Status status;
     private final ResponseMessage message;
 
     @Autowired
-    public DiaryService(DiaryRepository diaryRepository, Status status, ResponseMessage message) {
+    public DiaryService(UserRepository userRepository, DiaryRepository diaryRepository, Status status, ResponseMessage message) {
         this.diaryRepository = diaryRepository;
+        this.userRepository = userRepository;
         this.status = status;
         this.message = message;
     }
@@ -60,8 +66,16 @@ public class DiaryService {
     public ResponseEntity writeDiary(DiaryReqDto diaryReqDto) {
         if (diaryReqDto.getText() == null)
             return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED + ": 내용이 없습니다."), HttpStatus.OK);
+        Optional<User> user = userRepository.findById(diaryReqDto.getUserId());
+        if (!user.isPresent())
+            return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.NOT_VALID_ACCOUNT + ": 해당 유저가 없습니다."), HttpStatus.OK);
+
+        Long dogId = diaryReqDto.getDogId();
+        if (!user.get().getFamily().getDogs().contains(dogId))
+            return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.NOT_VALID_ACCOUNT + ": 해당 반려견이 없습니다."), HttpStatus.OK);
 
         Diary diary = new Diary(diaryReqDto);
+        diary.setUser(user.get());
         diaryRepository.save(diary);
         return new ResponseEntity(DataResponse.response(status.SUCCESS, "다이어리 작성 " + message.SUCCESS, diary.getId()), HttpStatus.OK);
     }
@@ -113,7 +127,7 @@ public class DiaryService {
 
         diaryRepository.save(diary);
 
-        return new ResponseEntity(DataResponse.response(status.SUCCESS, message.SUCCESS + ": 공개/비공개 토글 성공 : "+isPublic, isPublic), HttpStatus.OK);
+        return new ResponseEntity(DataResponse.response(status.SUCCESS, message.SUCCESS + ": 공개/비공개 토글 성공 : " + isPublic, isPublic), HttpStatus.OK);
 
     }
 
