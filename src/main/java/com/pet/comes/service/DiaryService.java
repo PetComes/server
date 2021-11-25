@@ -28,13 +28,15 @@ import java.util.Optional;
 public class DiaryService {
     private final DiaryRepository diaryRepository;
     private final UserRepository userRepository;
+    private final DogRepository dogRepository;
     private final Status status;
     private final ResponseMessage message;
 
     @Autowired
-    public DiaryService(UserRepository userRepository, DiaryRepository diaryRepository, Status status, ResponseMessage message) {
+    public DiaryService(DogRepository dogRepository,UserRepository userRepository, DiaryRepository diaryRepository, Status status, ResponseMessage message) {
         this.diaryRepository = diaryRepository;
         this.userRepository = userRepository;
+        this.dogRepository = dogRepository;
         this.status = status;
         this.message = message;
     }
@@ -72,7 +74,12 @@ public class DiaryService {
             return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.NOT_VALID_ACCOUNT + ": 해당 유저가 없습니다."), HttpStatus.OK);
 
         Long dogId = diaryReqDto.getDogId();
-        if (!user.get().getFamily().getDogs().contains(dogId))
+        Optional<Dog> dog = dogRepository.findById(dogId);
+
+        if(!dog.isPresent())
+            return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.NOT_VALID_ACCOUNT + ": 해당 반려견이 없습니다."), HttpStatus.OK);
+
+        if (!user.get().getFamily().getDogs().contains(dog.get()))
             return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.NOT_VALID_ACCOUNT + ": 해당 반려견이 없습니다."), HttpStatus.OK);
 
         Diary diary = new Diary(diaryReqDto);

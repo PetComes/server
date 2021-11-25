@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Getter
-public class SignReqDto {
+public class SignInReqDto {
 
     private String email;
     private String password;

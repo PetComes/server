@@ -2,7 +2,7 @@ package com.pet.comes.model.Entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet.comes.dto.Join.UserJoinDto;
-import com.pet.comes.dto.Req.SignReqDto;
+import com.pet.comes.dto.Req.SignInReqDto;
 import com.pet.comes.model.EnumType.SocialType;
 import com.pet.comes.model.EnumType.UserStatus;
 import com.pet.comes.model.Timestamped;
@@ -66,7 +66,7 @@ public class User extends Timestamped implements UserDetails {
         this.imageUrl = userJoinDto.getImageUrl();
     }
 
-    public User(SignReqDto signReqDto) {
+    public User(SignInReqDto signReqDto) {
         this.email = signReqDto.getEmail();
         this.password = signReqDto.getPassword();
 

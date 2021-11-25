@@ -38,6 +38,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/**").permitAll() // 일단 모든 리소스 혀용
                 .antMatchers(HttpMethod.POST,"/**").permitAll()
                 .antMatchers(HttpMethod.PUT,"/**").permitAll()
+                .antMatchers(HttpMethod.DELETE,"/**").permitAll()
                 .anyRequest().hasRole("USER") // 그외 나머지 요청은 모두 인증된 회원만 접근 가능
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class); // jwt token 필터를 id/password 인증 필터 전에 넣는다
