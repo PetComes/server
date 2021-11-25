@@ -15,13 +15,11 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
-    private final UserRepository userRepository;
 
     @Autowired
-    public UserController(UserService userService, UserRepository userRepository) {
+    public UserController(UserService userService) {
 
         this.userService = userService;
-        this.userRepository = userRepository;
     }
 
     @PostMapping("signup")
@@ -29,7 +27,9 @@ public class UserController {
         return userService.signUp(userJoinDto);
     }
 
-    @GetMapping("account/{id}")
+
+
+    @GetMapping("helloworld/account/{id}")
     public ResponseEntity myAccount(@PathVariable Long id){
         return userService.myAccount(id);
     }
