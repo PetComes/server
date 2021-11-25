@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,14 +24,12 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final FamilyService familyService;
     private final Status status;
     private final ResponseMessage message;
 
     @Autowired
     public UserService(UserRepository userRepository, FamilyService familyService, Status status, ResponseMessage message) {
         this.userRepository = userRepository;
-        this.familyService = familyService;
         this.status = status;
         this.message = message;
     }
@@ -107,10 +104,10 @@ public class UserService {
         if (user.isPresent()) {
             Family family = user.get().getFamily();
 //            int familyId = tmpfamilyId.intValue();
-            List<User> myfamilys =userRepository.findAllByFamily(family);
+            List<User> myfamilys = userRepository.findAllByFamily(family);
             List<MyFamilyRepDto> myfamilyRepDtos = new ArrayList<>();
 
-            for(User tmpUser :myfamilys){
+            for (User tmpUser : myfamilys) {
                 MyFamilyRepDto familyDto = new MyFamilyRepDto(tmpUser);
                 myfamilyRepDtos.add(familyDto);
             }
@@ -121,7 +118,7 @@ public class UserService {
         }
 
         return new ResponseEntity(NoDataResponse.response(
-                404, "내 가족 목록 조회 : "+ new ResponseMessage().NOT_VALID_ACCOUNT
+                404, "내 가족 목록 조회 : " + new ResponseMessage().NOT_VALID_ACCOUNT
         ), HttpStatus.NOT_FOUND);
     }
 

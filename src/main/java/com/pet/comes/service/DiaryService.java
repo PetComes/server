@@ -5,6 +5,7 @@ import com.pet.comes.dto.Rep.DiaryListRepDto;
 import com.pet.comes.dto.Req.DiaryReqDto;
 import com.pet.comes.model.Entity.Diary;
 import com.pet.comes.model.Entity.Dog;
+
 import com.pet.comes.model.Entity.User;
 import com.pet.comes.repository.DiaryRepository;
 import com.pet.comes.repository.DogRepository;
