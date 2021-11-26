@@ -16,6 +16,6 @@ public class ResponseMessage {
     public String NO_DIARIES = "해당 강아지에대한 다이어리가 없습니다.";
     public String NO_DIARY = "다이어리가 없습니다.";
     public String NO_COMMENT = "아직 댓글이 없습니다.";
-
+    public String NO_FAMILY = "아직 가족이 없습니다. 가족을 추가해 보세요 !";
 
 }
