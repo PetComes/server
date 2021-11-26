@@ -29,12 +29,12 @@ public class UserController {
 
 
 
-    @GetMapping("helloworld/account/{id}")
+    @GetMapping("account/{id}")
     public ResponseEntity myAccount(@PathVariable Long id){
         return userService.myAccount(id);
     }
 
-    @GetMapping("list/family/{id}")
+    @GetMapping("family/{id}")
     public ResponseEntity myFamily(@PathVariable Long id){
         return userService.myFamily(id);
     }

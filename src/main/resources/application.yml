@@ -24,6 +24,8 @@ spring:
     url: jdbc:mysql://petcomes.cnccg3mescgh.ap-northeast-2.rds.amazonaws.com:3306/petcomes?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
     username: petcomes
     password: petcomes
+  jwt:
+    secret : asd
 
 ---
 

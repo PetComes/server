@@ -39,15 +39,15 @@ public class SignController {
     @PostMapping("signin")
     @ResponseBody
     public SignResultRepDto signInUser(HttpServletRequest request, @RequestBody SignInReqDto signReqDto) {
-        User result = (User)customUserDetailService.findByEmail(signReqDto.getEmail());
+        User user = (User)customUserDetailService.findByEmail(signReqDto.getEmail());
         SignResultRepDto signResultRepDto = new SignResultRepDto();
 
         try {
-            if (passwordEncoder.matches(signReqDto.getPassword(), result.getPassword())) {
+            if (passwordEncoder.matches(signReqDto.getPassword(), user.getPassword())) {
                 System.out.println("비밀번호 일치");
-                List<String > roleList = Arrays.asList(result.getRoles().split(","));
+                List<String > roleList = Arrays.asList(user.getRoles().split(","));
                 signResultRepDto.setResult("success");
-                signResultRepDto.setToken(jwtTokenProvider.createToken(result.getEmail(), roleList)); // 좀 더 알아보기
+                signResultRepDto.setToken(jwtTokenProvider.createToken(user.getEmail(), roleList)); //
                 return signResultRepDto;
             }else {
                 signResultRepDto.setResult("fail");
@@ -67,17 +67,17 @@ public class SignController {
     public SignResultRepDto addUser(HttpServletRequest request, @RequestBody UserJoinDto userJoinDto) {
         User user = new User(userJoinDto);
 
-        user.setRoles("ROLE_USER"); // 역할(권한) 부여
+        user.setRoles("USER"); // 역할(권한) 부여
         user.setPassword(passwordEncoder.encode(userJoinDto.getPassword())); // 패스워드 암호화
         SignResultRepDto signResultRepDto = new SignResultRepDto();
         int result = customUserDetailService.signUpUser(user);
         if (result == 1) {
             signResultRepDto.setResult("success");
-            signResultRepDto.setMessage("SignUp complete");
+            signResultRepDto.setMessage("회원 가입 성공 !");
             return signResultRepDto;
         } else if (result == -1) {
             signResultRepDto.setResult("fail");
-            signResultRepDto.setMessage("There is the same name, please change your name.");
+            signResultRepDto.setMessage("이메일이 존재합니다. 비밀번호 찾기를 진행해주세요 !");
             return signResultRepDto;
         } else {
             signResultRepDto.setResult("fail");

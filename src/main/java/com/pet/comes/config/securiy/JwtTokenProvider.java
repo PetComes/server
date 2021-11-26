@@ -22,10 +22,10 @@ import java.util.List;
 @Component
 public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
 
-    @Value("spring.jwt.secret")
+    @Value("spring.jwt.secret") //  @Value application.yml 에 있는 값 가져오기
     private String secretKey;
 
-    private long tokenValidMilisecond = 1000L * 60 * 60; // 1시간만 토큰 유효
+    private long tokenValidMilisecond = 1000L * 60 * 60; // 토큰 유효기간 : 1시간.
 
     private final UserDetailsService userDetailsService;
 
@@ -36,8 +36,8 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
 
     // Jwt 토큰 생성
     public String createToken(String userPk, List<String> roles) {
-        Claims claims = Jwts.claims().setSubject(userPk);
-        claims.put("roles", roles);
+        Claims claims = Jwts.claims().setSubject(userPk); // userPK(email)을 기준으로 회원을 구분하겠다. : claim정보에는 토큰에 부가적으로 실어 보낼 정보를 세팅할 수 있음.
+        claims.put("roles", roles); //roles는 user 엔티티에 있는 칼럼
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims) // 데이터
@@ -60,7 +60,9 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
 
     // Request의 Header에서 token 파싱 : "X-AUTH-TOKEN: jwt토큰"
     public String resolveToken(HttpServletRequest req) {
-        return req.getHeader("X-AUTH-TOKEN");
+        String result = req.getHeader("token"); // 대소문자 구문을 못하기 때문에 소문자로만
+        System.out.println(result);
+        return  result;
     }
 
     // Jwt 토큰의 유효성 + 만료일자 확인
