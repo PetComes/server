@@ -103,22 +103,24 @@ public class UserService {
 
         if (user.isPresent()) {
             Family family = user.get().getFamily();
+            if(family !=null) {
 //            int familyId = tmpfamilyId.intValue();
-            List<User> myfamilys = userRepository.findAllByFamily(family);
-            List<MyFamilyRepDto> myfamilyRepDtos = new ArrayList<>();
+                List<User> myfamilys = userRepository.findAllByFamily(family);
+                List<MyFamilyRepDto> myfamilyRepDtos = new ArrayList<>();
 
-            for (User tmpUser : myfamilys) {
-                MyFamilyRepDto familyDto = new MyFamilyRepDto(tmpUser);
-                myfamilyRepDtos.add(familyDto);
+                for (User tmpUser : myfamilys) {
+                    MyFamilyRepDto familyDto = new MyFamilyRepDto(tmpUser);
+                    myfamilyRepDtos.add(familyDto);
+                }
+
+                return new ResponseEntity(DataResponse.response(
+                        200, "내 가족 목록 조회 " + new ResponseMessage().SUCCESS, myfamilyRepDtos
+                ), HttpStatus.OK);
             }
-
-            return new ResponseEntity(DataResponse.response(
-                    200, "내 가족 목록 조회 " + new ResponseMessage().SUCCESS, myfamilyRepDtos
-            ), HttpStatus.OK);
         }
 
         return new ResponseEntity(NoDataResponse.response(
-                404, "내 가족 목록 조회 : " + new ResponseMessage().NOT_VALID_ACCOUNT
+                404, "내 가족 목록 조회 : " + new ResponseMessage().NO_FAMILY
         ), HttpStatus.NOT_FOUND);
     }
 
