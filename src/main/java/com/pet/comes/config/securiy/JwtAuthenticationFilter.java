@@ -1,15 +1,9 @@
 package com.pet.comes.config.securiy;
 
 
-import com.pet.comes.config.securiy.component.CommonEncoder;
-import com.pet.comes.service.CustomUserDetailService;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -17,33 +11,39 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 
 
 // Jwt 가 유효한 토큰인지 인증하기 위한 filter
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private JwtTokenProvider jwtTokenProvider;
-    private CustomUserDetailService customUserDetailService;
+//    private CustomUserDetailService customUserDetailService;
 
     // Jwt Provier 주입
-    public JwtAuthenticationFilter(CustomUserDetailService customUserDetailService,JwtTokenProvider jwtTokenProvider) {
+    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.customUserDetailService = customUserDetailService;
+
     }
 
     // Request로 들어오는 Jwt Token의 유효성을 검증(jwtTokenProvider.validateToken)하는 filter를 filterChain에 등록합니다.
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
+        HashMap<String, String> tokens = jwtTokenProvider.resolveToken((HttpServletRequest) request);
         System.out.println("----token get---- ");
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-//            UserDetails userDetails = customUserDetailService.loadUserByUsername(token);
-//            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-//                    userDetails, null,userDetails.getAuthorities());
-            System.out.println("---valid token");
-            Authentication auth = jwtTokenProvider.getAuthentication(token);
+        String accesstoken = tokens.get("accesstoken");
+        String refreshtoken = tokens.get("refreshtoken");
 
-            SecurityContextHolder.getContext().setAuthentication(auth);
+        if (accesstoken != null) { // access token 확인
+            if (jwtTokenProvider.validateToken(accesstoken)) { // token이 유효하면
+                System.out.println("------ valid token -----");
+                System.out.println("accesstoken : " + tokens.get("accesstoken"));
+                System.out.println("refreshtoken : " + tokens.get("refreshtoken"));
+
+                Authentication auth = jwtTokenProvider.getAuthentication(accesstoken);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            }
         }
         filterChain.doFilter(request, response);
     }

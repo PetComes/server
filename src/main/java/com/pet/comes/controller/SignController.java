@@ -1,7 +1,6 @@
 package com.pet.comes.controller;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -10,10 +9,18 @@ import com.pet.comes.config.securiy.JwtTokenProvider;
 import com.pet.comes.config.securiy.component.CommonEncoder;
 import com.pet.comes.dto.Join.UserJoinDto;
 import com.pet.comes.dto.Rep.SignResultRepDto;
+import com.pet.comes.dto.Req.RefreshTokenReqDto;
 import com.pet.comes.dto.Req.SignInReqDto;
 import com.pet.comes.model.Entity.User;
+import com.pet.comes.repository.UserRepository;
+import com.pet.comes.response.DataResponse;
+import com.pet.comes.response.NoDataResponse;
+import com.pet.comes.response.ResponseMessage;
+import com.pet.comes.response.Status;
 import com.pet.comes.service.CustomUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,12 +34,16 @@ public class SignController {
     private final CommonEncoder passwordEncoder = new CommonEncoder();
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final Status status;
+    private final ResponseMessage message;
 
     @Autowired
-    public SignController(CustomUserDetailService customUserDetailService, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider) {
+    public SignController(ResponseMessage message,Status status,CustomUserDetailService customUserDetailService, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider) {
         this.customUserDetailService = customUserDetailService;
 //        this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider  = jwtTokenProvider;
+        this.message  = message;
+        this.status =status;
     }
 
     // signin, login
@@ -47,7 +58,14 @@ public class SignController {
                 System.out.println("비밀번호 일치");
                 List<String > roleList = Arrays.asList(user.getRoles().split(","));
                 signResultRepDto.setResult("success");
-                signResultRepDto.setToken(jwtTokenProvider.createToken(user.getEmail(), roleList)); //
+                signResultRepDto.setAccessToken(jwtTokenProvider.createToken(user.getEmail(), roleList)); // access token 만들기
+                String tmpRefreshToken = jwtTokenProvider.createRefreshToken(user.getEmail());
+                signResultRepDto.setRefreshToken(tmpRefreshToken); // refresh token 만들기
+
+                // 새롭게 DB에 refresh token 변경
+                user.setRefreshToken(tmpRefreshToken);
+                customUserDetailService.save(user);
+
                 return signResultRepDto;
             }else {
                 signResultRepDto.setResult("fail");
@@ -84,5 +102,35 @@ public class SignController {
             signResultRepDto.setMessage("Ask system admin");
             return signResultRepDto;
         }
+
     }
+
+    @PostMapping("reaccess")
+    @ResponseBody
+    public ResponseEntity refreshAccessToken(HttpServletRequest request, @RequestBody RefreshTokenReqDto refreshTokenReqDto) {
+
+        HashMap<String, String> tokens = new HashMap<>();
+
+        Optional<User> isExist = customUserDetailService.findById(refreshTokenReqDto.getUserId());
+        if (isExist.isPresent()) { // 해당 유저 존재해야됨
+            User user = isExist.get();
+            String userRefreshToken = user.getRefreshToken();
+            String reqToken = refreshTokenReqDto.getRefreshToken();
+            if (userRefreshToken != null && userRefreshToken.equals(reqToken)) { // refreshToken 유효해야
+                List<String> roleList = Arrays.asList(user.getRoles().split(","));
+                tokens.put("accesstoken", jwtTokenProvider.createToken(user.getEmail(), roleList));
+                userRefreshToken = jwtTokenProvider.createRefreshToken(user.getEmail());
+                tokens.put("refreshtoken", userRefreshToken);
+                user.setRefreshToken(userRefreshToken); // refreshToken 업데이트
+
+                customUserDetailService.save(user); // 새롭게 refreshToken 업데이트 된 User DB에 업데이트
+                return new ResponseEntity(DataResponse.response(status.SUCCESS,
+                        "access token 재발급 " + message.SUCCESS, tokens), HttpStatus.OK);
+
+            }
+        }
+
+        return new ResponseEntity(NoDataResponse.response(status.EXPIRED_TOKEN, message.EXPIRED_TOKEN), HttpStatus.OK);
+    }
+
 }

@@ -17,7 +17,8 @@ public class SignResultRepDto {
 
     private String result;
     private String message;
-    private String token;
+    private String accessToken;
+    private String refreshToken;
 
 
 }
