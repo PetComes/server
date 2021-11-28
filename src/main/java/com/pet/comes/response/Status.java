@@ -20,5 +20,6 @@ public class Status {
     public int INVALID_ID = 304;
     public int DB_INVALID_VALUE = 500;
     public int DB_NO_DATA = 501;
+    public int EXPIRED_TOKEN = 502;
 
 }

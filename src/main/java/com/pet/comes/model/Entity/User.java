@@ -57,6 +57,8 @@ public class User extends Timestamped implements UserDetails {
 
     private String roles;
 
+    private String refreshToken;
+
     public User(UserJoinDto userJoinDto) {
         this.name = userJoinDto.getName();
         this.email = userJoinDto.getEmail();
