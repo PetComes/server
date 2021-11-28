@@ -25,7 +25,7 @@ spring:
     username: petcomes
     password: petcomes
   jwt:
-    secret : asd
+    secret : eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJKaWhvQGdtYWlsLmNvbSIsInJvbGVzIjpbIlVTRVIiXSwiaWF0IjoxNjM3OTQ5ODUwLCJleHAiOjE2Mzc5NTM0NTB9.9cxwL02Dy3IWhIXPULbY49Pe4vdlgnOqXpHnBeRNeuQ
 
 ---
 
