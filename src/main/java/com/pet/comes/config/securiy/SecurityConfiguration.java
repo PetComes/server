@@ -2,30 +2,50 @@ package com.pet.comes.config.securiy;
 
 // import 생략
 
+import com.pet.comes.config.securiy.component.CommonEncoder;
 import com.pet.comes.model.Entity.User;
+import com.pet.comes.service.CustomUserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 /* 클라에서 api 호출을 하면 Controller에 도달하기 전에 filter를 거침
 * 이러한 filter 설정을 아래에 한거임. : Token 기반 인증 절차 구현 */
-@RequiredArgsConstructor
 @Configuration
-@EnableWebSecurity
+@RequiredArgsConstructor
+@EnableWebSecurity // 시큐리티 가능하게
+@EnableGlobalMethodSecurity( // 아래와 같은 어노테이션들을 컨트롤러에서 사용할 수 있게 해줌
+        securedEnabled = true, // @Secured
+        jsr250Enabled = true, // @RolesAllowed
+        prePostEnabled = true // @PreAuthorize, @PostAuthorize
+)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private CustomUserDetailService customUserDetailService;
+    private CommonEncoder commonEncoder;
 
-    @Bean
+//    @Override
+//    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception{
+//                authenticationManagerBuilder
+//                .userDetailsService(customUserDetailService)
+//                .passwordEncoder(commonEncoder);
+//    }
+
+    @Bean(BeanIds.AUTHENTICATION_MANAGER)
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
@@ -43,14 +63,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests() // 다음 리퀘스트에 대한 사용권한 체크 , 여기서 부터 호출되는 메소드들의 요청 보안 수준을 설정정                .antMatchers("/test/signin", "/test/signup").permitAll() // 가입 및 인증 주소는 누구나 접근가능
 //                    .antMatchers(HttpMethod.GET, "/helloworld/**").permitAll() // hellowworld로 시작하는 GET요청 리소스는 누구나 접근가능
-                .antMatchers(HttpMethod.GET, "/**").permitAll() // 일단 모든 리소스 혀용
+                .antMatchers(HttpMethod.GET, "/**").authenticated() // 일단 모든 리소스 혀용
                 .antMatchers(HttpMethod.POST,"/test/**").permitAll()
-                .antMatchers(HttpMethod.PUT,"/**").permitAll()
-                .antMatchers(HttpMethod.DELETE,"/**").permitAll()
-                .anyRequest().hasRole("USER") // 그외 나머지 요청은 모두 인증된 회원만 접근 가능
+//                .antMatchers(HttpMethod.PUT,"/**").permitAll()
+//                .antMatchers(HttpMethod.DELETE,"/**").permitAll()
+                .anyRequest().authenticated() // 그외 나머지 요청은 모두 인증된 회원만 접근 가능 ( 토큰 기반 )
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class); // jwt token 필터를 id/password 인증 필터 전에 넣는다
-
+                // 요청을 처리하기 전에 어떤 필터를 거치는지 설정함.
+                .addFilterBefore(new JwtAuthenticationFilter(customUserDetailService,jwtTokenProvider), UsernamePasswordAuthenticationFilter.class); // jwt token 필터를 id/password 인증 필터 전에 넣는다
     }
 
     @Override // ignore check swagger resource
