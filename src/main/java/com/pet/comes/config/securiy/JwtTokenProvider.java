@@ -50,7 +50,7 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
                 .signWith(SignatureAlgorithm.HS256, secretKey) // 암호화 알고리즘, secret값 세팅
                 .compact();
     }
-
+//
     // Jwt 토큰 생성
     public String createRefreshToken(String userPk) {
         Claims claims = Jwts.claims().setSubject(userPk); // userPK(email)을 기준으로 회원을 구분하겠다. : claim정보에는 토큰에 부가적으로 실어 보낼 정보를 세팅할 수 있음.
