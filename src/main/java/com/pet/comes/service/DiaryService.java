@@ -3,12 +3,15 @@ package com.pet.comes.service;
 
 import com.pet.comes.dto.Rep.DiaryListRepDto;
 import com.pet.comes.dto.Req.DiaryReqDto;
+import com.pet.comes.dto.Req.PinReqDto;
 import com.pet.comes.model.Entity.Diary;
 import com.pet.comes.model.Entity.Dog;
 
+import com.pet.comes.model.Entity.Pin;
 import com.pet.comes.model.Entity.User;
 import com.pet.comes.repository.DiaryRepository;
 import com.pet.comes.repository.DogRepository;
+import com.pet.comes.repository.PinRepository;
 import com.pet.comes.repository.UserRepository;
 import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
@@ -29,14 +32,16 @@ public class DiaryService {
     private final DiaryRepository diaryRepository;
     private final UserRepository userRepository;
     private final DogRepository dogRepository;
+    private final PinRepository pinRepository;
     private final Status status;
     private final ResponseMessage message;
 
     @Autowired
-    public DiaryService(DogRepository dogRepository,UserRepository userRepository, DiaryRepository diaryRepository, Status status, ResponseMessage message) {
+    public DiaryService(PinRepository pinRepository,DogRepository dogRepository,UserRepository userRepository, DiaryRepository diaryRepository, Status status, ResponseMessage message) {
         this.diaryRepository = diaryRepository;
         this.userRepository = userRepository;
         this.dogRepository = dogRepository;
+        this.pinRepository  = pinRepository;
         this.status = status;
         this.message = message;
     }
@@ -136,6 +141,39 @@ public class DiaryService {
         diaryRepository.save(diary);
 
         return new ResponseEntity(DataResponse.response(status.SUCCESS, message.SUCCESS + ": 공개/비공개 토글 성공 : " + isPublic, isPublic), HttpStatus.OK);
+
+    }
+
+    /* 다이어리 핀 설정하기/해제하기 API -- Tony */
+    public ResponseEntity pinDiary(PinReqDto pinReqDto){
+        Optional<User> isExist = userRepository.findById(pinReqDto.getUserId());
+        if(!isExist.isPresent())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID,  message.NOT_VALID_ACCOUNT + "유저 정보가 없습니다. "), HttpStatus.OK);
+
+        User user = isExist.get();
+        List<Pin> userPinList = user.getPins();
+        Long diaryId = pinReqDto.getDiaryId();
+        // pin 으로 등록되어 있을 때
+        Optional<Pin> isExist2 = pinRepository.findByUserAndDiaryId(user,diaryId);
+        if(isExist2.isPresent() ) { // 이미 등록 되어 있다면
+            Pin pin = isExist2.get();
+            userPinList.remove(pin); // user에서 삭제 (양뱡향)
+            pinRepository.delete(pin); // DB에서 삭제
+            userRepository.save(user);
+
+            return new ResponseEntity(NoDataResponse.response(status.SUCCESS,  message.SUCCESS + " : 핀 하기 해제"), HttpStatus.OK);
+        }
+
+        // pin 으로 등록되어 있지 않을 때
+        Pin pin = new Pin(user, diaryId);  // 핀 생성 ( pin -> user 관계 )
+        userPinList.add(pin); // 핀 추가  ( user -> pin 관계 )
+
+        pinRepository.save(pin);
+        userRepository.save(user);
+
+
+        return new ResponseEntity(NoDataResponse.response(status.SUCCESS, message.SUCCESS + " : 핀 하기 " ), HttpStatus.OK);
+
 
     }
 

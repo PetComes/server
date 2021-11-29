@@ -2,6 +2,7 @@ package com.pet.comes.controller;
 
 
 import com.pet.comes.dto.Req.DiaryReqDto;
+import com.pet.comes.dto.Req.PinReqDto;
 import com.pet.comes.service.DiaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,4 +44,8 @@ public class DiaryController {
         return diaryService.toggleDiary(diaryId);
     }
 
+    @PostMapping("/pin")
+    public ResponseEntity pinDiary(@RequestBody PinReqDto pinReqDto){
+        return diaryService.pinDiary(pinReqDto);
+    }
 }

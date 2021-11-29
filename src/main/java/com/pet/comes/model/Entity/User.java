@@ -55,6 +55,9 @@ public class User extends Timestamped implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<Diary> diaries = new ArrayList<Diary>();
 
+    @OneToMany(mappedBy = "user")
+    private List<Pin> pins = new ArrayList<>();
+
     private String roles;
 
     private String refreshToken;
@@ -85,6 +88,13 @@ public class User extends Timestamped implements UserDetails {
 
         if(diary.getUser() != this)
             diary.setUser(this);
+    }
+
+    public void setPins(Pin pin){
+        this.pins.add(pin);
+
+        if(pin.getUser() !=this)
+            pin.setUser(this);
     }
 
     @Override
