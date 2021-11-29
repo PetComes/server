@@ -48,4 +48,9 @@ public class DiaryController {
     public ResponseEntity pinDiary(@RequestBody PinReqDto pinReqDto){
         return diaryService.pinDiary(pinReqDto);
     }
+
+    @GetMapping("/list/pin/{userId}")
+    public ResponseEntity pinList(@PathVariable Long userId){
+        return diaryService.pinList(userId);
+    }
 }
