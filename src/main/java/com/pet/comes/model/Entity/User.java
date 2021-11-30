@@ -77,6 +77,7 @@ public class User extends Timestamped implements UserDetails {
 
     }
 
+
     public void setFamilyId(Family family) {
         if (this.family == null) {
             this.family = family;
