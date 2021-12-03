@@ -3,7 +3,7 @@ package com.pet.comes.config.securiy;
 
 import lombok.Builder;
 import lombok.Getter;
-import com.pet.comes.model.Entity.User
+import com.pet.comes.model.Entity.User;
 
 import java.util.Map;
 
