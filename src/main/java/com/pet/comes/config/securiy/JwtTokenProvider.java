@@ -78,7 +78,7 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
 
     // Request의 Header에서 token 파싱 : "accesstoken, refreshtoken: jwt토큰"
     public HashMap<String, String> resolveToken(HttpServletRequest req) {
-
+        // **** 유효성 검사 추가하기 ******
         HashMap<String, String> tokens = new HashMap<>();
         // accesstoken
         String tmp = req.getHeader("accesstoken");
