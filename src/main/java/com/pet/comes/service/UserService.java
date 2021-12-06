@@ -124,4 +124,19 @@ public class UserService {
         ), HttpStatus.NOT_FOUND);
     }
 
+    /* 닉네임 중복여부 확인(유저 닉네임) */
+    public ResponseEntity validNickname(String nickname){
+        Optional<User> isExist = userRepository.findByNickname(nickname);
+
+        if(isExist.isPresent())
+            return new ResponseEntity(NoDataResponse.response(status.EXISTED_NICKNAME
+                    ,   new ResponseMessage().EXISTED_NICKNAME
+            ), HttpStatus.NOT_FOUND);
+
+
+        return new ResponseEntity(DataResponse.response(
+                status.SUCCESS, nickname +" 닉네임  " + new ResponseMessage().SUCCESS, nickname
+        ), HttpStatus.OK);
+    }
+
 }

@@ -23,12 +23,10 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("signup")
-    public ResponseEntity signUp(@RequestBody UserJoinDto userJoinDto) {
-        return userService.signUp(userJoinDto);
-    }
-
-
+//    @PostMapping("signup")
+//    public ResponseEntity signUp(@RequestBody UserJoinDto userJoinDto) {
+//        return userService.signUp(userJoinDto);
+//    }
 
     @GetMapping("account/{id}")
 //    @PreAuthorize("hasRole('USER')")
@@ -39,6 +37,11 @@ public class UserController {
     @GetMapping("family/{id}")
     public ResponseEntity myFamily(@PathVariable Long id){
         return userService.myFamily(id);
+    }
+
+    @PostMapping("test/validation/{nickname}")
+    public ResponseEntity validNickname(@PathVariable String nickname){
+        return userService.validNickname(nickname);
     }
 
 

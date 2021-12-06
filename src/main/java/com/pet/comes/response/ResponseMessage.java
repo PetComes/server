@@ -18,4 +18,6 @@ public class ResponseMessage {
     public String NO_COMMENT = "아직 댓글이 없습니다.";
     public String NO_FAMILY = "아직 가족이 없습니다. 가족을 추가해 보세요 !";
     public String EXPIRED_TOKEN = "REFRESH TOKEN이 만료되었습니다. 새롭게 로그인 해주세요.";
+    public String EXISTED_NICKNAME = "이미 닉네임이 존재합니다. 다른 닉네임을 작성해 주세요.";
+
 }
