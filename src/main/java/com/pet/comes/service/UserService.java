@@ -124,7 +124,7 @@ public class UserService {
         ), HttpStatus.NOT_FOUND);
     }
 
-    /* 닉네임 중복여부 확인(유저 닉네임) */
+    /* 닉네임 중복여부 확인(유저 닉네임) -- Tony */
     public ResponseEntity validNickname(String nickname){
         Optional<User> isExist = userRepository.findByNickname(nickname);
 
