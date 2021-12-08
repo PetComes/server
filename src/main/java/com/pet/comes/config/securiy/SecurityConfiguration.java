@@ -60,7 +60,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests() // 다음 리퀘스트에 대한 사용권한 체크 , 여기서 부터 호출되는 메소드들의 요청 보안 수준을 설정정                .antMatchers("/test/signin", "/test/signup").permitAll() // 가입 및 인증 주소는 누구나 접근가능
 //                    .antMatchers(HttpMethod.GET, "/helloworld/**").permitAll() // hellowworld로 시작하는 GET요청 리소스는 누구나 접근가능
-                .antMatchers(HttpMethod.GET, "/**").authenticated()
+//                .antMatchers(HttpMethod.GET, "/**").authenticated()
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Request Header에 accesstoken 실어서 보내는 특별한 상황 허용
                 .antMatchers(HttpMethod.POST,"/test/**").permitAll() // 로그인 혹은 회원가입에 사용되는 api 들은 허용 ( 해당 단계에서는 토큰을 발급 받을 수 없음 )
 //                .antMatchers(HttpMethod.PUT,"/**").permitAll()
 //                .antMatchers(HttpMethod.DELETE,"/**").permitAll()
