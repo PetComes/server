@@ -1,6 +1,6 @@
 package com.pet.comes.service;
 
-import com.pet.comes.dto.FamilyDto;
+import com.pet.comes.model.Entity.Family;
 import com.pet.comes.repository.FamilyRepository;
 import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.ResponseMessage;
@@ -23,13 +23,13 @@ public class FamilyService {
         this.status = status;
         this.message = message;
     }
+    /*Dog 생성시 family 생성  -- Tony */
+    public ResponseEntity addFamily(Family family){
 
-    public ResponseEntity addFamily(FamilyDto familyDto ){
-
-
+        familyRepository.save(family);
         return new ResponseEntity(DataResponse.response(status.SUCCESS,
-                "반려견정보입력력" + message.SUCCESS, familyDto.getFamilyId()), HttpStatus.OK);
-
-
+                "가족등록완료" + message.SUCCESS, family.getId()), HttpStatus.OK);
     }
+
+
 }

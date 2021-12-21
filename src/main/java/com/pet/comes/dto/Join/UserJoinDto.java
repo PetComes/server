@@ -16,7 +16,7 @@ public class UserJoinDto {
     private String nickname;
     private String introduction;
     private String imageUrl;
-    private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
+
+
 
 }
