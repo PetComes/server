@@ -3,6 +3,7 @@ package com.pet.comes.service;
 
 import com.pet.comes.dto.Rep.DiaryListRepDto;
 import com.pet.comes.dto.Rep.PinListRepDto;
+import com.pet.comes.dto.Rep.PinListofDiaryDto;
 import com.pet.comes.dto.Req.DiaryReqDto;
 import com.pet.comes.dto.Req.PinReqDto;
 import com.pet.comes.model.Entity.Diary;
@@ -37,6 +38,7 @@ public class DiaryService {
     private final Status status;
     private final ResponseMessage message;
 
+
     @Autowired
     public DiaryService(PinRepository pinRepository, DogRepository dogRepository, UserRepository userRepository, DiaryRepository diaryRepository, Status status, ResponseMessage message) {
         this.diaryRepository = diaryRepository;
@@ -64,7 +66,7 @@ public class DiaryService {
             text = diary.getText();
             commentCount = 12; // 임의의 값 : 아직 comment 관련 api 만들지않아서
             pinCount = 2; // 임의의 값 : 아직 pin 관련 api 만들지 않아서
-            DiaryListRepDto diaryListRepDto = new DiaryListRepDto(createdAt, text, commentCount, pinCount);
+            DiaryListRepDto diaryListRepDto = new DiaryListRepDto(createdAt, text, commentCount, pinCount, diary.getId());
             diaryListRepDtoList.add(diaryListRepDto);
         }
         return new ResponseEntity(DataResponse.response(status.SUCCESS, "다이어리들 불어오기 " + message.SUCCESS, diaryListRepDtoList), HttpStatus.OK);
@@ -145,6 +147,29 @@ public class DiaryService {
 
     }
 
+    /* D7 다이어리 핀한수 상세보기 API -- Tony */
+    public ResponseEntity getPinListofDiary(Long diaryId) {
+        List<Pin> pinList = pinRepository.findAllByDiaryId(diaryId);
+
+        if (pinList.isEmpty())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NO_DIARY), HttpStatus.OK);
+//        int cnt = 0; // 전체핀 수 카운트하기
+
+        List<PinListofDiaryDto> resultList =  new ArrayList<>();
+
+        for(Pin pin : pinList){
+            User user = userRepository.findById(pin.getUser().getId()).get();
+            String imgurl = user.getImageUrl();
+            String nickName = user.getName();
+            PinListofDiaryDto pinListofDiaryDto = new PinListofDiaryDto(imgurl,nickName);
+            resultList.add(pinListofDiaryDto);
+//            cnt ++;
+        }
+
+        return new ResponseEntity(DataResponse.response(status.SUCCESS,
+                message.SUCCESS + " 다이어리의 핀목록 상세 조회 ", resultList), HttpStatus.OK);
+    }
+
     /* 다이어리 핀 설정하기/해제하기 API -- Tony */
     public ResponseEntity pinDiary(PinReqDto pinReqDto) {
         Optional<User> isExist = userRepository.findById(pinReqDto.getUserId());
@@ -200,7 +225,7 @@ public class DiaryService {
             pinListRepDto.setContentImageUrl(diary.getImageUrl());
 
             User usertmp = diary.getUser();
-            if(usertmp== null)
+            if (usertmp == null)
                 return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_VALID_ACCOUNT + "유저 정보가 없습니다. "), HttpStatus.OK);
 
             pinListRepDto.setNickname(usertmp.getNickname());
@@ -210,7 +235,7 @@ public class DiaryService {
         }
 
         return new ResponseEntity(DataResponse.response(status.SUCCESS,
-                 message.SUCCESS + " 핀 목록 조회 ", pinListRepDtoList), HttpStatus.OK);
+                message.SUCCESS + " 핀 목록 조회 ", pinListRepDtoList), HttpStatus.OK);
 
     }
 
