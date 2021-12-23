@@ -27,18 +27,20 @@ public class UserController {
 //    public ResponseEntity signUp(@RequestBody UserJoinDto userJoinDto) {
 //        return userService.signUp(userJoinDto);
 //    }
-
+    /* H1 : 내 계정정보 조회 --Tony */
     @GetMapping("account/{id}")
 //    @PreAuthorize("hasRole('USER')")
     public ResponseEntity myAccount(@PathVariable Long id){
         return userService.myAccount(id);
     }
 
+    /* H7 : 내 가족 목록 조회 --Tony */
     @GetMapping("family/{id}")
     public ResponseEntity myFamily(@PathVariable Long id){
         return userService.myFamily(id);
     }
 
+    /* U1 : 회원가입 및 로그인 --Tony */
     @PostMapping("test/validation/{nickname}")
     public ResponseEntity validNickname(@PathVariable String nickname){
         return userService.validNickname(nickname);

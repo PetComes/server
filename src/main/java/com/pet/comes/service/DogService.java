@@ -34,7 +34,7 @@ public class DogService {
     }
 
 
-    /* 강아지 등록 API --Tony */
+    /* H4 : 강아지 등록 API --Tony */
     public ResponseEntity addDog(Long userId, DogReqDto dogReqDto) {
         if (dogReqDto.getName() == null || dogReqDto.getAge() > 25) {
 
@@ -43,14 +43,17 @@ public class DogService {
         }
 
         Family family = userService.userFamily(userId);
+        if (family == null)
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NO_FAMILY+" : 강아지 등록해보기"), HttpStatus.OK);
 
-        Dog dog = new Dog(userId,dogReqDto);
+
+        Dog dog = new Dog(userId, dogReqDto);
         dog.setFamily(family);// dog -> family 관계 매핑
         family.setDogs(dog);// family -> dog 관계 매핑
         familyService.addFamily(family);
         userService.setFamilyId(userId, family); // User -> Family 관계 매핑
-        dogRepository.save(dog);
 
+        dogRepository.save(dog);
 
         return new ResponseEntity(DataResponse.response(status.SUCCESS,
                 "반려견정보입력" + message.SUCCESS, dog.getId()), HttpStatus.OK);
@@ -58,5 +61,9 @@ public class DogService {
 
     }
 
+//    /* H5 : 강아지별 프로필 조회 API -- Tony*/
+//    public ResponseEntity getDogProfile(Long dogId) {
+//
+//    }
 
 }

@@ -82,7 +82,7 @@ public class UserService {
 
     }
 
-    /* 내 계정정보 조회 API -- Tony */
+    /* H1 : 내 계정정보 조회 API -- Tony */
     public ResponseEntity myAccount(Long id) {
         Optional<User> user = userRepository.findById(id);
 
