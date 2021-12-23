@@ -18,9 +18,16 @@ public class DogController {
         this.dogService = dogService;
     }
 
+    /* H4 : 강아지 등록 API -- Tony*/
     @PostMapping("/{userId}")
     public ResponseEntity addDog(@PathVariable Long userId , @RequestBody DogReqDto dogReqDto) {
         return dogService.addDog(userId,dogReqDto);
     }
+
+    /* H5 : 강아지별 프로필 조회 API -- Tony*/
+//    @GetMapping("/profile/{userName}")
+//    public ResponseEntity getDogProfile(@PathVariable Long dogId){
+//        return dogService.getDogProfile(dogId);
+//    }
 
 }

@@ -76,6 +76,7 @@ public class Dog  {
         this.weight = dogReqDto.getWeight();
         this.birthday = dogReqDto.getBirthday();
         this.imageUrl = dogReqDto.getImageUrl();
+        this.sex = dogReqDto.getSex();
         this.isNeutered = dogReqDto.getIsNeutered();
         this.registerationNo = dogReqDto.getRegisterationNo();
         this.modifiedBy = userId;
