@@ -25,9 +25,9 @@ public class DogController {
     }
 
     /* H5 : 강아지별 프로필 조회 API -- Tony*/
-//    @GetMapping("/profile/{userName}")
-//    public ResponseEntity getDogProfile(@PathVariable Long dogId){
-//        return dogService.getDogProfile(dogId);
-//    }
+    @GetMapping("/profile/{nickName}/{dogName}")
+    public ResponseEntity getDogProfile(@PathVariable String nickName, @PathVariable String dogName){
+        return dogService.getDogProfile(nickName,dogName);
+    }
 
 }
