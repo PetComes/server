@@ -229,14 +229,24 @@ public class DiaryService {
         User user = isExist.get();
         List<Pin> userPinList = user.getPins();
         Long diaryId = pinReqDto.getDiaryId();
+        Optional<Diary> isDiary = diaryRepository.findById(diaryId);
+        if(!isDiary.isPresent())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID
+                    , new ResponseMessage().NO_DIARY
+            ), HttpStatus.NOT_FOUND);
+
+        Diary diary = isDiary.get();
+        int howManypins = diary.getHowManyPins();
+
         // pin 으로 등록되어 있을 때
         Optional<Pin> isExist2 = pinRepository.findByUserAndDiaryId(user, diaryId);
         if (isExist2.isPresent()) { // 이미 등록 되어 있다면
             Pin pin = isExist2.get();
             userPinList.remove(pin); // user에서 삭제 (양뱡향)
-            pinRepository.delete(pin); // DB에서 삭제
+            pinRepository.delete(pin); // DB에서  Pin 삭제
+            diary.setHowManyPins(howManypins-1); // pin 카운트 하나 삭제
             userRepository.save(user);
-
+            diaryRepository.save(diary);
             return new ResponseEntity(NoDataResponse.response(status.SUCCESS, message.SUCCESS + " : 핀 하기 해제"), HttpStatus.OK);
         }
 
@@ -244,7 +254,8 @@ public class DiaryService {
         Pin pin = new Pin(user, diaryId);  // 핀 생성 ( pin -> user 관계 )
         userPinList.add(pin); // 핀 추가  ( user -> pin 관계 )
 
-        pinRepository.save(pin);
+        pinRepository.save(pin); // DB에 pin 추가
+        diary.setHowManyPins(howManypins+1); // pin 카운트 하나 증가
         userRepository.save(user);
 
 
