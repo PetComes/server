@@ -19,10 +19,10 @@ public class DiaryController {
         this.diaryService = diaryService;
     }
 
-    /* D1 다이어리 조회 API (미완성) : 완성시 diaryId 도 전달하기 -- Tony */
-    @GetMapping("/{dogId}")
-    public ResponseEntity dogDiaryList(@PathVariable Long dogId){
-        return diaryService.dogDiaryList(dogId);
+    /* D1 : 강아지별 다이어리 조회 API (미완성) : 현재 공개/비공개 글 상관없이 전부 다 조회 -- Tony */
+    @GetMapping("/{nickName}/{dogName}")
+    public ResponseEntity dogDiaryList(@PathVariable String nickName, @PathVariable String dogName){
+        return diaryService.dogDiaryList(nickName,dogName);
     }
 
     /* D2 다이어리 작성 API -- Tony */

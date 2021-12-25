@@ -19,5 +19,10 @@ public class DiaryReqDto {
     private final Long addressId;
     private final int isDeleted; // default : 0
     private final String imageUrl;
+    private final String address; // 도로명주소
+    private final String locationName;
+    private final String x;
+    private final String y;
+
 
 }

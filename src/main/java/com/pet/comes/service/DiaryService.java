@@ -6,15 +6,9 @@ import com.pet.comes.dto.Rep.PinListRepDto;
 import com.pet.comes.dto.Rep.PinListofDiaryDto;
 import com.pet.comes.dto.Req.DiaryReqDto;
 import com.pet.comes.dto.Req.PinReqDto;
-import com.pet.comes.model.Entity.Diary;
-import com.pet.comes.model.Entity.Dog;
+import com.pet.comes.model.Entity.*;
 
-import com.pet.comes.model.Entity.Pin;
-import com.pet.comes.model.Entity.User;
-import com.pet.comes.repository.DiaryRepository;
-import com.pet.comes.repository.DogRepository;
-import com.pet.comes.repository.PinRepository;
-import com.pet.comes.repository.UserRepository;
+import com.pet.comes.repository.*;
 import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
@@ -35,22 +29,46 @@ public class DiaryService {
     private final UserRepository userRepository;
     private final DogRepository dogRepository;
     private final PinRepository pinRepository;
+    private final CommentRepository commentRepository;
+    private  final AddressRepository addressRepository;
     private final Status status;
     private final ResponseMessage message;
 
 
     @Autowired
-    public DiaryService(PinRepository pinRepository, DogRepository dogRepository, UserRepository userRepository, DiaryRepository diaryRepository, Status status, ResponseMessage message) {
+    public DiaryService(AddressRepository addressRepository,CommentRepository commentRepository,PinRepository pinRepository, DogRepository dogRepository, UserRepository userRepository, DiaryRepository diaryRepository, Status status, ResponseMessage message) {
         this.diaryRepository = diaryRepository;
         this.userRepository = userRepository;
         this.dogRepository = dogRepository;
         this.pinRepository = pinRepository;
+        this.commentRepository = commentRepository;
+        this.addressRepository = addressRepository;
         this.status = status;
         this.message = message;
     }
 
-    /* 다이어리 조회 API -- Tony */
-    public ResponseEntity dogDiaryList(Long dogId) {
+    /* D1 : 강아지별 다이어리 조회 API -- Tony */
+    public ResponseEntity dogDiaryList(String nickName, String dogName) {
+
+        // 조회하고자하는 강아지의 견주 닉네임으로 유저 찾기
+        Optional<User> isUser = userRepository.findByNickname(nickName);
+        if(!isUser.isPresent())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_VALID_ACCOUNT), HttpStatus.OK);
+
+        User user = isUser.get();
+        Family family = user.getFamily();
+        if(family == null) // 아직 가족을 생성하지 않으면
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NO_FAMILY), HttpStatus.OK);
+
+        List<Dog> dogs = family.getDogs();
+        if(dogs.isEmpty()) // 반려견이 없다면
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_DOGID, message.NO_DOG), HttpStatus.OK);
+
+        Long dogId = 0L; // 초기화 0 : dogId는 1부터 시작함.
+        for(Dog dog : dogs){
+            if(dog.getName().equals(dogName))
+                dogId =dog.getId();
+        }
 
         List<Diary> diaryList = diaryRepository.findAllByDogId(dogId);
         if (diaryList.isEmpty())
@@ -59,13 +77,19 @@ public class DiaryService {
 
         List<DiaryListRepDto> diaryListRepDtoList = new ArrayList<>();
         String createdAt, text;
-        int commentCount, pinCount;
+        int commentCount , pinCount;
+
 
         for (Diary diary : diaryList) {
             createdAt = diary.getRegisteredAt().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
             text = diary.getText();
-            commentCount = 12; // 임의의 값 : 아직 comment 관련 api 만들지않아서
-            pinCount = 2; // 임의의 값 : 아직 pin 관련 api 만들지 않아서
+//            List<Comment> comments = commentRepository.findAllByDiary(diary); // 임의의 값 : 아직 comment 관련 api 만들지않아서
+//            for(Comment comment : comments){
+//                if(!(comment==null))
+//                    commentCount++;
+//            }
+            commentCount = diary.getHowManyComments();
+            pinCount = diary.getHowManyPins();
             DiaryListRepDto diaryListRepDto = new DiaryListRepDto(createdAt, text, commentCount, pinCount, diary.getId());
             diaryListRepDtoList.add(diaryListRepDto);
         }
@@ -75,8 +99,11 @@ public class DiaryService {
 
     /* 다이어리 작성 API -- Tony */
     public ResponseEntity writeDiary(DiaryReqDto diaryReqDto) {
-        if (diaryReqDto.getText() == null)
-            return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED + ": 내용이 없습니다."), HttpStatus.OK);
+        if (diaryReqDto.getText() == null ) // Text data 자체가 없음
+            return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED + ": 내용이 없습니다. Text를 작성해 주세요(2글자 이상)"), HttpStatus.OK);
+        if (diaryReqDto.getText().length() < 2 ) // Text는 최소 글자 이상
+            return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED + " Text를 2글자 이상 작성해주세요. "), HttpStatus.OK);
+
         Optional<User> user = userRepository.findById(diaryReqDto.getUserId());
         if (!user.isPresent())
             return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.NOT_VALID_ACCOUNT + ": 해당 유저가 없습니다."), HttpStatus.OK);
@@ -92,8 +119,31 @@ public class DiaryService {
 
         Diary diary = new Diary(diaryReqDto);
         diary.setUser(user.get());
+
+        if(diaryReqDto.getLocationName() == null) { // 위치 정보 없을 때
+
+            diaryRepository.save(diary);
+            return new ResponseEntity(DataResponse.response(status.SUCCESS, "다이어리 작성 " + message.SUCCESS+" 위치태그 없음.", diary.getId()), HttpStatus.OK);
+        }
+
+        /*--위치 정보 있을 때 --*/
+        Address address = new Address(diaryReqDto); // 위치 객체 생성
+
+        // db반영 : Entity 생성 완료 ( 영속성 컨텍스트에 생성됨 )
         diaryRepository.save(diary);
-        return new ResponseEntity(DataResponse.response(status.SUCCESS, "다이어리 작성 " + message.SUCCESS, diary.getId()), HttpStatus.OK);
+        addressRepository.save(address);
+
+        // OneToOne 양뱡향 매핑
+        address.setDiary(diary);
+        diary.setAddress(address);
+
+        // db반영 : 변경사항 다시 저장
+        diaryRepository.save(diary);
+        addressRepository.save(address);
+
+
+
+        return new ResponseEntity(DataResponse.response(status.SUCCESS, "다이어리 작성 " + message.SUCCESS+" 위치태그 존재", diary.getId()), HttpStatus.OK);
     }
 
     /* 다이어리 수정 API -- Tony */
