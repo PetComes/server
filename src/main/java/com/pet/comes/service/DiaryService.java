@@ -97,7 +97,7 @@ public class DiaryService {
 
     }
 
-    /* 다이어리 작성 API -- Tony */
+    /* D2 :다이어리 작성 API -- Tony */
     public ResponseEntity writeDiary(DiaryReqDto diaryReqDto) {
         if (diaryReqDto.getText() == null ) // Text data 자체가 없음
             return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED + ": 내용이 없습니다. Text를 작성해 주세요(2글자 이상)"), HttpStatus.OK);

@@ -65,6 +65,9 @@ public class CommentService {
 
         Comment comment = new Comment(commentReqDto, user.get());
         commentRepository.save(comment);
+        if(comment.getCommentCommentId()!=null) // 대댓글 달기라면
+            return new ResponseEntity(DataResponse.response(status.SUCCESS,
+                    "대댓글 작성 " + message.SUCCESS + "해당 대댓글 다이어리 id : " + comment.getDiaryId(), comment.getDiaryId()), HttpStatus.OK);
 
         return new ResponseEntity(DataResponse.response(status.SUCCESS,
                 "다이러리 댓글 작성 " + message.SUCCESS + "해당 댓글 다이어리 id : " + comment.getDiaryId(), comment.getDiaryId()), HttpStatus.OK);
@@ -72,7 +75,7 @@ public class CommentService {
 
 
     /* D6 : 다이어리 댓글 상세보기 API -- Tony */
-    public ResponseEntity readComment(Long diaryId) {
+    public ResponseEntity readComments(Long diaryId) {
 
         Optional<Diary> diary = diaryRepository.findById(diaryId);
         if (!diary.isPresent()) {

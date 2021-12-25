@@ -46,5 +46,10 @@ public class UserController {
         return userService.validNickname(nickname);
     }
 
+    /* S10 : 클릭한 계정 프로필 확인하기 --Tony */
+    @GetMapping("profile/{userName}")
+    public ResponseEntity getUserProfile(@PathVariable String userName){
+        return userService.getUserProfile(userName);
+    }
 
 }

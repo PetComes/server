@@ -28,6 +28,6 @@ public class CommentController {
     /* D6 : 다이어리 댓글 상세보기 API --Tony*/
     @GetMapping("/{diaryId}")
     public ResponseEntity readComments(@PathVariable Long diaryId){
-        return commentService.readComment(diaryId);
+        return commentService.readComments(diaryId);
     }
 }

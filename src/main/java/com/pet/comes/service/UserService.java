@@ -3,6 +3,7 @@ package com.pet.comes.service;
 import com.pet.comes.dto.Join.UserJoinDto;
 import com.pet.comes.dto.Rep.MyAccountRepDto;
 import com.pet.comes.dto.Rep.MyFamilyRepDto;
+import com.pet.comes.dto.Rep.UserProfileRepDto;
 import com.pet.comes.model.Entity.Family;
 import com.pet.comes.model.Entity.User;
 import com.pet.comes.repository.UserRepository;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -97,13 +99,14 @@ public class UserService {
         ), HttpStatus.NOT_FOUND);
 
     }
-    /* 내 가족 목록 조회 API -- Tony */
+
+    /* H7 : 내 가족 목록 조회 API -- Tony */
     public ResponseEntity myFamily(Long id) {
         Optional<User> user = userRepository.findById(id);
 
         if (user.isPresent()) {
             Family family = user.get().getFamily();
-            if(family !=null) {
+            if (family != null) {
 //            int familyId = tmpfamilyId.intValue();
                 List<User> myfamilys = userRepository.findAllByFamily(family);
                 List<MyFamilyRepDto> myfamilyRepDtos = new ArrayList<>();
@@ -124,19 +127,38 @@ public class UserService {
         ), HttpStatus.NOT_FOUND);
     }
 
-    /* 닉네임 중복여부 확인(유저 닉네임) -- Tony */
-    public ResponseEntity validNickname(String nickname){
+    /* U5 : 닉네임 중복여부 확인(유저 닉네임) -- Tony */
+    public ResponseEntity validNickname(String nickname) {
         Optional<User> isExist = userRepository.findByNickname(nickname);
 
-        if(isExist.isPresent())
+        if (isExist.isPresent())
             return new ResponseEntity(NoDataResponse.response(status.EXISTED_NICKNAME
-                    ,   new ResponseMessage().EXISTED_NICKNAME
+                    , new ResponseMessage().EXISTED_NICKNAME
             ), HttpStatus.NOT_FOUND);
 
 
         return new ResponseEntity(DataResponse.response(
-                status.SUCCESS, nickname +" 닉네임  " + new ResponseMessage().SUCCESS, nickname
+                status.SUCCESS, nickname + " 닉네임  " + new ResponseMessage().SUCCESS, nickname
         ), HttpStatus.OK);
     }
+
+    /* S10 : 클릭한 계정 프로필 확인하기 --Tony */
+    public ResponseEntity getUserProfile(@PathVariable String userName) {
+        Optional<User> isExist = userRepository.findByNickname(userName);
+        if (!isExist.isPresent())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID
+                    , new ResponseMessage().NOT_VALID_ACCOUNT
+            ), HttpStatus.NOT_FOUND);
+
+        User user = isExist.get();
+        // 뱃지 연관관계 결정되면 넣기
+        UserProfileRepDto userProfileRepDto;
+
+        return new ResponseEntity(NoDataResponse.response(status.INVALID_ID
+                , new ResponseMessage().NOT_VALID_ACCOUNT
+        ), HttpStatus.NOT_FOUND);
+
+    }
+
 
 }
