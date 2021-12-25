@@ -12,4 +12,5 @@ import java.util.List;
 public interface DiaryRepository extends JpaRepository<Diary,Long> {
 
     List<Diary> findAllByDogId(Long dogId);
+
 }

@@ -22,5 +22,8 @@ public class Badge extends Timestamped {
     @Column(columnDefinition = "TEXT")
     private String activeCondition; // 활성 조건 설명
 
+    @Column(columnDefinition = "TEXT")
+    private String imageUrl;
+
 
 }
