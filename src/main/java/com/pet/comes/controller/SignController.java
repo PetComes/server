@@ -38,25 +38,25 @@ public class SignController {
     private final ResponseMessage message;
 
     @Autowired
-    public SignController(ResponseMessage message,Status status,CustomUserDetailService customUserDetailService, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider) {
+    public SignController(ResponseMessage message, Status status, CustomUserDetailService customUserDetailService, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider) {
         this.customUserDetailService = customUserDetailService;
 //        this.passwordEncoder = passwordEncoder;
-        this.jwtTokenProvider  = jwtTokenProvider;
-        this.message  = message;
-        this.status =status;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.message = message;
+        this.status = status;
     }
 
     // signin, login
     @PostMapping("signin")
     @ResponseBody
     public SignResultRepDto signInUser(HttpServletRequest request, @RequestBody SignInReqDto signReqDto) {
-        User user = (User)customUserDetailService.findByEmail(signReqDto.getEmail());
+        User user = (User) customUserDetailService.findByEmail(signReqDto.getEmail());
         SignResultRepDto signResultRepDto = new SignResultRepDto();
 
         try {
             if (passwordEncoder.matches(signReqDto.getPassword(), user.getPassword())) {
                 System.out.println("비밀번호 일치");
-                List<String > roleList = Arrays.asList(user.getRoles().split(","));
+                List<String> roleList = Arrays.asList(user.getRoles().split(","));
                 signResultRepDto.setResult("success");
                 signResultRepDto.setAccessToken(jwtTokenProvider.createToken(user.getEmail(), roleList)); // access token 만들기
                 String tmpRefreshToken = jwtTokenProvider.createRefreshToken(user.getEmail());
@@ -67,12 +67,12 @@ public class SignController {
                 customUserDetailService.save(user);
 
                 return signResultRepDto;
-            }else {
+            } else {
                 signResultRepDto.setResult("fail");
                 signResultRepDto.setMessage(" ID or Password is invalid.");
                 return signResultRepDto;
             }
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             signResultRepDto.setResult("fail");
             signResultRepDto.setMessage("NullPointerException");
             return signResultRepDto;
@@ -112,22 +112,24 @@ public class SignController {
         HashMap<String, String> tokens = new HashMap<>();
 
         Optional<User> isExist = customUserDetailService.findById(refreshTokenReqDto.getUserId());
-        if (isExist.isPresent()) { // 해당 유저 존재해야됨
-            User user = isExist.get();
-            String userRefreshToken = user.getRefreshToken();
-            String reqToken = refreshTokenReqDto.getRefreshToken();
-            if (userRefreshToken != null && userRefreshToken.equals(reqToken)) { // refreshToken 유효해야
-                List<String> roleList = Arrays.asList(user.getRoles().split(","));
-                tokens.put("accesstoken", jwtTokenProvider.createToken(user.getEmail(), roleList));
-                userRefreshToken = jwtTokenProvider.createRefreshToken(user.getEmail());
-                tokens.put("refreshtoken", userRefreshToken);
-                user.setRefreshToken(userRefreshToken); // refreshToken 업데이트
+        if (!isExist.isPresent())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_VALID_ACCOUNT ), HttpStatus.OK);
 
-                customUserDetailService.save(user); // 새롭게 refreshToken 업데이트 된 User DB에 업데이트
-                return new ResponseEntity(DataResponse.response(status.SUCCESS,
-                        "access token 재발급 " + message.SUCCESS, tokens), HttpStatus.OK);
+        User user = isExist.get();
+        String userRefreshToken = user.getRefreshToken();
+        String reqToken = refreshTokenReqDto.getRefreshToken();
+        if (userRefreshToken != null && userRefreshToken.equals(reqToken)) { // refreshToken 유효해야
+            List<String> roleList = Arrays.asList(user.getRoles().split(","));
+            tokens.put("accesstoken", jwtTokenProvider.createToken(user.getEmail(), roleList));
+            userRefreshToken = jwtTokenProvider.createRefreshToken(user.getEmail());
+            tokens.put("refreshtoken", userRefreshToken);
+            user.setRefreshToken(userRefreshToken); // refreshToken 업데이트
 
-            }
+            customUserDetailService.save(user); // 새롭게 refreshToken 업데이트 된 User DB에 업데이트
+            return new ResponseEntity(DataResponse.response(status.SUCCESS,
+                    "access token 재발급 " + message.SUCCESS, tokens), HttpStatus.OK);
+
+
         }
 
         return new ResponseEntity(NoDataResponse.response(status.EXPIRED_TOKEN, message.EXPIRED_TOKEN), HttpStatus.OK);

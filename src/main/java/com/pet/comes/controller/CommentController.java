@@ -19,11 +19,13 @@ public class CommentController {
         this.commentService = commentService;
     }
 
+    /* D8 : 다이어리 댓글 작성 API --Tony*/
     @PostMapping()
     public ResponseEntity writeComment(@RequestBody CommentReqDto commentReqDto) {
         return commentService.writeComment(commentReqDto);
     }
 
+    /* D6 : 다이어리 댓글 상세보기 API --Tony*/
     @GetMapping("/{diaryId}")
     public ResponseEntity readComments(@PathVariable Long diaryId){
         return commentService.readComment(diaryId);

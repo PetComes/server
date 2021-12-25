@@ -5,6 +5,7 @@ import com.pet.comes.dto.Req.DogReqDto;
 import com.pet.comes.model.Entity.Dog;
 import com.pet.comes.model.Entity.Family;
 import com.pet.comes.model.Entity.User;
+import com.pet.comes.model.EnumType.DogStatus;
 import com.pet.comes.repository.DogRepository;
 import com.pet.comes.repository.UserRepository;
 import com.pet.comes.response.DataResponse;
@@ -43,7 +44,7 @@ public class DogService {
 
     /* H4 : 강아지 등록 API --Tony */
     public ResponseEntity addDog(Long userId, DogReqDto dogReqDto) {
-        if (dogReqDto.getName() == null || dogReqDto.getAge() > 25) {
+        if (dogReqDto.getName() == null || dogReqDto.getAge() > 40) {
 
             return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED), HttpStatus.OK);
 
@@ -56,6 +57,7 @@ public class DogService {
 
         Dog dog = new Dog(userId, dogReqDto);
         dog.setFamily(family);// dog -> family 관계 매핑
+        dog.setStatus(DogStatus.WITH);
         family.setDogs(dog);// family -> dog 관계 매핑
         familyService.addFamily(family);
         userService.setFamilyId(userId, family); // User -> Family 관계 매핑
