@@ -63,11 +63,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //                .antMatchers(HttpMethod.GET, "/**").authenticated()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Request Header에 accesstoken 실어서 보내는 특별한 상황 허용 : Pre~~
 //                .antMatchers(HttpMethod.POST,"/test/**").permitAll() // 로그인 혹은 회원가입에 사용되는 api 들은 허용 ( 해당 단계에서는 토큰을 발급 받을 수 없음 )
-                .antMatchers(HttpMethod.POST,"/test/**").permitAll()
-//                .antMatchers(HttpMethod.PUT,"/**").permitAll()
-//                .antMatchers(HttpMethod.DELETE,"/**").permitAll()
-//                .antMatchers(HttpMethod.GET, "/**").permitAll()
-                .anyRequest().authenticated() // 그외 나머지 요청은 모두 인증된 회원만 접근 가능 ( 토큰 기반 )
+//                .antMatchers(HttpMethod.POST,"/test/**").permitAll()
+                .antMatchers(HttpMethod.POST,"/**").permitAll()
+                .antMatchers(HttpMethod.PUT,"/**").permitAll()
+                .antMatchers(HttpMethod.DELETE,"/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/**").permitAll()
+//                .anyRequest().authenticated() // 그외 나머지 요청은 모두 인증된 회원만 접근 가능 ( 토큰 기반 )
                 .and()
                 // 요청을 처리하기 전에 어떤 필터를 거치는지 설정함.
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class); // jwt token 필터를 id/password 인증 필터 전에 넣는다
