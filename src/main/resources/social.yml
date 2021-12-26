@@ -3,4 +3,4 @@ social:
     client:
       id:
       secret:
-    callback:
+    callback: http://localhost:8080/social/naver/callback

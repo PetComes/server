@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
@@ -15,16 +16,29 @@ import java.util.List;
 public class SocialService {
 
     private final List<SocialLogIn> socialLogInList;
+    private final HttpSession httpSession;
     private final HttpServletResponse response;
 
     public void requestSocialServer(SocialLogInType socialLogInType) {
         SocialLogIn socialLogIn = findSocialPlatform(socialLogInType);
         String redirectURL = socialLogIn.getRedirectURL();
+        httpSession.setAttribute("state", socialLogIn.getState());
         try {
             response.sendRedirect(redirectURL);
         }
         catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public String requestAccessToken(SocialLogInType socialLogInType, String state, String code) {
+        String storedState = (String) httpSession.getAttribute("state");
+        if(state.equals(storedState)) {
+            SocialLogIn socialLogIn = findSocialPlatform(socialLogInType);
+            return socialLogIn.requestAccessToken(state, code);
+        }
+        else {
+            return "FAILED : State IS NOT SAME";
         }
     }
 
