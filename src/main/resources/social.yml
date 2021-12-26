@@ -1,0 +1,6 @@
+social:
+  naver:
+    client:
+      id:
+      secret:
+    callback:

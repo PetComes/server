@@ -38,3 +38,4 @@ out/
 
 ### configuration file ###
 !**/src/main/resources/application.yml
+!**/src/main/resources/social.yml
