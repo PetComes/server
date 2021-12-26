@@ -19,6 +19,11 @@ spring:
   config:
     activate:
       on-profile: "devdb"
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true   # sql문 로그 찍어주기
+        format_sql: true # 로그 좀 이쁘게 찍어주기
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://petcomes.cnccg3mescgh.ap-northeast-2.rds.amazonaws.com:3306/petcomes?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
@@ -43,6 +48,17 @@ spring:
             token_uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user_name_attribute: id
+  #mail:
+   # host: smtp.gmail.com
+    #port: 587
+    #username: {  }
+    #password: {  }
+    #properties:
+     # mail:
+      #  smtp:
+       #   auth: true
+        #  starttls:
+         #   enable: true
 
 ---
 
@@ -82,8 +98,15 @@ spring:
         format_sql: true
         use_sql_comments: true
         show_sql: true
-    hibernate:
-      ddl-auto: none
-    show-sql: true
+      #logging:
+       # level:
+        #  org:
+         #   hibernate:
+          #    type:
+           #     descriptor:
+            #      sql: trace
+    #hibernate:
+     # ddl-auto: none
+    #show-sql: true
 
 

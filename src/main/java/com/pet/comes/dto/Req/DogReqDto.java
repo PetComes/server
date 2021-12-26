@@ -1,6 +1,7 @@
 package com.pet.comes.dto.Req;
 
 import com.pet.comes.model.EnumType.Sex;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -17,6 +18,7 @@ public class DogReqDto {
     private final Sex sex;
     private final int isNeutered; // 중성화 여부
     private final Long registerationNo ; // 반려견 등록번호
+
 
 
 }

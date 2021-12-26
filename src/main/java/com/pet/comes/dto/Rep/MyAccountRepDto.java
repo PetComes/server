@@ -38,7 +38,7 @@ public class MyAccountRepDto {
         this.modifiedAt = user.getModifiedAt();
 
         Family family = user.getFamily();
-        List<String> tmp = new ArrayList<>();
+        List<String> tmp = new ArrayList<String>();
 
         if (family == null) {
             tmp.add("반려견을 추가해보세요 !");

@@ -52,20 +52,30 @@ public class CommentService {
             return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_ENTERED + " 댓글이 비어있습니다."), HttpStatus.OK);
         }
         Optional<User> user = userRepository.findById(commentReqDto.getUserId());
-        if (!user.isPresent()) {
+        if (!user.isPresent())
             return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_ENTERED + "해당 유저가 없습니다."), HttpStatus.OK);
-        }
+
+        Optional<Diary> isExist = diaryRepository.findById(commentReqDto.getDiaryId());
+        if(!isExist.isPresent())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NO_DIARY + "해당 유저가 없습니다."), HttpStatus.OK);
+
+        Diary diary = isExist.get();
+        int commentsCnt = diary.getHowManyComments();
+        diary.setHowManyComments(commentsCnt+1);
 
         Comment comment = new Comment(commentReqDto, user.get());
         commentRepository.save(comment);
+        if(comment.getCommentCommentId()!=null) // 대댓글 달기라면
+            return new ResponseEntity(DataResponse.response(status.SUCCESS,
+                    "대댓글 작성 " + message.SUCCESS + "해당 대댓글 다이어리 id : " + comment.getDiaryId(), comment.getDiaryId()), HttpStatus.OK);
 
         return new ResponseEntity(DataResponse.response(status.SUCCESS,
                 "다이러리 댓글 작성 " + message.SUCCESS + "해당 댓글 다이어리 id : " + comment.getDiaryId(), comment.getDiaryId()), HttpStatus.OK);
     }
 
 
-    /* 다이어리 댓글 상세보기 API -- Tony */
-    public ResponseEntity readComment(Long diaryId) {
+    /* D6 : 다이어리 댓글 상세보기 API -- Tony */
+    public ResponseEntity readComments(Long diaryId) {
 
         Optional<Diary> diary = diaryRepository.findById(diaryId);
         if (!diary.isPresent()) {
