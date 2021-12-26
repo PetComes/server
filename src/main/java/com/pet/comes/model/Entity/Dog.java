@@ -1,6 +1,7 @@
 package com.pet.comes.model.Entity;
 
 import com.pet.comes.dto.Req.DogReqDto;
+import com.pet.comes.dto.Req.DogReqDto;
 import com.pet.comes.model.*;
 import com.pet.comes.model.EnumType.DogSize;
 import com.pet.comes.model.EnumType.DogStatus;
@@ -13,6 +14,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -69,7 +71,7 @@ public class Dog  {
 //                "}";
 //    }
 
-    public Dog(Long userId,DogReqDto dogReqDto){
+    public Dog(Long userId, DogReqDto dogReqDto){
         this.breedId = dogReqDto.getBreedId();
         this.name = dogReqDto.getName();
         this.age = dogReqDto.getAge();
