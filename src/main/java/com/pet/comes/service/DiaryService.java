@@ -104,10 +104,12 @@ public class DiaryService {
         if (diaryReqDto.getText().length() < 2 ) // Text는 최소 글자 이상
             return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED + " Text를 2글자 이상 작성해주세요. "), HttpStatus.OK);
 
+        // diary <-> user 다대일 양방향 매핑을 위해
         Optional<User> user = userRepository.findById(diaryReqDto.getUserId());
-        if (!user.isPresent())
+        if (!user.isPresent()) //
             return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.NOT_VALID_ACCOUNT + ": 해당 유저가 없습니다."), HttpStatus.OK);
 
+        //
         Long dogId = diaryReqDto.getDogId();
         Optional<Dog> dog = dogRepository.findById(dogId);
 
@@ -117,12 +119,11 @@ public class DiaryService {
         if (!user.get().getFamily().getDogs().contains(dog.get()))
             return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.NOT_VALID_ACCOUNT + ": 해당 반려견이 없습니다."), HttpStatus.OK);
 
-        Diary diary = new Diary(diaryReqDto);
-        diary.setUser(user.get());
+        Diary diary = new Diary(diaryReqDto); // 이 시점에서는 비영속 상태  , connection pool을 가져오지 않는다다        diary.setUser(user.get()); // diary <-> user 다대일 양방향 매핑
 
         if(diaryReqDto.getLocationName() == null) { // 위치 정보 없을 때
 
-            diaryRepository.save(diary);
+            diaryRepository.save(diary); // Tranaction 발생 -> Persistence Context 와 직접적인 관련이 생김.
             return new ResponseEntity(DataResponse.response(status.SUCCESS, "다이어리 작성 " + message.SUCCESS+" 위치태그 없음.", diary.getId()), HttpStatus.OK);
         }
 
@@ -133,7 +134,7 @@ public class DiaryService {
         diaryRepository.save(diary);
         addressRepository.save(address);
 
-        // OneToOne 양뱡향 매핑
+        // diary <-> address ,OneToOne 양뱡향 매핑
         address.setDiary(diary);
         diary.setAddress(address);
 
