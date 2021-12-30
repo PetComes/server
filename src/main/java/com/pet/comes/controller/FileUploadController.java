@@ -14,7 +14,8 @@ public class FileUploadController {
 
     private final FileUploadService fileUploadService;
 
-    @PostMapping("/api/v1/upload")
+    /* U11 : s3 파일 업로드 API -- Tony*/
+    @PostMapping("/s3/upload")
     public String uploadImage(@RequestPart MultipartFile file) {
         return fileUploadService.uploadImage(file);
     }
