@@ -15,12 +15,14 @@ import java.io.InputStream;
 public class AwsS3UploadService implements UploadService {
 
     private final AmazonS3 amazonS3;
-    private final S3Component component;
+    private final S3Component component; // aws s3 bucket과 연결 ? 해주는 컴포넌트
 
     @Override
     public void uploadFile(InputStream inputStream, ObjectMetadata objectMetadata, String fileName) {
         amazonS3.putObject(new PutObjectRequest(component.getBucket(), fileName, inputStream, objectMetadata)
                 .withCannedAcl(CannedAccessControlList.PublicRead));
+
+
     }
 
     @Override
