@@ -16,4 +16,10 @@ public class OuthController {
     public String authNaver(@RequestParam String code,@RequestParam String state){
         return "code : " + code+" state : " + state ;
     }
+
+    /* 카카오 소셜로그인 API 테스트용 */
+    @GetMapping("/kakao")
+    public String authKakao(@RequestParam String code,@RequestParam String state){
+        return "code : " + code+" state : " + state ;
+    }
 }
