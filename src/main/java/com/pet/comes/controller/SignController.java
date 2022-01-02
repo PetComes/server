@@ -46,7 +46,7 @@ public class SignController {
         this.status = status;
     }
 
-    // signin, login
+    /* U10 : 일반로그인 API --Tony*/
     @PostMapping("signin")
     @ResponseBody
     public SignResultRepDto signInUser(HttpServletRequest request, @RequestBody SignInReqDto signReqDto) {
@@ -79,7 +79,7 @@ public class SignController {
         }
     }
 
-    // signup,
+    /* U1 : 회원가입 API --Tony*/
     @PostMapping("signup")
     @ResponseBody
     public SignResultRepDto addUser(HttpServletRequest request, @RequestBody UserJoinDto userJoinDto) {
@@ -105,6 +105,7 @@ public class SignController {
 
     }
 
+    /* U9 : 액세스 토큰 새롭게 받기 (refresh token) API --Tony */
     @PostMapping("reaccess")
     @ResponseBody
     public ResponseEntity refreshAccessToken(HttpServletRequest request, @RequestBody RefreshTokenReqDto refreshTokenReqDto) {
