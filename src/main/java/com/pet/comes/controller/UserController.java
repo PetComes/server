@@ -4,6 +4,7 @@ import com.pet.comes.dto.Join.UserJoinDto;
 import com.pet.comes.model.Entity.User;
 import com.pet.comes.repository.UserRepository;
 import com.pet.comes.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,16 +13,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/")
 public class UserController {
 
     private final UserService userService;
 
-    @Autowired
-    public UserController(UserService userService) {
+//    @Autowired
+//    public UserController(UserService userService) {
 
-        this.userService = userService;
-    }
+//        this.userService = userService;
+//    }
 
 //    @PostMapping("signup")
 //    public ResponseEntity signUp(@RequestBody UserJoinDto userJoinDto) {
