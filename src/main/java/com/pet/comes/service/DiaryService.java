@@ -13,6 +13,7 @@ import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
 import com.pet.comes.response.Status;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class DiaryService {
     private final DiaryRepository diaryRepository;
     private final UserRepository userRepository;
@@ -35,17 +37,17 @@ public class DiaryService {
     private final ResponseMessage message;
 
 
-    @Autowired
-    public DiaryService(AddressRepository addressRepository,CommentRepository commentRepository,PinRepository pinRepository, DogRepository dogRepository, UserRepository userRepository, DiaryRepository diaryRepository, Status status, ResponseMessage message) {
-        this.diaryRepository = diaryRepository;
-        this.userRepository = userRepository;
-        this.dogRepository = dogRepository;
-        this.pinRepository = pinRepository;
-        this.commentRepository = commentRepository;
-        this.addressRepository = addressRepository;
-        this.status = status;
-        this.message = message;
-    }
+//    @Autowired
+//    public DiaryService(AddressRepository addressRepository,CommentRepository commentRepository,PinRepository pinRepository, DogRepository dogRepository, UserRepository userRepository, DiaryRepository diaryRepository, Status status, ResponseMessage message) {
+//        this.diaryRepository = diaryRepository;
+//        this.userRepository = userRepository;
+//        this.dogRepository = dogRepository;
+//        this.pinRepository = pinRepository;
+//        this.commentRepository = commentRepository;
+//        this.addressRepository = addressRepository;
+//        this.status = status;
+//        this.message = message;
+//    }
 
     /* D1 : 강아지별 다이어리 조회 API -- Tony */
     public ResponseEntity dogDiaryList(String nickName, String dogName) {

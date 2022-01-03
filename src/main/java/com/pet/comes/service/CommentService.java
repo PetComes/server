@@ -2,9 +2,11 @@ package com.pet.comes.service;
 
 import com.pet.comes.dto.Rep.CommentListRepDto;
 import com.pet.comes.dto.Req.CommentReqDto;
+import com.pet.comes.model.Entity.Alarm;
 import com.pet.comes.model.Entity.Comment;
 import com.pet.comes.model.Entity.Diary;
 import com.pet.comes.model.Entity.User;
+import com.pet.comes.repository.AlarmRepository;
 import com.pet.comes.repository.CommentRepository;
 import com.pet.comes.repository.DiaryRepository;
 import com.pet.comes.repository.UserRepository;
@@ -12,6 +14,7 @@ import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
 import com.pet.comes.response.Status;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
@@ -27,6 +30,7 @@ import java.util.*;
 
 
 @Service
+@RequiredArgsConstructor
 public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
@@ -34,25 +38,25 @@ public class CommentService {
     private final DiaryRepository diaryRepository;
     private final Status status;
     private final ResponseMessage message;
+    private final AlarmRepository alarmRepository;
 
-
-    @Autowired
-    public CommentService(UserService userService, DiaryRepository diaryRepository, UserRepository userRepository, CommentRepository commentRepository, Status status, ResponseMessage message) {
-        this.commentRepository = commentRepository;
-        this.userRepository = userRepository;
-        this.diaryRepository = diaryRepository;
-        this.userService = userService;
-        this.message = message;
-        this.status = status;
-    }
+//    @Autowired
+//    public CommentService(UserService userService, DiaryRepository diaryRepository, UserRepository userRepository, CommentRepository commentRepository, Status status, ResponseMessage message) {
+//        this.commentRepository = commentRepository;
+//        this.userRepository = userRepository;
+//        this.diaryRepository = diaryRepository;
+//        this.userService = userService;
+//        this.message = message;
+//        this.status = status;
+//    }
 
     /* 다이어리 댓글 작성 API --Tony */
     public ResponseEntity writeComment(CommentReqDto commentReqDto) {
         if (commentReqDto.getText() == null || commentReqDto.getText().length() < 1) {
             return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_ENTERED + " 댓글이 비어있습니다."), HttpStatus.OK);
         }
-        Optional<User> user = userRepository.findById(commentReqDto.getUserId());
-        if (!user.isPresent())
+        Optional<User> isExistUser = userRepository.findById(commentReqDto.getUserId());
+        if (!isExistUser.isPresent())
             return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_ENTERED + "해당 유저가 없습니다."), HttpStatus.OK);
 
         Optional<Diary> isExist = diaryRepository.findById(commentReqDto.getDiaryId());
@@ -63,8 +67,14 @@ public class CommentService {
         int commentsCnt = diary.getHowManyComments();
         diary.setHowManyComments(commentsCnt+1);
 
-        Comment comment = new Comment(commentReqDto, user.get());
+        User user = isExistUser.get();
+        Comment comment = new Comment(commentReqDto, user);
         commentRepository.save(comment);
+
+        Alarm alarm = new Alarm(user,1,0,comment.getCommentId()); // type 1 : 댓글 , 0 : 핀하기 / isChecked 1: 읽음, 0: 읽지 않음
+
+        alarmRepository.save(alarm);
+
         if(comment.getCommentCommentId()!=null) // 대댓글 달기라면
             return new ResponseEntity(DataResponse.response(status.SUCCESS,
                     "대댓글 작성 " + message.SUCCESS + "해당 대댓글 다이어리 id : " + comment.getDiaryId(), comment.getDiaryId()), HttpStatus.OK);

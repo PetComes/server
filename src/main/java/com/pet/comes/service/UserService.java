@@ -11,6 +11,7 @@ import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
 import com.pet.comes.response.Status;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,17 +25,18 @@ import java.util.Optional;
 
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final Status status;
     private final ResponseMessage message;
 
-    @Autowired
-    public UserService(UserRepository userRepository, FamilyService familyService, Status status, ResponseMessage message) {
-        this.userRepository = userRepository;
-        this.status = status;
-        this.message = message;
-    }
+//    @Autowired
+//    public UserService(UserRepository userRepository, FamilyService familyService, Status status, ResponseMessage message) {
+//        this.userRepository = userRepository;
+//        this.status = status;
+//        this.message = message;
+//    }
 
 
     @Transactional // 해당 메소드가 호출될 때 바뀐 내용을 DB에 반영
