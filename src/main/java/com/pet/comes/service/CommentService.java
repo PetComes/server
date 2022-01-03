@@ -79,7 +79,7 @@ public class CommentService {
 
         Optional<Diary> diary = diaryRepository.findById(diaryId);
         if (!diary.isPresent()) {
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NO_COMMENT), HttpStatus.OK);
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NO_DIARY), HttpStatus.OK);
         }
 
         // 댓글내용, 시간 등 불러오기
