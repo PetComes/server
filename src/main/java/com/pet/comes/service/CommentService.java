@@ -2,10 +2,7 @@ package com.pet.comes.service;
 
 import com.pet.comes.dto.Rep.CommentListRepDto;
 import com.pet.comes.dto.Req.CommentReqDto;
-import com.pet.comes.model.Entity.Alarm;
-import com.pet.comes.model.Entity.Comment;
-import com.pet.comes.model.Entity.Diary;
-import com.pet.comes.model.Entity.User;
+import com.pet.comes.model.Entity.*;
 import com.pet.comes.repository.AlarmRepository;
 import com.pet.comes.repository.CommentRepository;
 import com.pet.comes.repository.DiaryRepository;
@@ -60,22 +57,22 @@ public class CommentService {
             return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_ENTERED + "해당 유저가 없습니다."), HttpStatus.OK);
 
         Optional<Diary> isExist = diaryRepository.findById(commentReqDto.getDiaryId());
-        if(!isExist.isPresent())
+        if (!isExist.isPresent())
             return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NO_DIARY + "해당 유저가 없습니다."), HttpStatus.OK);
 
         Diary diary = isExist.get();
         int commentsCnt = diary.getHowManyComments();
-        diary.setHowManyComments(commentsCnt+1);
+        diary.setHowManyComments(commentsCnt + 1);
 
         User user = isExistUser.get();
         Comment comment = new Comment(commentReqDto, user);
         commentRepository.save(comment);
 
         /* 댓글 작성시 alarm 등록 */
-        Alarm alarm = new Alarm(user,1,0,comment.getCommentId()); // type 1 : 댓글 , 0 : 핀하기 / isChecked 1: 읽음, 0: 읽지 않음
+        Alarm alarm = new Alarm(user,1,0,diary.getId()); // type 1 : 댓글 , 0 : 핀하기 / isChecked 1: 읽음, 0: 읽지 않음
         alarmRepository.save(alarm);
 
-        if(comment.getCommentCommentId()!=null) // 대댓글 달기라면
+        if (comment.getCommentCommentId() != null) // 대댓글 달기라면
             return new ResponseEntity(DataResponse.response(status.SUCCESS,
                     "대댓글 작성 " + message.SUCCESS + "해당 대댓글 다이어리 id : " + comment.getDiaryId(), comment.getDiaryId()), HttpStatus.OK);
 
@@ -97,7 +94,7 @@ public class CommentService {
         Iterator iterator = queries.listIterator();
         List<CommentListRepDto> dtos = new ArrayList<>();
 
-       while (iterator.hasNext()) {
+        while (iterator.hasNext()) {
             Object[] comments = (Object[]) iterator.next();
 
             String nickname = (String) comments[0];

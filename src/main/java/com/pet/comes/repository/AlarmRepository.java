@@ -21,5 +21,7 @@ public interface AlarmRepository extends JpaRepository<Alarm,Long> {
     @Query("select a from Alarm a where a.user = :user and a.contentId= :diaryId and a.type= :type")
     Optional<Alarm> findAllByUserAndTypeAndContendId(@Param("user") User user,@Param("diaryId") Long diaryId,@Param("type") int type);
 
+    @Query("select a from Alarm a where a.user = :user and a.isChecked= :isChecked")
+    List<Alarm> findAllByUserAndNotChecked(@Param("user") User user,@Param("isChecked")int isChecked);
 
 }

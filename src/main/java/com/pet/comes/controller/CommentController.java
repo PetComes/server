@@ -16,11 +16,6 @@ public class CommentController {
 
     private final CommentService commentService;
 
-//    @Autowired
-//    public CommentController(CommentService commentService) {
-//        this.commentService = commentService;
-//    }
-
     /* D8 : 다이어리 댓글 작성 API --Tony*/
     @PostMapping()
     public ResponseEntity writeComment(@RequestBody CommentReqDto commentReqDto) {

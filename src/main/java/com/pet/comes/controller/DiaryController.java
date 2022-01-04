@@ -63,9 +63,5 @@ public class DiaryController {
         return diaryService.pinDiary(pinReqDto);
     }
 
-    /* H6 내 핀 목록 조회 API -- Tony */
-    @GetMapping("/list/pin/{userId}")
-    public ResponseEntity pinList(@PathVariable Long userId) {
-        return diaryService.pinList(userId);
-    }
+
 }
