@@ -3,14 +3,17 @@ package com.pet.comes.service;
 import com.pet.comes.dto.Join.UserJoinDto;
 import com.pet.comes.dto.Rep.MyAccountRepDto;
 import com.pet.comes.dto.Rep.MyFamilyRepDto;
+import com.pet.comes.dto.Rep.PinListRepDto;
 import com.pet.comes.dto.Rep.UserProfileRepDto;
-import com.pet.comes.model.Entity.Family;
-import com.pet.comes.model.Entity.User;
+import com.pet.comes.model.Entity.*;
+import com.pet.comes.repository.AlarmRepository;
+import com.pet.comes.repository.DiaryRepository;
 import com.pet.comes.repository.UserRepository;
 import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
 import com.pet.comes.response.Status;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,16 +31,12 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
     private final UserRepository userRepository;
     private final Status status;
     private final ResponseMessage message;
-
-//    @Autowired
-//    public UserService(UserRepository userRepository, FamilyService familyService, Status status, ResponseMessage message) {
-//        this.userRepository = userRepository;
-//        this.status = status;
-//        this.message = message;
-//    }
+    private final DiaryRepository diaryRepository;
+    private final AlarmRepository alarmRepository;
 
 
     @Transactional // 해당 메소드가 호출될 때 바뀐 내용을 DB에 반영
@@ -102,6 +102,60 @@ public class UserService {
 
     }
 
+    /* H2 : 읽지 않은 알림 개수 조회 --Tony */
+    public ResponseEntity alarmCount(Long userId){
+        Optional<User> isExist = userRepository.findById(userId);
+        if(!isExist.isPresent())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_VALID_ACCOUNT ), HttpStatus.OK);
+
+        User user = isExist.get();
+        List<Alarm> alarmList = alarmRepository.findAllByUserAndNotChecked(user,0); // 아직 체크 안된 알림 갯수 알기 위해
+
+        if(alarmList.isEmpty())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NO_ALARMS ), HttpStatus.OK);
+
+        int cnt =alarmList.size();
+
+        return new ResponseEntity(DataResponse.response(status.SUCCESS , message.SUCCESS ,cnt), HttpStatus.OK);
+    }
+
+    /* H6 : 내 핀 목록 조회 API -- Tony */
+    public ResponseEntity pinList(Long userId) {
+        Optional<User> isExist = userRepository.findById(userId);
+
+        if (!isExist.isPresent())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_VALID_ACCOUNT + "유저 정보가 없습니다. "), HttpStatus.OK);
+
+        User user = isExist.get(); // 해당 api 요청한 user의 id
+
+        List<Pin> pinList = user.getPins();
+        List<PinListRepDto> pinListRepDtoList = new ArrayList<>();
+        PinListRepDto pinListRepDto = new PinListRepDto();
+
+        for (Pin pin : pinList) {
+            Optional<Diary> isExist2 = diaryRepository.findById(pin.getDiaryId());
+            if (!isExist2.isPresent())
+                return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_VALID_ACCOUNT + "유저 다이어리가 없습니다. "), HttpStatus.OK);
+            Diary diary = isExist2.get();
+            pinListRepDto.setText(diary.getText());
+            pinListRepDto.setContentImageUrl(diary.getImageUrl());
+
+            User usertmp = diary.getUser();
+            if (usertmp == null)
+                return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_VALID_ACCOUNT + "유저 정보가 없습니다. "), HttpStatus.OK);
+
+            pinListRepDto.setNickname(usertmp.getNickname());
+            pinListRepDto.setProfileImageUrl(usertmp.getImageUrl());
+
+            pinListRepDtoList.add(pinListRepDto);
+        }
+
+        return new ResponseEntity(DataResponse.response(status.SUCCESS,
+                message.SUCCESS + " 핀 목록 조회 ", pinListRepDtoList), HttpStatus.OK);
+
+    }
+
+
     /* H7 : 내 가족 목록 조회 API -- Tony */
     public ResponseEntity myFamily(Long id) {
         Optional<User> user = userRepository.findById(id);
@@ -161,6 +215,7 @@ public class UserService {
         ), HttpStatus.NOT_FOUND);
 
     }
+
 
 
 }

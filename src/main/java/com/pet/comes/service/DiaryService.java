@@ -2,7 +2,6 @@ package com.pet.comes.service;
 
 
 import com.pet.comes.dto.Rep.DiaryListRepDto;
-import com.pet.comes.dto.Rep.PinListRepDto;
 import com.pet.comes.dto.Rep.PinListofDiaryDto;
 import com.pet.comes.dto.Req.DiaryReqDto;
 import com.pet.comes.dto.Req.PinReqDto;
@@ -14,7 +13,6 @@ import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
 import com.pet.comes.response.Status;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -32,8 +30,8 @@ public class DiaryService {
     private final DogRepository dogRepository;
     private final PinRepository pinRepository;
     private final CommentRepository commentRepository;
-    private  final AddressRepository addressRepository;
-    private  final  AlarmRepository alarmRepository;
+    private final AddressRepository addressRepository;
+    private final AlarmRepository alarmRepository;
     private final Status status;
     private final ResponseMessage message;
 
@@ -43,22 +41,22 @@ public class DiaryService {
 
         // 조회하고자하는 강아지의 견주 닉네임으로 유저 찾기
         Optional<User> isUser = userRepository.findByNickname(nickName);
-        if(!isUser.isPresent())
+        if (!isUser.isPresent())
             return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_VALID_ACCOUNT), HttpStatus.OK);
 
         User user = isUser.get();
         Family family = user.getFamily();
-        if(family == null) // 아직 가족을 생성하지 않으면
+        if (family == null) // 아직 가족을 생성하지 않으면
             return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NO_FAMILY), HttpStatus.OK);
 
         List<Dog> dogs = family.getDogs();
-        if(dogs.isEmpty()) // 반려견이 없다면
+        if (dogs.isEmpty()) // 반려견이 없다면
             return new ResponseEntity(NoDataResponse.response(status.INVALID_DOGID, message.NO_DOG), HttpStatus.OK);
 
         Long dogId = 0L; // 초기화 0 : dogId는 1부터 시작함.
-        for(Dog dog : dogs){
-            if(dog.getName().equals(dogName))
-                dogId =dog.getId();
+        for (Dog dog : dogs) {
+            if (dog.getName().equals(dogName))
+                dogId = dog.getId();
         }
 
         List<Diary> diaryList = diaryRepository.findAllByDogId(dogId);
@@ -68,7 +66,7 @@ public class DiaryService {
 
         List<DiaryListRepDto> diaryListRepDtoList = new ArrayList<>();
         String createdAt, text;
-        int commentCount , pinCount;
+        int commentCount, pinCount;
 
 
         for (Diary diary : diaryList) {
@@ -90,9 +88,9 @@ public class DiaryService {
 
     /* D2 :다이어리 작성 API -- Tony */
     public ResponseEntity writeDiary(DiaryReqDto diaryReqDto) {
-        if (diaryReqDto.getText() == null ) // Text data 자체가 없음
+        if (diaryReqDto.getText() == null) // Text data 자체가 없음
             return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED + ": 내용이 없습니다. Text를 작성해 주세요(2글자 이상)"), HttpStatus.OK);
-        if (diaryReqDto.getText().length() < 2 ) // Text는 최소 글자 이상
+        if (diaryReqDto.getText().length() < 2) // Text는 최소 글자 이상
             return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED + " Text를 2글자 이상 작성해주세요. "), HttpStatus.OK);
 
         // diary <-> user 다대일 양방향 매핑을 위해
@@ -112,10 +110,10 @@ public class DiaryService {
 
         Diary diary = new Diary(diaryReqDto); // 이 시점에서는 비영속 상태  , connection pool을 가져오지 않는다다        diary.setUser(user.get()); // diary <-> user 다대일 양방향 매핑
 
-        if(diaryReqDto.getLocationName() == null) { // 위치 정보 없을 때
+        if (diaryReqDto.getLocationName() == null) { // 위치 정보 없을 때
 
             diaryRepository.save(diary); // Tranaction 발생 -> Persistence Context 와 직접적인 관련이 생김.
-            return new ResponseEntity(DataResponse.response(status.SUCCESS, "다이어리 작성 " + message.SUCCESS+" 위치태그 없음.", diary.getId()), HttpStatus.OK);
+            return new ResponseEntity(DataResponse.response(status.SUCCESS, "다이어리 작성 " + message.SUCCESS + " 위치태그 없음.", diary.getId()), HttpStatus.OK);
         }
 
         /*--위치 정보 있을 때 --*/
@@ -134,8 +132,7 @@ public class DiaryService {
         addressRepository.save(address);
 
 
-
-        return new ResponseEntity(DataResponse.response(status.SUCCESS, "다이어리 작성 " + message.SUCCESS+" 위치태그 존재", diary.getId()), HttpStatus.OK);
+        return new ResponseEntity(DataResponse.response(status.SUCCESS, "다이어리 작성 " + message.SUCCESS + " 위치태그 존재", diary.getId()), HttpStatus.OK);
     }
 
     /* 다이어리 수정 API -- Tony */
@@ -197,13 +194,13 @@ public class DiaryService {
             return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NO_DIARY), HttpStatus.OK);
 //        int cnt = 0; // 전체핀 수 카운트하기
 
-        List<PinListofDiaryDto> resultList =  new ArrayList<>();
+        List<PinListofDiaryDto> resultList = new ArrayList<>();
 
-        for(Pin pin : pinList){
+        for (Pin pin : pinList) {
             User user = userRepository.findById(pin.getUser().getId()).get();
             String imgurl = user.getImageUrl();
             String nickName = user.getName();
-            PinListofDiaryDto pinListofDiaryDto = new PinListofDiaryDto(imgurl,nickName);
+            PinListofDiaryDto pinListofDiaryDto = new PinListofDiaryDto(imgurl, nickName);
             resultList.add(pinListofDiaryDto);
 //            cnt ++;
         }
@@ -222,7 +219,7 @@ public class DiaryService {
         List<Pin> userPinList = user.getPins();
         Long diaryId = pinReqDto.getDiaryId();
         Optional<Diary> isDiary = diaryRepository.findById(diaryId);
-        if(!isDiary.isPresent())
+        if (!isDiary.isPresent())
             return new ResponseEntity(NoDataResponse.response(status.INVALID_ID
                     , new ResponseMessage().NO_DIARY
             ), HttpStatus.NOT_FOUND);
@@ -237,7 +234,7 @@ public class DiaryService {
             Pin pin = isExist2.get();
             userPinList.remove(pin); // user에서 삭제 (양뱡향)
             pinRepository.delete(pin); // DB에서  Pin 삭제
-            diary.setHowManyPins(howManypins-1); // pin 카운트 하나 삭제
+            diary.setHowManyPins(howManypins - 1); // pin 카운트 하나 삭제
             userRepository.save(user);
             diaryRepository.save(diary);
             return new ResponseEntity(NoDataResponse.response(status.SUCCESS, message.SUCCESS + " : 핀 하기 해제"), HttpStatus.OK);
@@ -248,7 +245,7 @@ public class DiaryService {
         userPinList.add(pin); // 핀 추가  ( user -> pin 관계 )
 
         pinRepository.save(pin); // DB에 pin 추가
-        diary.setHowManyPins(howManypins+1); // pin 카운트 하나 증가
+        diary.setHowManyPins(howManypins + 1); // pin 카운트 하나 증가
         userRepository.save(user);
         int type  = 0;
         Optional<Alarm> isExistAlarm = alarmRepository.findAllByUserAndTypeAndContendId(user,diaryId,type);
@@ -262,40 +259,5 @@ public class DiaryService {
 
     }
 
-    /* 내 핀 목록 조회 API -- Tony */
-    public ResponseEntity pinList(Long userId) {
-        Optional<User> isExist = userRepository.findById(userId);
-
-        if (!isExist.isPresent())
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_VALID_ACCOUNT + "유저 정보가 없습니다. "), HttpStatus.OK);
-
-        User user = isExist.get(); // 해당 api 요청한 user의 id
-
-        List<Pin> pinList = user.getPins();
-        List<PinListRepDto> pinListRepDtoList = new ArrayList<>();
-        PinListRepDto pinListRepDto = new PinListRepDto();
-
-        for (Pin pin : pinList) {
-            Optional<Diary> isExist2 = diaryRepository.findById(pin.getDiaryId());
-            if (!isExist2.isPresent())
-                return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_VALID_ACCOUNT + "유저 다이어리가 없습니다. "), HttpStatus.OK);
-            Diary diary = isExist2.get();
-            pinListRepDto.setText(diary.getText());
-            pinListRepDto.setContentImageUrl(diary.getImageUrl());
-
-            User usertmp = diary.getUser();
-            if (usertmp == null)
-                return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_VALID_ACCOUNT + "유저 정보가 없습니다. "), HttpStatus.OK);
-
-            pinListRepDto.setNickname(usertmp.getNickname());
-            pinListRepDto.setProfileImageUrl(usertmp.getImageUrl());
-
-            pinListRepDtoList.add(pinListRepDto);
-        }
-
-        return new ResponseEntity(DataResponse.response(status.SUCCESS,
-                message.SUCCESS + " 핀 목록 조회 ", pinListRepDtoList), HttpStatus.OK);
-
-    }
 
 }
