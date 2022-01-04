@@ -26,11 +26,14 @@ import java.time.LocalDateTime;
 public class Pin  implements Serializable  {
 
 
+    @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    private Long pinId;
+
     @ManyToOne(fetch = FetchType.LAZY) // OneToOne default FetchType = EAGER
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Id
     private Long diaryId;
 
     @CreatedDate

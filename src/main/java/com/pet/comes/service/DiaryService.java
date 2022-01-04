@@ -33,21 +33,10 @@ public class DiaryService {
     private final PinRepository pinRepository;
     private final CommentRepository commentRepository;
     private  final AddressRepository addressRepository;
+    private  final  AlarmRepository alarmRepository;
     private final Status status;
     private final ResponseMessage message;
 
-
-//    @Autowired
-//    public DiaryService(AddressRepository addressRepository,CommentRepository commentRepository,PinRepository pinRepository, DogRepository dogRepository, UserRepository userRepository, DiaryRepository diaryRepository, Status status, ResponseMessage message) {
-//        this.diaryRepository = diaryRepository;
-//        this.userRepository = userRepository;
-//        this.dogRepository = dogRepository;
-//        this.pinRepository = pinRepository;
-//        this.commentRepository = commentRepository;
-//        this.addressRepository = addressRepository;
-//        this.status = status;
-//        this.message = message;
-//    }
 
     /* D1 : 강아지별 다이어리 조회 API -- Tony */
     public ResponseEntity dogDiaryList(String nickName, String dogName) {
@@ -241,6 +230,7 @@ public class DiaryService {
         Diary diary = isDiary.get();
         int howManypins = diary.getHowManyPins();
 
+
         // pin 으로 등록되어 있을 때
         Optional<Pin> isExist2 = pinRepository.findByUserAndDiaryId(user, diaryId);
         if (isExist2.isPresent()) { // 이미 등록 되어 있다면
@@ -260,8 +250,13 @@ public class DiaryService {
         pinRepository.save(pin); // DB에 pin 추가
         diary.setHowManyPins(howManypins+1); // pin 카운트 하나 증가
         userRepository.save(user);
+        int type  = 0;
+        Optional<Alarm> isExistAlarm = alarmRepository.findAllByUserAndTypeAndContendId(user,diaryId,type);
 
-
+        if(!isExistAlarm.isPresent()) { // 해당 다이어리에대한 핀하기를 똑같은 유저가 중복적으로 할경우가 아닐때만 유저에게 알림을 줌.
+            Alarm alarm = new Alarm(user, 0, 0, diaryId); // type 1 : 댓글 , 0 : 핀하기 / isChecked 1: 읽음, 0: 읽지 않음
+            alarmRepository.save(alarm);
+        }
         return new ResponseEntity(NoDataResponse.response(status.SUCCESS, message.SUCCESS + " : 핀 하기 "), HttpStatus.OK);
 
 
