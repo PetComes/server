@@ -37,6 +37,12 @@ public class UserController {
         return userService.alarmCount(userId);
     }
 
+    /* H3 : 알림 목록 조회 --Tony */
+    @GetMapping("list/alarm/{userId}")
+    public ResponseEntity showAlarmList(@PathVariable Long userId){
+        return userService.showAlarmList(userId);
+    }
+
     /* H6 내 핀 목록 조회 API -- Tony */
     @GetMapping("list/pin/{userId}")
     public ResponseEntity pinList(@PathVariable Long userId) {
