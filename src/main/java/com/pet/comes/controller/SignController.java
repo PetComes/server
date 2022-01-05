@@ -12,7 +12,6 @@ import com.pet.comes.dto.Rep.SignResultRepDto;
 import com.pet.comes.dto.Req.RefreshTokenReqDto;
 import com.pet.comes.dto.Req.SignInReqDto;
 import com.pet.comes.model.Entity.User;
-import com.pet.comes.repository.UserRepository;
 import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
@@ -114,7 +113,7 @@ public class SignController {
 
         Optional<User> isExist = customUserDetailService.findById(refreshTokenReqDto.getUserId());
         if (!isExist.isPresent())
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_VALID_ACCOUNT ), HttpStatus.OK);
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_ACCOUNT), HttpStatus.OK);
 
         User user = isExist.get();
         String userRefreshToken = user.getRefreshToken();

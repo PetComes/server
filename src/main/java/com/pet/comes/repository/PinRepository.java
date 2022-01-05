@@ -12,7 +12,8 @@ import java.util.Optional;
 @Repository
 public interface PinRepository extends JpaRepository<Pin,Long> {
 
-    Optional<Pin> findByUserAndDiaryId(User user,Long diaryId);
+    Optional<Pin> findByUserAndDiaryId(User user,Diary diary);
     List<Pin> findAllByDiaryId(Long diaryId);
+
 
 }

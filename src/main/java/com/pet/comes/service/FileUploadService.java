@@ -42,7 +42,7 @@ public class FileUploadService {
         // DB에 해달 imageurl 저장하기
         Optional<User> isExist = userRepository.findById(userId);
         if(!isExist.isPresent())
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_VALID_ACCOUNT ), HttpStatus.OK);
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_ACCOUNT), HttpStatus.OK);
 
         User user = isExist.get();
         user.setImageUrl(imageUrl);

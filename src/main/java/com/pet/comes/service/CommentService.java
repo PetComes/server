@@ -12,15 +12,10 @@ import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
 import com.pet.comes.response.Status;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -69,7 +64,7 @@ public class CommentService {
         commentRepository.save(comment);
 
         /* 댓글 작성시 alarm 등록 */
-        Alarm alarm = new Alarm(user,1,0,diary.getId()); // type 1 : 댓글 , 0 : 핀하기 / isChecked 1: 읽음, 0: 읽지 않음
+        Alarm alarm = new Alarm(user,1,0,comment.getCommentId(),diary); // type 1 : 댓글 , 0 : 핀하기 / isChecked 1: 읽음, 0: 읽지 않음
         alarmRepository.save(alarm);
 
         if (comment.getCommentCommentId() != null) // 대댓글 달기라면
@@ -90,7 +85,7 @@ public class CommentService {
         }
 
         // 댓글내용, 시간 등 불러오기
-        List<Object[]> queries = commentRepository.findAllByDiaryId(diaryId);
+        List<Object[]> queries = commentRepository.findAllByDiaryIdForD6(diaryId);
         Iterator iterator = queries.listIterator();
         List<CommentListRepDto> dtos = new ArrayList<>();
 

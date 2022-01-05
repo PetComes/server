@@ -15,7 +15,7 @@ public class Alarm extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "alarm_id")
-    private Long addressId;
+    private Long alarmId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -27,13 +27,18 @@ public class Alarm extends Timestamped {
     @Column(nullable = false, columnDefinition = "TINYINT", length = 1) // DBMS의 테이블과 매핑시 오류방지
     private int isChecked; // 1: 읽음, 0: 읽지 않음.
 
-    private Long contentId;
+    private Long contentId; // 댓글일때 : comment_id , 핀 일때  : user_id
 
-    public Alarm(User user, int type, int isChecked,Long contentId) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "diary_id")
+    private Diary diary;
+
+    public Alarm(User user, int type, int isChecked,Long contentId,Diary diary) {
         this.user = user;
         this.type = type;
         this.isChecked = isChecked;
         this.contentId = contentId;
+        this.diary = diary;
     }
 
 

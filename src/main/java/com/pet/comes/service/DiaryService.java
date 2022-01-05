@@ -42,7 +42,7 @@ public class DiaryService {
         // 조회하고자하는 강아지의 견주 닉네임으로 유저 찾기
         Optional<User> isUser = userRepository.findByNickname(nickName);
         if (!isUser.isPresent())
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_VALID_ACCOUNT), HttpStatus.OK);
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_ACCOUNT), HttpStatus.OK);
 
         User user = isUser.get();
         Family family = user.getFamily();
@@ -96,17 +96,17 @@ public class DiaryService {
         // diary <-> user 다대일 양방향 매핑을 위해
         Optional<User> user = userRepository.findById(diaryReqDto.getUserId());
         if (!user.isPresent()) //
-            return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.NOT_VALID_ACCOUNT + ": 해당 유저가 없습니다."), HttpStatus.OK);
+            return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.INVALID_ACCOUNT + ": 해당 유저가 없습니다."), HttpStatus.OK);
 
         //
         Long dogId = diaryReqDto.getDogId();
         Optional<Dog> dog = dogRepository.findById(dogId);
 
         if (!dog.isPresent())
-            return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.NOT_VALID_ACCOUNT + ": 해당 반려견이 없습니다."), HttpStatus.OK);
+            return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.INVALID_ACCOUNT + ": 해당 반려견이 없습니다."), HttpStatus.OK);
 
         if (!user.get().getFamily().getDogs().contains(dog.get()))
-            return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.NOT_VALID_ACCOUNT + ": 해당 반려견이 없습니다."), HttpStatus.OK);
+            return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.INVALID_ACCOUNT + ": 해당 반려견이 없습니다."), HttpStatus.OK);
 
         Diary diary = new Diary(diaryReqDto); // 이 시점에서는 비영속 상태  , connection pool을 가져오지 않는다다        diary.setUser(user.get()); // diary <-> user 다대일 양방향 매핑
 
@@ -213,7 +213,7 @@ public class DiaryService {
     public ResponseEntity pinDiary(PinReqDto pinReqDto) {
         Optional<User> isExist = userRepository.findById(pinReqDto.getUserId());
         if (!isExist.isPresent())
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_VALID_ACCOUNT + "유저 정보가 없습니다. "), HttpStatus.OK);
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_ACCOUNT + "유저 정보가 없습니다. "), HttpStatus.OK);
 
         User user = isExist.get();
         List<Pin> userPinList = user.getPins();
@@ -229,7 +229,7 @@ public class DiaryService {
 
 
         // pin 으로 등록되어 있을 때
-        Optional<Pin> isExist2 = pinRepository.findByUserAndDiaryId(user, diaryId);
+        Optional<Pin> isExist2 = pinRepository.findByUserAndDiaryId(user, diary);
         if (isExist2.isPresent()) { // 이미 등록 되어 있다면
             Pin pin = isExist2.get();
             userPinList.remove(pin); // user에서 삭제 (양뱡향)
@@ -251,7 +251,7 @@ public class DiaryService {
         Optional<Alarm> isExistAlarm = alarmRepository.findAllByUserAndTypeAndContendId(user,diaryId,type);
 
         if(!isExistAlarm.isPresent()) { // 해당 다이어리에대한 핀하기를 똑같은 유저가 중복적으로 할경우가 아닐때만 유저에게 알림을 줌.
-            Alarm alarm = new Alarm(user, 0, 0, diaryId); // type 1 : 댓글 , 0 : 핀하기 / isChecked 1: 읽음, 0: 읽지 않음
+            Alarm alarm = new Alarm(user, 0, 0, user.getId(), diary); // type 1 : 댓글 , 0 : 핀하기 / isChecked 1: 읽음, 0: 읽지 않음
             alarmRepository.save(alarm);
         }
         return new ResponseEntity(NoDataResponse.response(status.SUCCESS, message.SUCCESS + " : 핀 하기 "), HttpStatus.OK);
