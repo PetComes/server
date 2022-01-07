@@ -1,8 +1,10 @@
 package com.pet.comes.service;
 
 import com.pet.comes.dto.Rep.DogProfileRepDto;
+import com.pet.comes.dto.Req.DogBodyInformationDto;
 import com.pet.comes.dto.Req.DogReqDto;
 import com.pet.comes.model.Entity.Dog;
+import com.pet.comes.model.Entity.DogLog;
 import com.pet.comes.model.Entity.Family;
 import com.pet.comes.model.Entity.User;
 import com.pet.comes.model.EnumType.DogStatus;
@@ -106,5 +108,39 @@ public class DogService {
 
     }
 
+    /* A2 : 키, 몸무게 등록 및 수정 - Heather */
+    public ResponseEntity registerDogBodyInformation(DogBodyInformationDto dogBodyInfo) {
+
+        // 키와 몸무게가 둘 다 0일 경우 fail
+        if(dogBodyInfo.getHeight() == 0 && dogBodyInfo.getWeight() == 0) {
+            return new ResponseEntity(NoDataResponse.response(status.EMPTY_VALUE, "키와 몸무게가 0입니다."), HttpStatus.OK);
+        }
+        // 유효한 강아지인지 확인
+        Optional<Dog> dog = dogRepository.findById(dogBodyInfo.getDogId());
+        // 유효한 강아지가 아니라면 fail
+        if(dog.isPresent()) {
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_DOGID, "유효하지 않은 dogId 입니다."), HttpStatus.OK);
+        }
+
+        // 등록된 키, 몸무게 확인
+        float height = dog.get().getHeight();
+        float weight = dog.get().getWeight();
+
+        // 이미 등록되어 있었다면 dog_log에 저장
+        if(height == 0.0f && weight != 0.0f) { // 키만 등록되어 있는 경우
+            DogLog dogLog = new DogLog(dogBodyInfo);
+        }
+        else if(height != 0.0f && weight == 0.0f) { // 몸무게만 등록되어 있는 경우
+
+        }
+        else {
+
+        }
+        // 새로 받은 키, 몸무게 정보 등록
+        dog.get().setHeight(dogBodyInfo.getHeight());
+        dog.get().setWeight(dogBodyInfo.getWeight());
+
+        return new ResponseEntity(NoDataResponse.response(status.SUCCESS, "키, 몸무게 등록 성공"), HttpStatus.OK);
+    }
 
 }

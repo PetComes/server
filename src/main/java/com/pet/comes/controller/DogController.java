@@ -1,5 +1,6 @@
 package com.pet.comes.controller;
 
+import com.pet.comes.dto.Req.DogBodyInformationDto;
 import com.pet.comes.dto.Req.DogReqDto;
 import com.pet.comes.service.DogService;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/dog")
 public class DogController {
-
 
     private final DogService dogService;
 
@@ -32,4 +32,11 @@ public class DogController {
         return dogService.getDogProfile(nickName,dogName);
     }
 
+    /* A1 : 동물등록번호 등록 - Heather */
+
+    /* A2 : 강아지 키, 몸무게 등록 및 수정 - Heather */
+    @PatchMapping
+    public ResponseEntity registerDogBodyInformation(DogBodyInformationDto dogBodyInfo) {
+        return dogService.registerDogBodyInformation(dogBodyInfo);
+    }
 }

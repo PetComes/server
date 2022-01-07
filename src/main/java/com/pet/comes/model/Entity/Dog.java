@@ -16,6 +16,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -35,7 +37,6 @@ public class Dog  {
     @Enumerated(value=EnumType.STRING)
     private DogStatus status;
 
-
     private int breedId;
 
     @Enumerated(value=EnumType.STRING)
@@ -45,11 +46,14 @@ public class Dog  {
     private int age;
     private String birthday;
 
-
     @Column(columnDefinition = "TEXT")
     private String imageUrl;
 
     private float weight;
+    private float height;
+
+    @OneToMany(mappedBy = "dog")
+    private List<DogLog> bodyInfoLogs = new ArrayList<DogLog>();
 
     @Enumerated(value=EnumType.STRING)
     private Sex sex;
@@ -95,6 +99,14 @@ public class Dog  {
         this.family = family;
         if(!family.getDogs().contains(this)) { // 무한 루프 방지
             family.setDogs(this);
+        }
+    }
+
+    public void addDogLog(DogLog dogLog) { // bodyInfoLogs에서 DogLog 객체를 항상 갖고 있게 하기 위해 add 메서드 추가
+        this.bodyInfoLogs.add(dogLog);
+
+        if(dogLog.getDog() != this) {
+            dogLog.setDog(this);
         }
     }
 
