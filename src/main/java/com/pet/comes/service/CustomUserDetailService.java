@@ -3,6 +3,7 @@ package com.pet.comes.service;
 import com.pet.comes.repository.OuthRepository;
 import com.pet.comes.model.Entity.User;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CustomUserDetailService implements UserDetailsService {
 
     private final OuthRepository outhRepository;

@@ -64,7 +64,7 @@ public class NaverLogIn implements SocialLogIn {
 
         ResponseEntity<String> response = restTemplate.exchange(
                 NAVER_ISSUE_TOKEN_URL,
-                HttpMethod.GET,
+                HttpMethod.POST,
                 headerAndBody,
                 String.class
         );

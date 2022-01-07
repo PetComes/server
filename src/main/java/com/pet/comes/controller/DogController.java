@@ -2,21 +2,23 @@ package com.pet.comes.controller;
 
 import com.pet.comes.dto.Req.DogReqDto;
 import com.pet.comes.service.DogService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/dog")
 public class DogController {
 
 
     private final DogService dogService;
 
-    @Autowired
-    public DogController(DogService dogService) {
-        this.dogService = dogService;
-    }
+//    @Autowired
+//    public DogController(DogService dogService) {
+//        this.dogService = dogService;
+//    }
 
     /* H4 : 강아지 등록 API -- Tony*/
     @PostMapping("/{userId}")

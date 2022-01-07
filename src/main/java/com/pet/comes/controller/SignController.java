@@ -12,20 +12,19 @@ import com.pet.comes.dto.Rep.SignResultRepDto;
 import com.pet.comes.dto.Req.RefreshTokenReqDto;
 import com.pet.comes.dto.Req.SignInReqDto;
 import com.pet.comes.model.Entity.User;
-import com.pet.comes.repository.UserRepository;
 import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
 import com.pet.comes.response.Status;
 import com.pet.comes.service.CustomUserDetailService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/test/")
 public class SignController {
 
@@ -37,16 +36,16 @@ public class SignController {
     private final Status status;
     private final ResponseMessage message;
 
-    @Autowired
-    public SignController(ResponseMessage message, Status status, CustomUserDetailService customUserDetailService, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider) {
-        this.customUserDetailService = customUserDetailService;
+//    @Autowired
+//    public SignController(ResponseMessage message, Status status, CustomUserDetailService customUserDetailService, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider) {
+//        this.customUserDetailService = customUserDetailService;
 //        this.passwordEncoder = passwordEncoder;
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.message = message;
-        this.status = status;
-    }
+//        this.jwtTokenProvider = jwtTokenProvider;
+//        this.message = message;
+//        this.status = status;
+//    }
 
-    // signin, login
+    /* U10 : 일반로그인 API --Tony*/
     @PostMapping("signin")
     @ResponseBody
     public SignResultRepDto signInUser(HttpServletRequest request, @RequestBody SignInReqDto signReqDto) {
@@ -79,7 +78,7 @@ public class SignController {
         }
     }
 
-    // signup,
+    /* U1 : 회원가입 API --Tony*/
     @PostMapping("signup")
     @ResponseBody
     public SignResultRepDto addUser(HttpServletRequest request, @RequestBody UserJoinDto userJoinDto) {
@@ -105,6 +104,7 @@ public class SignController {
 
     }
 
+    /* U9 : 액세스 토큰 새롭게 받기 (refresh token) API --Tony */
     @PostMapping("reaccess")
     @ResponseBody
     public ResponseEntity refreshAccessToken(HttpServletRequest request, @RequestBody RefreshTokenReqDto refreshTokenReqDto) {
@@ -113,7 +113,7 @@ public class SignController {
 
         Optional<User> isExist = customUserDetailService.findById(refreshTokenReqDto.getUserId());
         if (!isExist.isPresent())
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_VALID_ACCOUNT ), HttpStatus.OK);
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_ACCOUNT), HttpStatus.OK);
 
         User user = isExist.get();
         String userRefreshToken = user.getRefreshToken();

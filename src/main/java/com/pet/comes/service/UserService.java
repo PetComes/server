@@ -1,17 +1,14 @@
 package com.pet.comes.service;
 
 import com.pet.comes.dto.Join.UserJoinDto;
-import com.pet.comes.dto.Rep.MyAccountRepDto;
-import com.pet.comes.dto.Rep.MyFamilyRepDto;
-import com.pet.comes.dto.Rep.UserProfileRepDto;
-import com.pet.comes.model.Entity.Family;
-import com.pet.comes.model.Entity.User;
-import com.pet.comes.repository.UserRepository;
+import com.pet.comes.dto.Rep.*;
+import com.pet.comes.model.Entity.*;
+import com.pet.comes.repository.*;
 import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
 import com.pet.comes.response.Status;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,18 +21,16 @@ import java.util.Optional;
 
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
+
     private final UserRepository userRepository;
     private final Status status;
     private final ResponseMessage message;
-
-    @Autowired
-    public UserService(UserRepository userRepository, FamilyService familyService, Status status, ResponseMessage message) {
-        this.userRepository = userRepository;
-        this.status = status;
-        this.message = message;
-    }
-
+    private final DiaryRepository diaryRepository;
+    private final AlarmRepository alarmRepository;
+    private final CommentRepository commentRepository;
+    private final PinRepository pinRepository;
 
     @Transactional // 해당 메소드가 호출될 때 바뀐 내용을 DB에 반영
     public Long setFamilyId(Long id, Family family) {
@@ -95,10 +90,130 @@ public class UserService {
             ), HttpStatus.OK);
         }
         return new ResponseEntity(NoDataResponse.response(
-                404, new ResponseMessage().NOT_VALID_ACCOUNT
+                404, new ResponseMessage().INVALID_ACCOUNT
         ), HttpStatus.NOT_FOUND);
 
     }
+
+    /* H2 : 읽지 않은 알림 개수 조회 --Tony */
+    public ResponseEntity alarmCount(Long userId) {
+        Optional<User> isExist = userRepository.findById(userId);
+        if (!isExist.isPresent())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_ACCOUNT), HttpStatus.OK);
+
+        User user = isExist.get();
+        List<Alarm> alarmList = alarmRepository.findAllByUserAndNotChecked(user, 0); // 아직 체크 안된 알림 갯수 알기 위해
+
+        if (alarmList.isEmpty())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NO_ALARMS), HttpStatus.OK);
+
+        int cnt = alarmList.size();
+
+        return new ResponseEntity(DataResponse.response(status.SUCCESS, message.SUCCESS, cnt), HttpStatus.OK);
+    }
+
+    /* H3 : 알림 목록 조회 --Tony */
+    public ResponseEntity showAlarmList(Long userId) {
+
+        // User 유효성 검사
+        Optional<User> isExistUser = userRepository.findById(userId);
+        if (!isExistUser.isPresent())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_ACCOUNT), HttpStatus.OK);
+
+        User user = isExistUser.get(); // 계정 주인 user 객체
+
+        // 해당 유저에대한 Alarm 다 가져오기
+        List<Alarm> alarmList = alarmRepository.findAllByUser(user);  // 알람 전체 찾아오기
+        String imageurl = "";
+        String nickname = "";
+        String messageStr = "";
+
+        List<AlarmListRepDto> alarmListRepDtoList = new ArrayList<>();
+
+        // return 해줄 dto로 변경
+        for (Alarm alarm : alarmList) {
+
+            // 다이어리 댓글인지 핀인지 확인
+            if (alarm.getType() == 1) { // 1: 댓글
+                Optional<Comment> isExist = commentRepository.findById(alarm.getContentId()); // comment_id로 찾기
+
+                if (!isExist.isPresent())  // 댓글이 없어졌을 때
+                    messageStr = "댓글이 삭제되거나 게시물이 없습니다.";
+                else {
+                    // comment -> user 정보 찾기
+                    Comment comment = isExist.get();
+                    User usertmp = comment.getUser();// 해당 댓글과 관련있는 유저
+                    imageurl = usertmp.getImageUrl();
+                    nickname = usertmp.getNickname();
+                    messageStr = nickname + "님이 회원님의 게시글에 댓글을 달았습니다.";
+                }
+
+                // return 해줄 List에 추가하기
+                AlarmListRepDto alarmListRepDto = new AlarmListRepDto(imageurl, nickname, messageStr);
+                alarmListRepDtoList.add(alarmListRepDto);
+
+            } else if (alarm.getType() == 0) { // 0 : 핀
+                Optional<User> isUserExist = userRepository.findById(alarm.getContentId());// user_id로 pin 조회
+                if(!isUserExist.isPresent()) // 해당 유저가 탈퇴할 경우
+                    messageStr= "존재하지 않는 계정입니다.";
+                User userParam = isUserExist.get();
+
+                Optional<Pin> isExist = pinRepository.findByUserAndDiaryId(userParam,alarm.getDiary()); // 핀을 영속성컨텍스트에서 찾기
+                if (!isExist.isPresent())  // 핀이 db상에서 오류 났을 때 ?
+                    messageStr = "핀한 다이어리가 존재하지 않습니다.";
+
+                else {
+                    Pin pin = isExist.get();
+                    User usertmp = pin.getUser(); // 해당 핀 객체를 가진 유저
+                    imageurl = usertmp.getImageUrl();
+                    nickname = usertmp.getNickname();
+                    messageStr = nickname + "님이 회원님의 게시글을 핀했습니다.";
+                }
+                // return 해줄 List에 추가하기
+                AlarmListRepDto alarmListRepDto = new AlarmListRepDto(imageurl, nickname, messageStr);
+                alarmListRepDtoList.add(alarmListRepDto);
+            }
+        }
+
+        return new ResponseEntity(DataResponse.response(status.SUCCESS, message.SUCCESS, alarmListRepDtoList), HttpStatus.OK);
+    }
+
+    /* H6 : 내 핀 목록 조회 API -- Tony */
+    public ResponseEntity pinList(Long userId) {
+        Optional<User> isExist = userRepository.findById(userId);
+
+        if (!isExist.isPresent())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_ACCOUNT + "유저 정보가 없습니다. "), HttpStatus.OK);
+
+        User user = isExist.get(); // 해당 api 요청한 user의 id
+
+        List<Pin> pinList = user.getPins();
+        List<PinListRepDto> pinListRepDtoList = new ArrayList<>();
+        PinListRepDto pinListRepDto = new PinListRepDto();
+
+        for (Pin pin : pinList) {
+            Optional<Diary> isExist2 = diaryRepository.findById(pin.getDiaryId());
+            if (!isExist2.isPresent())
+                return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_ACCOUNT + "유저 다이어리가 없습니다. "), HttpStatus.OK);
+            Diary diary = isExist2.get();
+            pinListRepDto.setText(diary.getText());
+            pinListRepDto.setContentImageUrl(diary.getImageUrl());
+
+            User usertmp = diary.getUser();
+            if (usertmp == null)
+                return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_ACCOUNT + "유저 정보가 없습니다. "), HttpStatus.OK);
+
+            pinListRepDto.setNickname(usertmp.getNickname());
+            pinListRepDto.setProfileImageUrl(usertmp.getImageUrl());
+
+            pinListRepDtoList.add(pinListRepDto);
+        }
+
+        return new ResponseEntity(DataResponse.response(status.SUCCESS,
+                message.SUCCESS + " 핀 목록 조회 ", pinListRepDtoList), HttpStatus.OK);
+
+    }
+
 
     /* H7 : 내 가족 목록 조회 API -- Tony */
     public ResponseEntity myFamily(Long id) {
@@ -147,7 +262,7 @@ public class UserService {
         Optional<User> isExist = userRepository.findByNickname(userName);
         if (!isExist.isPresent())
             return new ResponseEntity(NoDataResponse.response(status.INVALID_ID
-                    , new ResponseMessage().NOT_VALID_ACCOUNT
+                    , new ResponseMessage().INVALID_ACCOUNT
             ), HttpStatus.NOT_FOUND);
 
         User user = isExist.get();
@@ -155,7 +270,7 @@ public class UserService {
         UserProfileRepDto userProfileRepDto;
 
         return new ResponseEntity(NoDataResponse.response(status.INVALID_ID
-                , new ResponseMessage().NOT_VALID_ACCOUNT
+                , new ResponseMessage().INVALID_ACCOUNT
         ), HttpStatus.NOT_FOUND);
 
     }

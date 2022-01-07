@@ -12,7 +12,7 @@ import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
 import com.pet.comes.response.Status;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,6 +22,7 @@ import java.util.Optional;
 
 
 @Service
+@RequiredArgsConstructor
 public class DogService {
 
     private final DogRepository dogRepository;
@@ -31,15 +32,15 @@ public class DogService {
     private final UserRepository userRepository;
     private final FamilyService familyService;
 
-    @Autowired
-    public DogService(UserRepository userRepository, UserService userService, FamilyService familyService, DogRepository dogRepository, Status status, ResponseMessage message) {
-        this.dogRepository = dogRepository;
-        this.familyService = familyService;
-        this.userService = userService;
-        this.userRepository = userRepository;
-        this.status = status;
-        this.message = message;
-    }
+//    @Autowired
+//    public DogService(UserRepository userRepository, UserService userService, FamilyService familyService, DogRepository dogRepository, Status status, ResponseMessage message) {
+//        this.dogRepository = dogRepository;
+//        this.familyService = familyService;
+//        this.userService = userService;
+//        this.userRepository = userRepository;
+//        this.status = status;
+//        this.message = message;
+//    }
 
 
     /* H4 : 강아지 등록 API --Tony */
@@ -74,7 +75,7 @@ public class DogService {
     public ResponseEntity getDogProfile(String nickName, String dogName) {
         Optional<User> isUser = userRepository.findByNickname(nickName);
         if (!isUser.isPresent())
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_VALID_ACCOUNT), HttpStatus.OK);
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_ACCOUNT), HttpStatus.OK);
 
         User user = isUser.get();
         Family family = user.getFamily();
