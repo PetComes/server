@@ -1,5 +1,6 @@
 package com.pet.comes.controller;
 
+import com.pet.comes.dto.Req.AnimalRegistrationReqDto;
 import com.pet.comes.dto.Req.DogBodyInformationDto;
 import com.pet.comes.dto.Req.DogReqDto;
 import com.pet.comes.service.DogService;
@@ -33,10 +34,14 @@ public class DogController {
     }
 
     /* A1 : 동물등록번호 등록 - Heather */
+    @PatchMapping("/registration")
+    public ResponseEntity registerAnimalRegistrationNo(AnimalRegistrationReqDto animalRegistrationReqDto) {
+        return dogService.registerAnimalRegistrationNo(animalRegistrationReqDto);
+    }
 
     /* A2 : 강아지 키, 몸무게 등록 및 수정 - Heather */
     @PatchMapping
-    public ResponseEntity registerDogBodyInformation(DogBodyInformationDto dogBodyInfo) {
-        return dogService.registerDogBodyInformation(dogBodyInfo);
+    public ResponseEntity registerDogBodyInformation(DogBodyInformationDto dogBodyInformationDto) {
+        return dogService.registerDogBodyInformation(dogBodyInformationDto);
     }
 }

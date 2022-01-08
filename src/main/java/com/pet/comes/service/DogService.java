@@ -1,6 +1,7 @@
 package com.pet.comes.service;
 
 import com.pet.comes.dto.Rep.DogProfileRepDto;
+import com.pet.comes.dto.Req.AnimalRegistrationReqDto;
 import com.pet.comes.dto.Req.DogBodyInformationDto;
 import com.pet.comes.dto.Req.DogReqDto;
 import com.pet.comes.model.Entity.Dog;
@@ -106,6 +107,15 @@ public class DogService {
         return new ResponseEntity(DataResponse.response(status.SUCCESS,
                 "강아지별 프로필 조회 " + message.SUCCESS, dogProfileRepDto), HttpStatus.OK);
 
+    }
+
+    /* A1 : 동물등록번호 조회 - Heather */
+    public ResponseEntity registerAnimalRegistrationNo(AnimalRegistrationReqDto animalRegistrationReqDto) {
+        // 소유자 생년월일, 성명 조회해오기
+        // 동물등록번호 유효성 검사
+        // 동물등록번호 등록
+
+        return new ResponseEntity(NoDataResponse.response(status.SUCCESS, "동물등록번호 등록 성공"), HttpStatus.OK);
     }
 
     /* A2 : 키, 몸무게 등록 및 수정 - Heather */
