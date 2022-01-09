@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/dog")
@@ -35,7 +37,7 @@ public class DogController {
 
     /* A1 : 동물등록번호 등록 - Heather */
     @PatchMapping("/registration")
-    public ResponseEntity registerAnimalRegistrationNo(AnimalRegistrationReqDto animalRegistrationReqDto) {
+    public ResponseEntity registerAnimalRegistrationNo(AnimalRegistrationReqDto animalRegistrationReqDto) throws IOException {
         return dogService.registerAnimalRegistrationNo(animalRegistrationReqDto);
     }
 

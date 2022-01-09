@@ -15,11 +15,13 @@ import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
 import com.pet.comes.response.Status;
+import com.pet.comes.util.openAPI.AnimalRegNoValidateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +36,7 @@ public class DogService {
     private final UserService userService;
     private final UserRepository userRepository;
     private final FamilyService familyService;
+    private final AnimalRegNoValidateService animalRegNoValidateService;
 
 //    @Autowired
 //    public DogService(UserRepository userRepository, UserService userService, FamilyService familyService, DogRepository dogRepository, Status status, ResponseMessage message) {
@@ -110,9 +113,17 @@ public class DogService {
     }
 
     /* A1 : 동물등록번호 조회 - Heather */
-    public ResponseEntity registerAnimalRegistrationNo(AnimalRegistrationReqDto animalRegistrationReqDto) {
+    public ResponseEntity registerAnimalRegistrationNo(AnimalRegistrationReqDto animalRegistrationReqDto) throws IOException {
         // 소유자 생년월일, 성명 조회해오기
+        Optional<User> user = userRepository.findByUserId(animalRegistrationReqDto.getUserId());
+
+        if (!user.isPresent())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_ACCOUNT), HttpStatus.OK);
+
+        User userA = user.get();
         // 동물등록번호 유효성 검사
+        // animalRegNoValidateService.isValidAnimalRegNo(animalRegistrationReqDto.getDogRegNo(), userA.getBir, userA.getName());
+
         // 동물등록번호 등록
 
         return new ResponseEntity(NoDataResponse.response(status.SUCCESS, "동물등록번호 등록 성공"), HttpStatus.OK);
