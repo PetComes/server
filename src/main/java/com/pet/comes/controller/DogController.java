@@ -35,7 +35,13 @@ public class DogController {
         return dogService.getDogProfile(nickName,dogName);
     }
 
-    /* A1 : 동물등록번호 등록 - Heather */
+    /* A1 : 동물등록번호 등록 시 이름 내려주기 - Heather */
+    @GetMapping("/registration/{userId}")
+    public ResponseEntity getUserName(@PathVariable Long userId) {
+        return dogService.getUserName(userId);
+    }
+
+    /* A2 : 동물등록번호 등록 - Heather */
     @PatchMapping("/registration")
     public ResponseEntity registerAnimalRegistrationNo(AnimalRegistrationReqDto animalRegistrationReqDto) throws IOException {
         return dogService.registerAnimalRegistrationNo(animalRegistrationReqDto);

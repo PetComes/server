@@ -112,7 +112,20 @@ public class DogService {
 
     }
 
-    /* A1 : 동물등록번호 조회 - Heather */
+    /* A1 : 동물등록번호 등록 시 유저 이름 내려주기 - Heather */
+    public ResponseEntity getUserName(Long userId) {
+
+        Optional<User> user = userRepository.findByUserId(userId);
+        if (!user.isPresent()) {
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_ACCOUNT), HttpStatus.OK);
+        }
+        User userA = user.get();
+        String username = userA.getUsername();
+
+        return new ResponseEntity(DataResponse.response(status.SUCCESS, "성공", username), HttpStatus.OK);
+    }
+
+    /* A2 : 동물등록번호 조회 - Heather */
     public ResponseEntity registerAnimalRegistrationNo(AnimalRegistrationReqDto animalRegistrationReqDto) throws IOException {
         // 소유자 생년월일, 성명 조회해오기
         Optional<User> user = userRepository.findByUserId(animalRegistrationReqDto.getUserId());
