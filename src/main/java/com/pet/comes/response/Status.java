@@ -22,6 +22,8 @@ public class Status {
     public int INVALID_DOGID = 306;
     public int INVALID_FAMILYID = 307;
     public int LIST_IS_EMPTY = 308;
+    public int EMPTY_VALUE = 309;
+
     public int DB_INVALID_VALUE = 500;
     public int DB_NO_DATA = 501;
     public int EXPIRED_TOKEN = 502;

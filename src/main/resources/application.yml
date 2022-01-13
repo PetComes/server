@@ -3,6 +3,7 @@ spring:
     include:
       - aws
       - credentials
+      - openAPI
     active: devdb
   servlet:
     multipart:

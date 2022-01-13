@@ -1,0 +1,6 @@
+social:
+  naver:
+    client:
+      id:
+      secret:
+    callback: http://localhost:8080/social/naver/callback

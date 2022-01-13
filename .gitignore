@@ -38,5 +38,5 @@ out/
 
 ### configuration file ###
 !**/src/main/resources/application.yml
-
-appplication-credentials.yml  # 필수 입니다 (예시를 위해 제외)
+!**/src/main/resources/social.yml
+appplication-credentials.yml  #필수 입니다 (예시를 위해 제외)
