@@ -13,7 +13,8 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByUserId(long userId);
+//    Optional<User> findByUserId(Long userId);
+
     Optional<User> findByEmail(String email);
     Optional<User> findByNickname(String nickname);
 
@@ -23,5 +24,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "where u.nickname= :nickName")
         // nativeQuery 옵션을 줘야 DB에서 쿼리문을 작성하는 방식으로 작성할 수 있음.
     Optional<String> findIsUserNickNameByNickName(@Param("nickName") String nickName);
-  //  List<User> findAllBy()
+//    List<User> findAllBy()
 }
