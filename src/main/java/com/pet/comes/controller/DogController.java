@@ -47,7 +47,7 @@ public class DogController {
         return dogService.registerAnimalRegistrationNo(animalRegistrationReqDto);
     }
 
-    /* A2 : 강아지 키, 몸무게 등록 및 수정 - Heather */
+    /* A3 : 강아지 키, 몸무게 등록 및 수정 - Heather */
     @PatchMapping
     public ResponseEntity registerDogBodyInformation(DogBodyInformationDto dogBodyInformationDto) {
         return dogService.registerDogBodyInformation(dogBodyInformationDto);

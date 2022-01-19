@@ -135,7 +135,7 @@ public class DogService {
 
         User userA = user.get();
         // 동물등록번호 유효성 검사
-        // animalRegNoValidateService.isValidAnimalRegNo(animalRegistrationReqDto.getDogRegNo(), userA.getBir, userA.getName());
+        animalRegNoValidateService.isValidAnimalRegNo(animalRegistrationReqDto.getDogRegNo(), animalRegistrationReqDto.getBirthday(), userA.getName());
 
         // 동물등록번호 등록
 
