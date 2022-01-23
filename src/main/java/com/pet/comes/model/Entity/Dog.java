@@ -64,7 +64,7 @@ public class Dog  {
 
     private int isNeutered;
 
-    private Long registerationNo;
+    private String registerationNo;
 
     private Long modifiedBy;
 

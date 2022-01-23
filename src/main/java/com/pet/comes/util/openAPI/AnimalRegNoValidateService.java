@@ -22,7 +22,7 @@ public class AnimalRegNoValidateService {
         StringBuilder urlBuilder = new StringBuilder("http://openapi.animal.go.kr/openapi/service/rest/animalInfoSrvc/animalInfo"); /*URL*/
         urlBuilder.append("?" + URLEncoder.encode("serviceKey", StandardCharsets.UTF_8) + "=" + serviceKey); /*Service Key*/
         urlBuilder.append("&" + URLEncoder.encode("dog_reg_no", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(animalRegNo, StandardCharsets.UTF_8)); /*동물등록번호*/
-        urlBuilder.append("&" + URLEncoder.encode("rfid_cd", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(animalRegNo, StandardCharsets.UTF_8)); /*RFID번호*/
+        urlBuilder.append("&" + URLEncoder.encode("rfid_cd","UTF-8") + "=" + URLEncoder.encode("410000000227825", "UTF-8")); /*RFID번호*/
         urlBuilder.append("&" + URLEncoder.encode("owner_birth", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(ownerBirth, StandardCharsets.UTF_8)); /*소유자 생년월일*/
         urlBuilder.append("&" + URLEncoder.encode("owner_nm", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(ownerName, StandardCharsets.UTF_8)); /*소유자 성명*/
 
@@ -31,12 +31,12 @@ public class AnimalRegNoValidateService {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.setRequestProperty("Content-type", "application/json");
-        System.out.println("Response code: " + conn.getResponseCode());
-        BufferedReader rd;
 
+        BufferedReader rd;
         if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
             rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        } else {
+        }
+        else {
             rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
         }
 
@@ -49,7 +49,6 @@ public class AnimalRegNoValidateService {
         conn.disconnect();
 
         return sb.toString();
-        // System.out.println(sb.toString());
     }
 }
 

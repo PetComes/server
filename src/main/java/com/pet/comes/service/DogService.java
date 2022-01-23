@@ -20,8 +20,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,17 +45,6 @@ public class DogService {
     private final UserRepository userRepository;
     private final FamilyService familyService;
     private final AnimalRegNoValidateService animalRegNoValidateService;
-
-//    @Autowired
-//    public DogService(UserRepository userRepository, UserService userService, FamilyService familyService, DogRepository dogRepository, Status status, ResponseMessage message) {
-//        this.dogRepository = dogRepository;
-//        this.familyService = familyService;
-//        this.userService = userService;
-//        this.userRepository = userRepository;
-//        this.status = status;
-//        this.message = message;
-//    }
-
 
     /* H4 : 강아지 등록 API --Tony */
     public ResponseEntity addDog(Long userId, DogReqDto dogReqDto) {
@@ -122,29 +119,68 @@ public class DogService {
         User userA = user.get();
         String username = userA.getUsername();
 
-        return new ResponseEntity(DataResponse.response(status.SUCCESS, "성공", username), HttpStatus.OK);
+        return new ResponseEntity(DataResponse.response(status.SUCCESS, "이름 조회 성공", username), HttpStatus.OK);
     }
 
     /* A2 : 동물등록번호 조회 - Heather */
     public ResponseEntity registerAnimalRegistrationNo(AnimalRegistrationReqDto animalRegistrationReqDto) throws IOException {
-        // 소유자 생년월일, 성명 조회해오기
+        // 소유자 유효성 검사
         Optional<User> user = userRepository.findById(animalRegistrationReqDto.getUserId());
-
-        if (user.isEmpty())
+        if (user.isEmpty()) {
             return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_ACCOUNT), HttpStatus.OK);
+        }
+        User userForRegistration = user.get();
 
-        User userA = user.get();
+        // 동물등록번호 자리수 검사
+        if(animalRegistrationReqDto.getDogRegNo().length() > 15) {
+            return new ResponseEntity(NoDataResponse.response(status.TOO_LONG_VALUE, "초과:동물등록번호는 15자리입니다."), HttpStatus.OK);
+        }
+
         // 동물등록번호 유효성 검사
-        String result = animalRegNoValidateService.isValidAnimalRegNo(animalRegistrationReqDto.getDogRegNo(), animalRegistrationReqDto.getBirthday(), userA.getName());
+        String result = animalRegNoValidateService.isValidAnimalRegNo(animalRegistrationReqDto.getDogRegNo(), animalRegistrationReqDto.getBirthday(), userForRegistration.getName());
+        String resultMsg = "";
+        String dogRegNo = "";
+        try {
+            if(result != null) {
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder documentBuilder = factory.newDocumentBuilder();
 
-        // 테스트
-        return new ResponseEntity(DataResponse.response(status.SUCCESS, "조회 성공",result), HttpStatus.OK);
+                InputStream is = new ByteArrayInputStream(result.getBytes());
+                Document doc = documentBuilder.parse(is);
+                Element element = doc.getDocumentElement();
+                NodeList resultMsgNodeList = element.getElementsByTagName("resultMsg");
+                NodeList dogRegNoNodeList = element.getElementsByTagName("dogRegNo");
+
+                for(int i = 0; i<resultMsgNodeList.getLength(); i++) {
+                    Node item = resultMsgNodeList.item(i);
+                    Node text = item.getFirstChild();
+                    resultMsg = text.getNodeValue();
+
+                    Node dogRegNoItem = dogRegNoNodeList.item(i);
+                    dogRegNo = dogRegNoItem.getFirstChild().getNodeValue();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if(!resultMsg.equals("NORMAL SERVICE.")) {
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_NO, "유효하지 않은 동물등록번호입니다."), HttpStatus.OK);
+        }
+
         // 동물등록번호 등록
+        Optional<Dog> dog = dogRepository.findById(animalRegistrationReqDto.getDogId());
+        if(dog.isPresent()) {
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_DOGID, "유효하지 않은 dogId 입니다."), HttpStatus.OK);
+        }
+        Dog dogForRegistration = dog.get();
+        dogForRegistration.setRegisterationNo(dogRegNo);
+        dogRepository.save(dogForRegistration);
 
-        //return new ResponseEntity(NoDataResponse.response(status.SUCCESS, "동물등록번호 등록 성공"), HttpStatus.OK);
+        return new ResponseEntity(NoDataResponse.response(status.SUCCESS, "동물등록번호 등록 성공"), HttpStatus.OK);
     }
 
-    /* A2 : 키, 몸무게 등록 및 수정 - Heather */
+    /* A3 : 키, 몸무게 등록 및 수정 - Heather */
     public ResponseEntity registerDogBodyInformation(DogBodyInformationDto dogBodyInfo) {
 
         // 키와 몸무게가 둘 다 0일 경우 fail
@@ -157,10 +193,10 @@ public class DogService {
         if(dog.isPresent()) {
             return new ResponseEntity(NoDataResponse.response(status.INVALID_DOGID, "유효하지 않은 dogId 입니다."), HttpStatus.OK);
         }
-
+        Dog dogForUpdate = dog.get();
         // 등록된 키, 몸무게 확인
-        float height = dog.get().getHeight();
-        float weight = dog.get().getWeight();
+        float height = dogForUpdate.getHeight();
+        float weight = dogForUpdate.getWeight();
 
         // 이미 등록되어 있었다면 dog_log에 저장
         if(height == 0.0f && weight != 0.0f) { // 키만 등록되어 있는 경우
