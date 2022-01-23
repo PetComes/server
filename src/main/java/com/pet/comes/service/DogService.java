@@ -130,16 +130,18 @@ public class DogService {
         // 소유자 생년월일, 성명 조회해오기
         Optional<User> user = userRepository.findById(animalRegistrationReqDto.getUserId());
 
-        if (!user.isPresent())
+        if (user.isEmpty())
             return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_ACCOUNT), HttpStatus.OK);
 
         User userA = user.get();
         // 동물등록번호 유효성 검사
-        animalRegNoValidateService.isValidAnimalRegNo(animalRegistrationReqDto.getDogRegNo(), animalRegistrationReqDto.getBirthday(), userA.getName());
+        String result = animalRegNoValidateService.isValidAnimalRegNo(animalRegistrationReqDto.getDogRegNo(), animalRegistrationReqDto.getBirthday(), userA.getName());
 
+        // 테스트
+        return new ResponseEntity(DataResponse.response(status.SUCCESS, "조회 성공",result), HttpStatus.OK);
         // 동물등록번호 등록
 
-        return new ResponseEntity(NoDataResponse.response(status.SUCCESS, "동물등록번호 등록 성공"), HttpStatus.OK);
+        //return new ResponseEntity(NoDataResponse.response(status.SUCCESS, "동물등록번호 등록 성공"), HttpStatus.OK);
     }
 
     /* A2 : 키, 몸무게 등록 및 수정 - Heather */

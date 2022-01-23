@@ -14,4 +14,11 @@ public class AnimalRegistrationReqDto {
 
     private long dogId;
     private String dogRegNo;
+
+    public AnimalRegistrationReqDto(String userId, String birthday, String dogId, String dogRegNo) {
+        this.userId = Long.parseLong(userId);
+        this.birthday = birthday;
+        this.dogId = Long.parseLong(dogId);
+        this.dogRegNo = dogRegNo;
+    }
 }

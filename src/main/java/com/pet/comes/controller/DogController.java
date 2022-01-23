@@ -43,7 +43,7 @@ public class DogController {
 
     /* A2 : 동물등록번호 등록 - Heather */
     @PatchMapping("/registration")
-    public ResponseEntity registerAnimalRegistrationNo(AnimalRegistrationReqDto animalRegistrationReqDto) throws IOException {
+    public ResponseEntity registerAnimalRegistrationNo(@RequestBody AnimalRegistrationReqDto animalRegistrationReqDto) throws IOException {
         return dogService.registerAnimalRegistrationNo(animalRegistrationReqDto);
     }
 
