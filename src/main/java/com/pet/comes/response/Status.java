@@ -23,6 +23,8 @@ public class Status {
     public int INVALID_FAMILYID = 307;
     public int LIST_IS_EMPTY = 308;
     public int EMPTY_VALUE = 309;
+    public int TOO_LONG_VALUE = 310;
+    public int INVALID_NO = 311;
 
     public int DB_INVALID_VALUE = 500;
     public int DB_NO_DATA = 501;

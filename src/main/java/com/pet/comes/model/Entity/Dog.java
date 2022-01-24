@@ -13,6 +13,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -50,10 +51,9 @@ public class Dog  {
     private String imageUrl;
 
     private float weight;
-    private float height;
 
     @OneToMany(mappedBy = "dog")
-    private List<DogLog> bodyInfoLogs = new ArrayList<DogLog>();
+    private List<DogLog> bodyInfoLogs = new ArrayList<>();
 
     @Enumerated(value=EnumType.STRING)
     private Sex sex;
@@ -64,7 +64,7 @@ public class Dog  {
 
     private int isNeutered;
 
-    private Long registerationNo;
+    private String registerationNo;
 
     private Long modifiedBy;
 
@@ -104,8 +104,7 @@ public class Dog  {
 
     public void addDogLog(DogLog dogLog) { // bodyInfoLogs에서 DogLog 객체를 항상 갖고 있게 하기 위해 add 메서드 추가
         this.bodyInfoLogs.add(dogLog);
-
-        if(dogLog.getDog() != this) {
+        if(dogLog.getDog().getDog() != this) {
             dogLog.setDog(this);
         }
     }

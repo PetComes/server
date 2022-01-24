@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -13,34 +15,40 @@ import java.time.LocalDateTime;
 @Setter
 @RequiredArgsConstructor
 @Entity
+@EntityListeners(AuditingEntityListener.class) // Auditing : 감시, 자동으로 시간을 매핑하여 DB 테이블에 넣어줌.
 @Table(name = "dog_log")
 public class DogLog {
 
-    @ManyToOne
-    @JoinColumn(name="id")
-    @Setter(AccessLevel.PROTECTED)
-    private Dog dog;
 
-    @Id
-    private long dogId = dog.getId();
+    //    private long dogId; // = dog.getId();
     // Dog : DogLog = 1 : 다 <=> dogId는 Dog의 id를 참조하는 외래 <=> DogLog가 연관관계의 주인
+//    @Id
+//    @ManyToOne
+//    @JoinColumn(name = "id")
+//    private Dog dog;
+    @EmbeddedId
+    private DogLogId dog;
 
-    private float height;
     private float weight;
 
-    private LocalDateTime registeredAt = LocalDateTime.now();
+    @CreatedDate
+    private LocalDateTime registeredAt;
+
 
     public void setDog(Dog dog) {
-        this.dog = dog;
+        this.dog.setDog(dog);
 
-        if(!dog.getBodyInfoLogs().contains(this)) {
+        if (!dog.getBodyInfoLogs().contains(this)) {
             dog.getBodyInfoLogs().add(this);
         }
     }
 
-    public DogLog(DogBodyInformationDto dogBodyInformation) {
-        this.dogId = dogBodyInformation.getDogId();
-        this.height = dogBodyInformation.getHeight();
-        this.weight = dogBodyInformation.getWeight();
+    public DogLog(DogBodyInformationDto dogBodyInformationDto, Dog dog) {
+//        this.dogId = dogBodyInformationDto.getDogId();
+        if (!dog.getBodyInfoLogs().contains(this)) {
+            dog.getBodyInfoLogs().add(this);
+        }
+        this.weight = dogBodyInformationDto.getWeight();
+
     }
 }
