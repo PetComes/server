@@ -4,7 +4,8 @@ import lombok.Data;
 
 @Data
 public class DogBodyInformationDto {
-    private long dogId;
+    private Long dogId;
+
     private float weight;
 
     private long modifiedBy;
