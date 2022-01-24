@@ -16,7 +16,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {//<Comm
     // 대소 문자 구별
     @Query("select u.nickname, u.imageUrl, c.text, c.commentedAt, c.commentCommentId from Comment c left join User u on c.user.id = u.id " +
             "where c.diaryId= :diaryId")
-    // nativeQuery 옵션을 줘야 DB에서 쿼리문을 작성하는 방식으로 작성할 수 있음.
+    // nativeQuery 옵션을 줘야 DB에ㄹ서 쿼리문을 작성하는 방식으로 작성할 수 있음.
     List<Object[]> findAllByDiaryIdForD6(@Param("diaryId") Long diaryId);
 
     @Query("select u.nickname, u.imageUrl from Comment c left join User u " +
