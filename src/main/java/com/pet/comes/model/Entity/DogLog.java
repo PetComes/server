@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 public class DogLog implements Serializable {
 
     @EmbeddedId
-    private DogLogId dog;
+    private DogLogId dog = new DogLogId();
 
     private float weight;
 
@@ -29,15 +29,14 @@ public class DogLog implements Serializable {
     private LocalDateTime registeredAt;
 
     public void setDog(Dog dog) {
-        this.dog.setDog(dog);
-
         if (!dog.getBodyInfoLogs().contains(this)) {
             dog.addDogLog(this);
         }
     }
 
     public DogLog(DogBodyInformationDto dogBodyInformationDto, Dog dog) {
-//        this.dogId = dogBodyInformationDto.getDogId();
+        this.dog.setDog(dog);
+
         if (!dog.getBodyInfoLogs().contains(this)) {
             dog.getBodyInfoLogs().add(this);
         }

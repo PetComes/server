@@ -17,7 +17,7 @@ import java.io.Serializable;
 public class DogLogId implements Serializable {
 
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(referencedColumnName = "id", name = "dog_id")
     private Dog dog;
 
 }
