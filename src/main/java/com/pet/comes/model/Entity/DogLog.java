@@ -16,19 +16,17 @@ import java.time.LocalDateTime;
 @Table(name = "dog_log")
 public class DogLog {
 
-    @ManyToOne
-    @JoinColumn(name="id")
-    @Setter(AccessLevel.PROTECTED)
-    private Dog dog;
-
     @Id
-    private long dogId = dog.getId();
+    private long dogId; // = dog.getId();
     // Dog : DogLog = 1 : 다 <=> dogId는 Dog의 id를 참조하는 외래 <=> DogLog가 연관관계의 주인
 
-    private float height;
     private float weight;
 
     private LocalDateTime registeredAt = LocalDateTime.now();
+
+    @ManyToOne
+    @JoinColumn(name="id")
+    private Dog dog;
 
     public void setDog(Dog dog) {
         this.dog = dog;
@@ -38,9 +36,8 @@ public class DogLog {
         }
     }
 
-    public DogLog(DogBodyInformationDto dogBodyInformation) {
-        this.dogId = dogBodyInformation.getDogId();
-        this.height = dogBodyInformation.getHeight();
-        this.weight = dogBodyInformation.getWeight();
+    public DogLog(DogBodyInformationDto dogBodyInformationDto) {
+        this.dogId = dogBodyInformationDto.getDogId();
+        this.weight = dogBodyInformationDto.getWeight();
     }
 }

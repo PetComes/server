@@ -124,7 +124,7 @@ public class DogService {
         return new ResponseEntity(DataResponse.response(status.SUCCESS, "이름 조회 성공", username), HttpStatus.OK);
     }
 
-    /* A2 : 동물등록번호 추가 - Heather */
+    /* A2 : 동물등록번호 추가 - Heather : 22-01-24 */
     public ResponseEntity registerAnimalRegistrationNo(AnimalRegistrationReqDto animalRegistrationReqDto) throws IOException {
         // 등록하려는 사람의 계정 유효성 검사
         Optional<User> user = userRepository.findById(animalRegistrationReqDto.getUserId());
@@ -192,35 +192,36 @@ public class DogService {
             return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_ACCOUNT), HttpStatus.OK);
         }
 
-        // 키와 몸무게가 둘 다 0일 경우 fail
-        if(dogBodyInfo.getHeight() == 0.0f && dogBodyInfo.getWeight() == 0.0f) {
+        // 몸무게가 둘 다 0일 경우 fail
+        if(dogBodyInfo.getWeight() == 0.0f) {
             return new ResponseEntity(NoDataResponse.response(status.EMPTY_VALUE, "키와 몸무게가 0입니다."), HttpStatus.OK);
         }
-        System.out.println("\n\n????? + " + dogBodyInfo.getDogId() + "\n\n");
+
         // 유효한 강아지인지 확인
         Optional<Dog> dog = dogRepository.findById(dogBodyInfo.getDogId());
-        // 유효한 강아지가 아니라면 fail
         if(dog.isEmpty()) {
             return new ResponseEntity(NoDataResponse.response(status.INVALID_DOGID, "유효하지 않은 dogId 입니다."), HttpStatus.OK);
         }
         Dog dogForUpdate = dog.get();
 
-        // 등록된 키, 몸무게 확인
-        //float height = dogForUpdate.getHeight();
+        // 등록된 몸무게 확인
         float weight = dogForUpdate.getWeight();
 
-        // 키나 몸무게가 이전에 등록되어 있었다면 dog_log에 저장
-        if(weight != 0.0f) { // height != 0.0f ||
+        // 몸무게가 이전에 등록되어 있었다면 dog_log에 저장
+        if(weight != 0.0f) {
             DogLog dogLog = new DogLog(dogBodyInfo);
+            dogLog.setDog(dogForUpdate); // dogLog - dog 매핑
+            dogForUpdate.addDogLog(dogLog); // dog - dogLog 매핑
+
             dogLogRepository.save(dogLog);
         }
 
-        // 새로 받은 키, 몸무게 정보 등록
-        // dogForUpdate.setHeight(dogBodyInfo.getHeight());
+        // 새로 받은 몸무게 정보 등록
         dogForUpdate.setWeight(dogBodyInfo.getWeight());
+        dogForUpdate.setModifiedBy(dogBodyInfo.getModifiedBy());
         dogRepository.save(dogForUpdate);
 
-        return new ResponseEntity(NoDataResponse.response(status.SUCCESS, "키, 몸무게 등록 성공"), HttpStatus.OK);
+        return new ResponseEntity(NoDataResponse.response(status.SUCCESS, "몸무게 등록 성공"), HttpStatus.OK);
     }
 
 }

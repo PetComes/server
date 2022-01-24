@@ -50,7 +50,6 @@ public class DogController {
     /* A3 : 강아지 키, 몸무게 등록 및 수정 - Heather */
     @PatchMapping
     public ResponseEntity registerDogBodyInformation(@RequestBody DogBodyInformationDto dogBodyInformationDto) {
-        System.out.println(dogBodyInformationDto.getDogId() + "\\" + dogBodyInformationDto.getWeight() + "\\" + dogBodyInformationDto.getHeight());
         return dogService.registerDogBodyInformation(dogBodyInformationDto);
     }
 }

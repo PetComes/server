@@ -52,10 +52,8 @@ public class Dog  {
 
     private float weight;
 
-    // private float height;
-
     @OneToMany(mappedBy = "dog")
-    private List<DogLog> bodyInfoLogs = new ArrayList<DogLog>();
+    private List<DogLog> bodyInfoLogs = new ArrayList<>();
 
     @Enumerated(value=EnumType.STRING)
     private Sex sex;
@@ -106,7 +104,6 @@ public class Dog  {
 
     public void addDogLog(DogLog dogLog) { // bodyInfoLogs에서 DogLog 객체를 항상 갖고 있게 하기 위해 add 메서드 추가
         this.bodyInfoLogs.add(dogLog);
-
         if(dogLog.getDog() != this) {
             dogLog.setDog(this);
         }
