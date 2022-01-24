@@ -111,7 +111,7 @@ public class DogService {
 
     }
 
-    /* A1 : 동물등록번호 등록 시 유저 이름 내려주기 - Heather */
+    /* A1 : 동물등록번호 등록 시 유저 이름 내려주기 - Heather : 22-01-24 */
     public ResponseEntity getUserName(Long userId) {
 
         Optional<User> user = userRepository.findById(userId);
@@ -124,24 +124,24 @@ public class DogService {
         return new ResponseEntity(DataResponse.response(status.SUCCESS, "이름 조회 성공", username), HttpStatus.OK);
     }
 
-    /* A2 : 동물등록번호 조회 - Heather */
+    /* A2 : 동물등록번호 추가 - Heather */
     public ResponseEntity registerAnimalRegistrationNo(AnimalRegistrationReqDto animalRegistrationReqDto) throws IOException {
-        // 소유자 유효성 검사
+        // 등록하려는 사람의 계정 유효성 검사
         Optional<User> user = userRepository.findById(animalRegistrationReqDto.getUserId());
         if (user.isEmpty()) {
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_ACCOUNT), HttpStatus.OK);
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_USER), HttpStatus.OK);
         }
         User userForRegistration = user.get();
 
         // 동물등록번호 자리수 검사
         if(animalRegistrationReqDto.getDogRegNo().length() > 15) {
-            return new ResponseEntity(NoDataResponse.response(status.TOO_LONG_VALUE, "초과:동물등록번호는 15자리입니다."), HttpStatus.OK);
+            return new ResponseEntity(NoDataResponse.response(status.TOO_LONG_VALUE, "동물등록번호는 15자리입니다."), HttpStatus.OK);
         }
 
-        // 동물등록번호 유효성 검사
-        String result = animalRegNoValidateService.isValidAnimalRegNo(animalRegistrationReqDto.getDogRegNo(), animalRegistrationReqDto.getBirthday(), userForRegistration.getName());
+        // 동물등록번호 유효성 검사 : 현재 OpenAPI body가 오고 있지 않음.
+        String result = animalRegNoValidateService.isValidAnimalRegNo(animalRegistrationReqDto.getDogRegNo(), animalRegistrationReqDto.getBirthday(), animalRegistrationReqDto.getUserName());
         String resultMsg = "";
-        String dogRegNo = "";
+        // String dogRegNo = "";
         try {
             if(result != null) {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -169,14 +169,15 @@ public class DogService {
         if(!resultMsg.equals("NORMAL SERVICE.")) {
             return new ResponseEntity(NoDataResponse.response(status.INVALID_NO, "유효하지 않은 동물등록번호입니다."), HttpStatus.OK);
         }
-        System.out.println(result);
+
         // 동물등록번호 등록
         Optional<Dog> dog = dogRepository.findById(animalRegistrationReqDto.getDogId());
         if(dog.isEmpty()) {
             return new ResponseEntity(NoDataResponse.response(status.INVALID_DOGID, "유효하지 않은 dogId 입니다."), HttpStatus.OK);
         }
         Dog dogForRegistration = dog.get();
-        dogForRegistration.setRegisterationNo(dogRegNo);
+        dogForRegistration.setRegisterationNo(animalRegistrationReqDto.getDogRegNo()); // body를 전달받을 경우 dogRegNo로 등록해야 함
+        dogForRegistration.setModifiedBy(userForRegistration.getId());
         dogRepository.save(dogForRegistration);
 
         return new ResponseEntity(NoDataResponse.response(status.SUCCESS, "동물등록번호 등록 성공"), HttpStatus.OK);
