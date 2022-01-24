@@ -183,7 +183,7 @@ public class DogService {
         return new ResponseEntity(NoDataResponse.response(status.SUCCESS, "동물등록번호 등록 성공"), HttpStatus.OK);
     }
 
-    /* A3 : 키, 몸무게 등록 및 수정 - Heather */
+    /* A3 : 키, 몸무게 등록 및 수정 - Heather : 미완 */
     public ResponseEntity registerDogBodyInformation(DogBodyInformationDto dogBodyInfo) {
 
         // 소유자 유효성 검사
@@ -209,11 +209,9 @@ public class DogService {
 
         // 몸무게가 이전에 등록되어 있었다면 dog_log에 저장
         if(weight != 0.0f) {
-            DogLog dogLog = new DogLog(dogBodyInfo,dogForUpdate); // dogLog -> dog 매핑
-//            dogLog.setDog(dogForUpdate); // dogLog - dog 매핑
-            dogForUpdate.addDogLog(dogLog); // dog -> dogLog 매핑
-
+            DogLog dogLog = new DogLog(dogBodyInfo, dogForUpdate); // dogLog -> dog 매핑
             dogLogRepository.save(dogLog);
+            dogForUpdate.addDogLog(dogLog); // dog -> dogLog 매핑
         }
 
         // 새로 받은 몸무게 정보 등록
