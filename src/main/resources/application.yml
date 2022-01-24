@@ -4,6 +4,7 @@ spring:
       - aws
       - credentials
       - openAPI
+      - mail
     active: devdb
   servlet:
     multipart:

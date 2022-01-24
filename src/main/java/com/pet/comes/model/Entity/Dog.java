@@ -68,15 +68,6 @@ public class Dog  {
 
     private Long modifiedBy;
 
-//    @Override
-//    public String toString(){
-//        return "Dog{"+
-//                "createdAt: "+getCreatedAt() +
-//                ",modifiedAt: " +getModifiedBy() +
-//                ",id: " + id +
-//                "}";
-//    }
-
     public Dog(Long userId, DogReqDto dogReqDto){
         this.breedId = dogReqDto.getBreedId();
         this.name = dogReqDto.getName();

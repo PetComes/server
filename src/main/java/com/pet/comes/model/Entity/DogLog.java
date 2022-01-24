@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
@@ -14,30 +15,28 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @Entity
 @Table(name = "dog_log")
-public class DogLog {
+public class DogLog implements Serializable {
 
     @Id
-    private long dogId; // = dog.getId();
-    // Dog : DogLog = 1 : 다 <=> dogId는 Dog의 id를 참조하는 외래 <=> DogLog가 연관관계의 주인
-
+    @Column(name="dog_id")
+    private Long dogId;
     private float weight;
-
     private LocalDateTime registeredAt = LocalDateTime.now();
 
     @ManyToOne
     @JoinColumn(name="id")
-    private Dog dog;
+    private Dog dog; // @JoinColumn(name="dog_id")
 
     public void setDog(Dog dog) {
         this.dog = dog;
 
         if(!dog.getBodyInfoLogs().contains(this)) {
-            dog.getBodyInfoLogs().add(this);
+            dog.addDogLog(this);
         }
     }
 
     public DogLog(DogBodyInformationDto dogBodyInformationDto) {
-        this.dogId = dogBodyInformationDto.getDogId();
+        //this.dogId = dogBodyInformationDto.getDogId();
         this.weight = dogBodyInformationDto.getWeight();
     }
 }

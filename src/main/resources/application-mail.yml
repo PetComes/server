@@ -1,0 +1,11 @@
+mail:
+  naver:
+    user: petcomes@naver.com
+    password: petcomes@@
+    smtp:
+      host: smtp.naver.com
+      port: 465
+      auth: true
+      ssl:
+        enable: true
+        trust: smtp.naver.com

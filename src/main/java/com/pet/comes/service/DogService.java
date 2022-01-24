@@ -183,7 +183,7 @@ public class DogService {
         return new ResponseEntity(NoDataResponse.response(status.SUCCESS, "동물등록번호 등록 성공"), HttpStatus.OK);
     }
 
-    /* A3 : 키, 몸무게 등록 및 수정 - Heather */
+    /* A3 : 키, 몸무게 등록 및 수정 - Heather : 미완 */
     public ResponseEntity registerDogBodyInformation(DogBodyInformationDto dogBodyInfo) {
 
         // 소유자 유효성 검사
