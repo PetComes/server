@@ -183,18 +183,18 @@ public class DogService {
         return new ResponseEntity(NoDataResponse.response(status.SUCCESS, "동물등록번호 등록 성공"), HttpStatus.OK);
     }
 
-    /* A3 : 키, 몸무게 등록 및 수정 - Heather : 미완 */
+    /* A3 : 키, 몸무게 등록 및 수정 - Heather : 22-01-24 */
     public ResponseEntity registerDogBodyInformation(DogBodyInformationDto dogBodyInfo) {
 
         // 소유자 유효성 검사
         Optional<User> user = userRepository.findById(dogBodyInfo.getModifiedBy());
         if (user.isEmpty()) {
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_ACCOUNT), HttpStatus.OK);
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_USER), HttpStatus.OK);
         }
 
-        // 몸무게가 둘 다 0일 경우 fail
+        // 몸무게가 0일 경우 fail
         if(dogBodyInfo.getWeight() == 0.0f) {
-            return new ResponseEntity(NoDataResponse.response(status.EMPTY_VALUE, "키와 몸무게가 0입니다."), HttpStatus.OK);
+            return new ResponseEntity(NoDataResponse.response(status.EMPTY_VALUE, "몸무게가 0입니다."), HttpStatus.OK);
         }
 
         // 유효한 강아지인지 확인
