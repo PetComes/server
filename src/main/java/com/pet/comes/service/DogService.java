@@ -9,6 +9,7 @@ import com.pet.comes.model.Entity.DogLog;
 import com.pet.comes.model.Entity.Family;
 import com.pet.comes.model.Entity.User;
 import com.pet.comes.model.EnumType.DogStatus;
+import com.pet.comes.repository.DogLogRepository;
 import com.pet.comes.repository.DogRepository;
 import com.pet.comes.repository.UserRepository;
 import com.pet.comes.response.DataResponse;
@@ -45,6 +46,7 @@ public class DogService {
     private final UserRepository userRepository;
     private final FamilyService familyService;
     private final AnimalRegNoValidateService animalRegNoValidateService;
+    private final DogLogRepository dogLogRepository;
 
     /* H4 : 강아지 등록 API --Tony */
     public ResponseEntity addDog(Long userId, DogReqDto dogReqDto) {
@@ -113,8 +115,8 @@ public class DogService {
     public ResponseEntity getUserName(Long userId) {
 
         Optional<User> user = userRepository.findById(userId);
-        if (!user.isPresent()) {
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_ACCOUNT), HttpStatus.OK);
+        if (user.isEmpty()) {
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_USER), HttpStatus.OK);
         }
         User userA = user.get();
         String username = userA.getUsername();
@@ -149,15 +151,15 @@ public class DogService {
                 Document doc = documentBuilder.parse(is);
                 Element element = doc.getDocumentElement();
                 NodeList resultMsgNodeList = element.getElementsByTagName("resultMsg");
-                NodeList dogRegNoNodeList = element.getElementsByTagName("dogRegNo");
+                //NodeList dogRegNoNodeList = element.getElementsByTagName("dogRegNo");
 
                 for(int i = 0; i<resultMsgNodeList.getLength(); i++) {
                     Node item = resultMsgNodeList.item(i);
                     Node text = item.getFirstChild();
                     resultMsg = text.getNodeValue();
 
-                    Node dogRegNoItem = dogRegNoNodeList.item(i);
-                    dogRegNo = dogRegNoItem.getFirstChild().getNodeValue();
+                    //Node dogRegNoItem = dogRegNoNodeList.item(i);
+                    //dogRegNo = dogRegNoItem.getFirstChild().getNodeValue();
                 }
             }
         } catch (Exception e) {
@@ -167,10 +169,10 @@ public class DogService {
         if(!resultMsg.equals("NORMAL SERVICE.")) {
             return new ResponseEntity(NoDataResponse.response(status.INVALID_NO, "유효하지 않은 동물등록번호입니다."), HttpStatus.OK);
         }
-
+        System.out.println(result);
         // 동물등록번호 등록
         Optional<Dog> dog = dogRepository.findById(animalRegistrationReqDto.getDogId());
-        if(dog.isPresent()) {
+        if(dog.isEmpty()) {
             return new ResponseEntity(NoDataResponse.response(status.INVALID_DOGID, "유효하지 않은 dogId 입니다."), HttpStatus.OK);
         }
         Dog dogForRegistration = dog.get();
@@ -183,34 +185,39 @@ public class DogService {
     /* A3 : 키, 몸무게 등록 및 수정 - Heather */
     public ResponseEntity registerDogBodyInformation(DogBodyInformationDto dogBodyInfo) {
 
+        // 소유자 유효성 검사
+        Optional<User> user = userRepository.findById(dogBodyInfo.getModifiedBy());
+        if (user.isEmpty()) {
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_ACCOUNT), HttpStatus.OK);
+        }
+
         // 키와 몸무게가 둘 다 0일 경우 fail
-        if(dogBodyInfo.getHeight() == 0 && dogBodyInfo.getWeight() == 0) {
+        if(dogBodyInfo.getHeight() == 0.0f && dogBodyInfo.getWeight() == 0.0f) {
             return new ResponseEntity(NoDataResponse.response(status.EMPTY_VALUE, "키와 몸무게가 0입니다."), HttpStatus.OK);
         }
+        System.out.println("\n\n????? + " + dogBodyInfo.getDogId() + "\n\n");
         // 유효한 강아지인지 확인
         Optional<Dog> dog = dogRepository.findById(dogBodyInfo.getDogId());
         // 유효한 강아지가 아니라면 fail
-        if(dog.isPresent()) {
+        if(dog.isEmpty()) {
             return new ResponseEntity(NoDataResponse.response(status.INVALID_DOGID, "유효하지 않은 dogId 입니다."), HttpStatus.OK);
         }
         Dog dogForUpdate = dog.get();
+
         // 등록된 키, 몸무게 확인
-        float height = dogForUpdate.getHeight();
+        //float height = dogForUpdate.getHeight();
         float weight = dogForUpdate.getWeight();
 
-        // 이미 등록되어 있었다면 dog_log에 저장
-        if(height == 0.0f && weight != 0.0f) { // 키만 등록되어 있는 경우
+        // 키나 몸무게가 이전에 등록되어 있었다면 dog_log에 저장
+        if(weight != 0.0f) { // height != 0.0f ||
             DogLog dogLog = new DogLog(dogBodyInfo);
+            dogLogRepository.save(dogLog);
         }
-        else if(height != 0.0f && weight == 0.0f) { // 몸무게만 등록되어 있는 경우
 
-        }
-        else {
-
-        }
         // 새로 받은 키, 몸무게 정보 등록
-        dog.get().setHeight(dogBodyInfo.getHeight());
-        dog.get().setWeight(dogBodyInfo.getWeight());
+        // dogForUpdate.setHeight(dogBodyInfo.getHeight());
+        dogForUpdate.setWeight(dogBodyInfo.getWeight());
+        dogRepository.save(dogForUpdate);
 
         return new ResponseEntity(NoDataResponse.response(status.SUCCESS, "키, 몸무게 등록 성공"), HttpStatus.OK);
     }

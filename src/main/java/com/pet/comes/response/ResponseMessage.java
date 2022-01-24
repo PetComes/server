@@ -21,4 +21,5 @@ public class ResponseMessage {
     public String EXPIRED_TOKEN = "REFRESH TOKEN이 만료되었습니다. 새롭게 로그인 해주세요.";
     public String EXISTED_NICKNAME = "이미 닉네임이 존재합니다. 다른 닉네임을 작성해 주세요.";
     public String NO_ALARMS = "알림이 없습니다.";
+    public String INVALID_USER = "유효하지 않은 userId 입니다.";
 }
