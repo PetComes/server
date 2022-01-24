@@ -209,9 +209,9 @@ public class DogService {
 
         // 몸무게가 이전에 등록되어 있었다면 dog_log에 저장
         if(weight != 0.0f) {
-            DogLog dogLog = new DogLog(dogBodyInfo);
-            dogLog.setDog(dogForUpdate); // dogLog - dog 매핑
-            dogForUpdate.addDogLog(dogLog); // dog - dogLog 매핑
+            DogLog dogLog = new DogLog(dogBodyInfo,dogForUpdate); // dogLog -> dog 매핑
+//            dogLog.setDog(dogForUpdate); // dogLog - dog 매핑
+            dogForUpdate.addDogLog(dogLog); // dog -> dogLog 매핑
 
             dogLogRepository.save(dogLog);
         }
