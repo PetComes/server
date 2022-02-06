@@ -27,6 +27,7 @@ public class Status {
     public int INVALID_NO = 311;
     public int NOTHING = 312;
     public int NOT_ACHIEVED = 313;
+    public int TAKEN_BADGE = 314;
 
     public int DB_INVALID_VALUE = 500;
     public int DB_NO_DATA = 501;

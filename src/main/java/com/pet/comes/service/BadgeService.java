@@ -83,7 +83,16 @@ public class BadgeService {
                 return new ResponseEntity(DataResponse.response(status.SUCCESS, badgeId + "번 배지 획득", badgeId), HttpStatus.OK);
             }
             else { // 조건 미달성
-                return new ResponseEntity(NoDataResponse.response(status.NOT_ACHIEVED, badgeId + "번 배지 조건 미달"), HttpStatus.OK);
+                // 혹시 이 배지가 활성화되어 있으면 다시 수거해야 한다.
+                Optional<ActivatedBadge> activatedBadge = badgeRepository.findAllByUserIdAndBadgeId(userId, badgeId);
+                if(activatedBadge.isEmpty() || activatedBadge.get().getStatus() == BadgeStatus.CANCELED) { // 활성화되어있지 않음
+                    return new ResponseEntity(NoDataResponse.response(status.NOT_ACHIEVED, badgeId + "번 배지 조건 미달"), HttpStatus.OK);
+                }
+                // 수거하기
+                ActivatedBadge needToModify = activatedBadge.get();
+                needToModify.setStatus(BadgeStatus.CANCELED);
+                badgeRepository.save(needToModify);
+                return new ResponseEntity(NoDataResponse.response(status.TAKEN_BADGE, badgeId + "번 배지 조건 미달로 배지가 회수되었습니다."), HttpStatus.OK);
             }
         }
         else if(badgeId == 2) { // 모범견주 : 강아지등록번호 등록
@@ -104,6 +113,7 @@ public class BadgeService {
                 return new ResponseEntity(DataResponse.response(status.SUCCESS, badgeId + "번 배지 획득", badgeId), HttpStatus.OK);
             }
             else { // 조건 미달성
+                // 지금은 반려동물등록번호를 한 번 등록하면 삭제하지 못하므로 이 배지 회수X
                 return new ResponseEntity(NoDataResponse.response(status.NOT_ACHIEVED, badgeId + "번 배지 조건 미달"), HttpStatus.OK);
             }
         }
