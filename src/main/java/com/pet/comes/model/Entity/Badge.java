@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -25,5 +26,7 @@ public class Badge extends Timestamped {
     @Column(columnDefinition = "TEXT")
     private String imageUrl;
 
+    @OneToMany(mappedBy = "badge")
+    private List<ActivatedBadge> activatedBadgeList;
 
 }

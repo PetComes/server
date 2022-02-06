@@ -34,6 +34,7 @@ spring:
       hibernate:
         show_sql: true   # sql문 로그 찍어주기
         format_sql: true # 로그 좀 이쁘게 찍어주기
+        use_sql_comments: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://petcomes.cnccg3mescgh.ap-northeast-2.rds.amazonaws.com:3306/petcomes?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul

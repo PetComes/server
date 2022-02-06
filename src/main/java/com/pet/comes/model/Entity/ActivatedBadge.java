@@ -7,6 +7,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -16,12 +18,16 @@ import java.time.LocalDateTime;
 public class ActivatedBadge {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // IDENTITY : 데이터베이스에 위임( MYSQL )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    private String badgeId;
+    // private String badgeId;
 
-    private String status; // 상태 예시 알려주세요 ~
+    @ManyToOne
+    @JoinColumn(referencedColumnName = "id", name = "badge_id")
+    private Badge badge;
+
+    private String status; // 상태 예시 알려주세요 ~ : 활성화 상태일 때(NORMAL), 등록취소되었을 때(CANCELED)
 
     @LastModifiedDate
     private LocalDateTime activatedAt; // Time
