@@ -21,7 +21,7 @@ public class Badge extends Timestamped {
     private String title;
 
     @Column(columnDefinition = "TEXT")
-    private String activeCondition; // 활성 조건 설명
+    private String activeCondition; // 활성 조건 설명 : 유저가 '조건보기' 등을 눌렀을 때 표시해줘야 함
 
     @Column(columnDefinition = "TEXT")
     private String imageUrl;

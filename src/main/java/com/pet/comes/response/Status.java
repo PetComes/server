@@ -25,6 +25,8 @@ public class Status {
     public int EMPTY_VALUE = 309;
     public int TOO_LONG_VALUE = 310;
     public int INVALID_NO = 311;
+    public int NOTHING = 312;
+    public int NOT_ACHIEVED = 313;
 
     public int DB_INVALID_VALUE = 500;
     public int DB_NO_DATA = 501;
