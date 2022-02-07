@@ -17,6 +17,7 @@ public class DiaryListRepDto {
     private String text;
     private int commentCount;
     private int pinCount;
+    private int isPublic;
     private Long diaryId;
 //    public DiaryListRepDto(String createdAt, String text, int commentCount, int pinCount) {
 //        this.username =
