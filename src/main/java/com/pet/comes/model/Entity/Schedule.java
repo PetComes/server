@@ -32,7 +32,7 @@ public class Schedule  {
     private int iconId;
 
     @CreatedDate
-    private LocalDateTime time ;
+    private LocalDateTime registeredAt;
 
     @Column(columnDefinition = "TINYINT", length = 1)
     private int alsoMonthly; // '월간에 노출하기=1 , 일간에서만 보기=0',

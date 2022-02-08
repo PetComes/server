@@ -33,6 +33,8 @@ public class Status {
     public int PIN_UNREGISTERED = 317;
     public int BADGE_ACHIEVEMENT_CONDITION_UNREGISTERED = 318;
     public int DIARY_UNREGISTERED = 318;
+    public int COMMENT_UNREGISTERED = 319;
+    public int SCHEDULE_UNREGISTERED = 320;
 
     public int DB_INVALID_VALUE = 500;
     public int DB_NO_DATA = 501;

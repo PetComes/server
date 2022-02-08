@@ -9,6 +9,7 @@ import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
 import com.pet.comes.response.Status;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.jni.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
@@ -29,6 +30,10 @@ public class BadgeService {
     private final DiaryRepository diaryRepository;
     private final BadgeListRepository badgeListRepository;
     private final PinRepository pinRepository;
+    private final CommentRepository commentRepository;
+    private final ScheduleRepository scheduleRepository;
+
+    private final int ICON_ID_OF_GROOMING = 1;
 
     /*
      * B1 : 이전에 획득한 배지 전부 조회하기
@@ -126,7 +131,7 @@ public class BadgeService {
                 return takeTheBadgeIfActivated(userId, badgeId);
             }
         }
-        else if(badgeId == 5) { /* 꿀팁콜렉터 : 핀한 게시글 50개 이상 */
+        else if(badgeId == 5) { /* 꿀팁콜렉터 : 핀한 게시글 총 50개 이상 */
             List<Pin> pinList = user.get().getPins();
             if(pinList.size() == 0) {
                 return new ResponseEntity(NoDataResponse.response(status.PIN_UNREGISTERED, badgeId + "번 배지 조건 미달 : 핀한 게시글 없음"), HttpStatus.OK);
@@ -138,10 +143,10 @@ public class BadgeService {
                 return takeTheBadgeIfActivated(userId, badgeId);
             }
         }
-        else if(badgeId == 6) { /* 고마운 분 : 1:1 문의를 많이 주시는 고마우신 분 */
+        else if(badgeId == 6) { /* 고마운 분 : 1:1 문의를 많이 주시는 고마운 분 */
             return new ResponseEntity(NoDataResponse.response(status.BADGE_ACHIEVEMENT_CONDITION_UNREGISTERED, badgeId + "번 배지 조건 미등록 : ERROR"), HttpStatus.OK);
         }
-        else if(badgeId == 7) { /* 베스트 셀러 : 일주일동안 핀을 100개 이상 받은 다이어리가 하나 이상 */
+        else if(badgeId == 7) { /* 베스트 셀러 : 등록 시점부터 일주일동안 핀을 100개 이상 받은 다이어리가 하나 이상 */
             List<Diary> diaryList = diaryRepository.findByUserId(userId);
             if(diaryList.size() == 0) {
                 return new ResponseEntity(NoDataResponse.response(status.DIARY_UNREGISTERED, badgeId + "번 배지 조건 미달 : 다이어리 없음"), HttpStatus.OK);
@@ -159,7 +164,6 @@ public class BadgeService {
                     break;
                 }
             }
-
             if(doesMeetTheCondition) {
                 return giveTheBadge(userId, badgeId);
             }
@@ -167,10 +171,12 @@ public class BadgeService {
                 return takeTheBadgeIfActivated(userId, badgeId);
             }
         }
-        else if(badgeId == 8) { /* 나는야인싸 : 공개 다이어리 작성 일주일에 5개 이상 */
-            List<Diary> diaryList = diaryRepository.findByUserId(userId);
+        else if(badgeId == 8) { /* 나는야인싸 : 공개 다이어리 작성 최근 일주일동안 5개 이상 */
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime end = start.minusDays(7);
+            List<Diary> diaryList = diaryRepository.findByUserIdAndRegisteredAtBetween(userId, end, start);
             if(diaryList.size() == 0) {
-                return new ResponseEntity(NoDataResponse.response(status.DIARY_UNREGISTERED, badgeId + "번 배지 조건 미달 : 다이어리 없음"), HttpStatus.OK);
+                return new ResponseEntity(NoDataResponse.response(status.DIARY_UNREGISTERED, badgeId + "번 배지 조건 미달 : 최근 일주일동안 작성된 다이어리 없음"), HttpStatus.OK);
             }
             int diaryCounter = 0;
             for(Diary diary : diaryList) {
@@ -182,6 +188,83 @@ public class BadgeService {
                 }
             }
             if(diaryCounter >= 5) {
+                return giveTheBadge(userId, badgeId);
+            }
+            else {
+                return takeTheBadgeIfActivated(userId, badgeId);
+            }
+        }
+        else if(badgeId == 9) { /* 모험가 : 최근 한달 기준 다이어리 장소태그 5개이상 */
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime end = start.minusMonths(1);
+            List<Diary> diaryList = diaryRepository.findByUserIdAndRegisteredAtBetween(userId, end, start);
+            if(diaryList.size() == 0) {
+                return new ResponseEntity(NoDataResponse.response(status.DIARY_UNREGISTERED, badgeId + "번 배지 조건 미달 : 최근 한달동안 장소 태그한 다이어리 없음"), HttpStatus.OK);
+            }
+            int diaryCounter = 0;
+            for(Diary diary : diaryList) {
+                if(diaryCounter >= 5) { // 다이어리가 너무 많은 경우 성능 저하를 막기 위해 기준치까지만 탐색하도록 함
+                    break;
+                }
+                if(diary.getAddress() != null) {
+                    diaryCounter++;
+                }
+            }
+            if(diaryCounter >= 5) {
+                return giveTheBadge(userId, badgeId);
+            }
+            else {
+                return takeTheBadgeIfActivated(userId, badgeId);
+            }
+        }
+        else if(badgeId == 10) { /* 댓글천사 : 최근 일주일동안 댓글 100개 이상 */
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime end = start.minusDays(7);
+            List<Comment> commentList = commentRepository.findByUserIdAndCommentedAtBetween(userId, end, start); // 여기 생각대로 될지 테스트 필요!!!!
+            if(commentList.size() == 0) {
+                return new ResponseEntity(NoDataResponse.response(status.COMMENT_UNREGISTERED, badgeId + "번 배지 조건 미달 : 최근 일주일동안 댓글 없음"), HttpStatus.OK);
+            }
+            else if(commentList.size() >= 100) {
+                return giveTheBadge(userId, badgeId);
+            }
+            else {
+                return takeTheBadgeIfActivated(userId, badgeId);
+            }
+        }
+        else if(badgeId == 11) { /* 비지도그 : 최근 한달동안 일정 5개 이상 등록 */
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime end = start.plusMonths(1);
+            List<Schedule> scheduleList = scheduleRepository.findByUserIdAndRegisteredAtBetween(userId, end, start);
+            if(scheduleList.size() == 0) {
+                return new ResponseEntity(NoDataResponse.response(status.SCHEDULE_UNREGISTERED, badgeId + "번 배지 조건 미달 : 최근 한달동안 등록된 일정 없음"), HttpStatus.OK);
+            }
+            else if(scheduleList.size() >= 5) {
+                return giveTheBadge(userId, badgeId);
+            }
+            else {
+                return takeTheBadgeIfActivated(userId, badgeId);
+            }
+        }
+        else if(badgeId == 12) { /* 패셔니스타 : 최근 한달기준 2회이상 미용시 */
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime end = start.plusMonths(1);
+            List<Schedule> scheduleList = scheduleRepository.findByUserIdAndRegisteredAtBetween(userId, end, start);
+            if(scheduleList.size() == 0) {
+                return new ResponseEntity(NoDataResponse.response(status.SCHEDULE_UNREGISTERED, badgeId + "번 배지 조건 미달 : 최근 한달동안 등록된 일정 없음"), HttpStatus.OK);
+            }
+
+            int grooming = 0;
+            boolean canActivate = false;
+            for(Schedule schedule : scheduleList) {
+                if(grooming >= 2) {
+                    canActivate = true;
+                    break;
+                }
+                if(schedule.getIconId() == ICON_ID_OF_GROOMING) {
+                    grooming++;
+                }
+            }
+            if(canActivate) {
                 return giveTheBadge(userId, badgeId);
             }
             else {
