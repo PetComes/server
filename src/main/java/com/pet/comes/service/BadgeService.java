@@ -14,6 +14,7 @@ import com.pet.comes.response.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -58,7 +59,7 @@ public class BadgeService {
             return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_USER), HttpStatus.OK);
         }
 
-        if(badgeId == 1) { // 신인상 : 가입 후 3일 이내 다이어리 작성
+        if(badgeId == 1) { /* 신인상 : 가입 후 3일 이내 다이어리 작성 */
             LocalDateTime start = user.get().getCreatedAt();
             LocalDateTime end = start.plusDays(3);
             List<Diary> diaryList = diaryRepository.findByUserIdAndRegisteredAtBetween(userId, start, end);
@@ -68,62 +69,101 @@ public class BadgeService {
 
             boolean canActivate = false;
             for(Diary diary : diaryList) {
-                if(diary.getIsDeleted() == 0) { // 하나라도 있으면 가능
+                if(diary.getIsDeleted() == 0) { // 하나라도 있으면 조건 달성
                     canActivate = true;
                     break;
                 }
             }
-            if(canActivate) { // 3일 내 작성한 다이어리가 하나라도 있으면 배지 활성화시키고, 있다고 응답
-                Optional<Badge> badge = badgeListRepository.findById(badgeId);
-                if(badge.isEmpty()) {
-                    return new ResponseEntity(NoDataResponse.response(status.DB_NO_DATA, "DB 배지조회 에러"), HttpStatus.OK);
-                }
-                ActivatedBadge activatedBadge = new ActivatedBadge(userId, badge.get(), BadgeStatus.ACTIVATED, LocalDateTime.now());
-                badgeRepository.save(activatedBadge);
-                return new ResponseEntity(DataResponse.response(status.SUCCESS, badgeId + "번 배지 획득", badgeId), HttpStatus.OK);
+            if(canActivate) { // 3일 내 작성한 다이어리가 하나라도 있으면 조건 달성
+                return giveTheBadge(userId, badgeId);
             }
-            else { // 조건 미달성
-                // 혹시 이 배지가 활성화되어 있으면 다시 수거해야 한다.
-                Optional<ActivatedBadge> activatedBadge = badgeRepository.findAllByUserIdAndBadgeId(userId, badgeId);
-                if(activatedBadge.isEmpty() || activatedBadge.get().getStatus() == BadgeStatus.CANCELED) { // 활성화되어있지 않음
-                    return new ResponseEntity(NoDataResponse.response(status.NOT_ACHIEVED, badgeId + "번 배지 조건 미달"), HttpStatus.OK);
-                }
-                // 수거하기
-                ActivatedBadge needToModify = activatedBadge.get();
-                needToModify.setStatus(BadgeStatus.CANCELED);
-                badgeRepository.save(needToModify);
-                return new ResponseEntity(NoDataResponse.response(status.TAKEN_BADGE, badgeId + "번 배지 조건 미달로 배지가 회수되었습니다."), HttpStatus.OK);
+            else { // 조건 미달 -> 배지가 활성화되어 있으면 배지 회수, 아니면 조건 미달 응답
+                return takeTheBadgeIfActivated(userId, badgeId);
             }
         }
-        else if(badgeId == 2) { // 모범견주 : 강아지등록번호 등록
-            // 가족 id 조회, 강아지 조회
+        else if(badgeId == 2) { /* 모범견주 : 강아지등록번호 등록 */
+            // 강아지 조회
             List<Dog> dogList = user.get().getFamily().getDogs();
             if(dogList.size() == 0) {
-                return new ResponseEntity(NoDataResponse.response(status.INVALID_DOGID, message.NO_DOG), HttpStatus.OK);
+                return new ResponseEntity(NoDataResponse.response(status.INVALID_DOGID, badgeId + "번 배지 조건 미달 : 반려견 미등록"), HttpStatus.OK);
             }
-            // 강아지등록번호 등록여부 확인
+
             boolean isRegistered = false;
             for(Dog dog : dogList) {
-                if(dog.getRegisterationNo() != null) {
+                if(dog.getRegisterationNo() != null) { // 강아지등록번호 등록여부 확인
                     isRegistered = true;
                     break;
                 }
             }
             if(isRegistered) { // 조건 달성
-                return new ResponseEntity(DataResponse.response(status.SUCCESS, badgeId + "번 배지 획득", badgeId), HttpStatus.OK);
+                return giveTheBadge(userId, badgeId);
             }
-            else { // 조건 미달성
-                // 지금은 반려동물등록번호를 한 번 등록하면 삭제하지 못하므로 이 배지 회수X
-                return new ResponseEntity(NoDataResponse.response(status.NOT_ACHIEVED, badgeId + "번 배지 조건 미달"), HttpStatus.OK);
+            else { // 조건 미달
+                return takeTheBadgeIfActivated(userId, badgeId);
             }
         }
-        /*
-        else if(badgeId == 3) {
-
+        else if(badgeId == 3) { /* 다둥이 부모 : 반려견 3마리 이상 등록 */
+            // 강아지 조회
+            List<Dog> dogList = user.get().getFamily().getDogs();
+            if(dogList.size() == 0) {
+                return new ResponseEntity(NoDataResponse.response(status.INVALID_DOGID, badgeId + "번 배지 조건 미달 : 반려견 미등록"), HttpStatus.OK);
+            }
+            else if(dogList.size() >=3 ) {
+                return giveTheBadge(userId, badgeId);
+            }
+            else {
+                return takeTheBadgeIfActivated(userId, badgeId);
+            }
         }
-        */
+        else if(badgeId == 4) { /* 대가족 : 4인 이상 가족 등록 */
+            Family family = user.get().getFamily();
+            List<User> userList = userRepository.findAllByFamily(family);
+            if(userList.size() == 0) {
+                return new ResponseEntity(NoDataResponse.response(status.FAMILY_UNREGISTERED, badgeId + "번 배지 조건 미달 : 가족 미등록"), HttpStatus.OK);
+            }
+            else if(userList.size() >= 4) {
+                return giveTheBadge(userId, badgeId);
+            }
+            else {
+                return takeTheBadgeIfActivated(userId, badgeId);
+            }
+        }
+        else if(badgeId == 5) { /* 꿀팁콜렉터 : 핀한 게시글 50개 이상 */
+            List<Pin> pinList = user.get().getPins();
+            if(pinList.size() == 0) {
+                return new ResponseEntity(NoDataResponse.response(status.PIN_UNREGISTERED, badgeId + "번 배지 조건 미달 : 핀한 게시글 없음"), HttpStatus.OK);
+            }
+            else if(pinList.size() >= 50) {
+                return giveTheBadge(userId, badgeId);
+            }
+            else {
+                return takeTheBadgeIfActivated(userId, badgeId);
+            }
+        }
         else { // 없는 배지를 조회하려고 하는 경우
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "유효하지 않은 badgeId입니다."), HttpStatus.OK);
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_BADGE, "유효하지 않은 badgeId입니다."), HttpStatus.OK);
         }
+    }
+
+    private ResponseEntity giveTheBadge(Long userId, Long badgeId) {
+        Optional<Badge> badge = badgeListRepository.findById(badgeId);
+        if(badge.isEmpty()) {
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_BADGE, "유효하지 않은 badgeId 입니다."), HttpStatus.OK);
+        }
+        ActivatedBadge activatedBadge = new ActivatedBadge(userId, badge.get(), BadgeStatus.ACTIVATED, LocalDateTime.now());
+        badgeRepository.save(activatedBadge);
+        return new ResponseEntity(DataResponse.response(status.SUCCESS, badgeId + "번 배지 획득", badgeId), HttpStatus.OK);
+
+    }
+
+    private ResponseEntity takeTheBadgeIfActivated(Long userId, Long badgeId) {
+        Optional<ActivatedBadge> activatedBadge = badgeRepository.findAllByUserIdAndBadgeId(userId, badgeId);
+        if(activatedBadge.isEmpty() || activatedBadge.get().getStatus() != BadgeStatus.CANCELED) {
+            return new ResponseEntity(NoDataResponse.response(status.NOT_ACHIEVED, badgeId + "번 배지 조건 미달"), HttpStatus.OK);
+        }
+        ActivatedBadge needToModify = activatedBadge.get();
+        needToModify.setStatus(BadgeStatus.CANCELED);
+        badgeRepository.save(needToModify);
+        return new ResponseEntity(NoDataResponse.response(status.TAKEN_BADGE, badgeId + "번 배지 : 조건 미달로 배지가 회수되었습니다."), HttpStatus.OK);
     }
 }

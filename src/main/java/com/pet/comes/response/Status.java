@@ -28,6 +28,9 @@ public class Status {
     public int NOTHING = 312;
     public int NOT_ACHIEVED = 313;
     public int TAKEN_BADGE = 314;
+    public int INVALID_BADGE = 315;
+    public int FAMILY_UNREGISTERED = 316;
+    public int PIN_UNREGISTERED = 317;
 
     public int DB_INVALID_VALUE = 500;
     public int DB_NO_DATA = 501;
