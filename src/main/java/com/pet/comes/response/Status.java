@@ -31,6 +31,8 @@ public class Status {
     public int INVALID_BADGE = 315;
     public int FAMILY_UNREGISTERED = 316;
     public int PIN_UNREGISTERED = 317;
+    public int BADGE_ACHIEVEMENT_CONDITION_UNREGISTERED = 318;
+    public int DIARY_UNREGISTERED = 318;
 
     public int DB_INVALID_VALUE = 500;
     public int DB_NO_DATA = 501;
