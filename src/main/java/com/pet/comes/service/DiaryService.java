@@ -265,7 +265,7 @@ public class DiaryService {
         }
 
         // pin 으로 등록되어 있지 않을 때
-        Pin pin = new Pin(user, diaryId);  // 핀 생성 ( pin -> user 관계 )
+        Pin pin = new Pin(user, diaryId);  // 핀 생성 ( pin -> user 관계  )
         userPinList.add(pin); // 핀 추가  ( user -> pin 관계 )
 
         pinRepository.save(pin); // DB에 pin 추가

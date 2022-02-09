@@ -53,18 +53,18 @@ public class CommentService {
 
         Optional<Diary> isExist = diaryRepository.findById(commentReqDto.getDiaryId());
         if (!isExist.isPresent())
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NO_DIARY + "해당 유저가 없습니다."), HttpStatus.OK);
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NO_DIARY ), HttpStatus.OK);
 
         Diary diary = isExist.get();
         int commentsCnt = diary.getHowManyComments();
-        diary.setHowManyComments(commentsCnt + 1);
+        diary.setHowManyComments(commentsCnt + 1); // 댓글 카운트 하나 증가
 
         User user = isExistUser.get();
         Comment comment = new Comment(commentReqDto, user);
         commentRepository.save(comment);
 
         /* 댓글 작성시 alarm 등록 */
-        Alarm alarm = new Alarm(user,1,0,comment.getCommentId(),diary); // type 1 : 댓글 , 0 : 핀하기 / isChecked 1: 읽음, 0: 읽지 않음
+        Alarm alarm = new Alarm(user,1,0,comment.getCommentId(),diary); // type = 1 : 댓글 / isChecked = 0 : 읽지 않음
         alarmRepository.save(alarm);
 
         if (comment.getCommentCommentId() != null) // 대댓글 달기라면
