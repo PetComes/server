@@ -278,7 +278,7 @@ public class DiaryService {
         System.out.println("size : "+isExistAlarm.size());
         if (isExistAlarm.size() == 0) { // 해당 다이어리에대한 핀하기를 똑같은 유저가 비중복적으로 누를때만 db에 알람 만들어주기
             System.out.println("==== 중복알람 x, 알람 만들기 ====");
-            Alarm alarm = new Alarm(user, 0, 0, user.getId(), diary); // type = 0 : 핀하기 / isChecked = 0 : 읽지 않음
+            Alarm alarm = new Alarm(diary.getUser(), 0, 0, user.getId(), diary); // 해당 다이어리의 주인 ,type = 0 : 핀하기 / isChecked = 0 : 읽지 않음
             alarmRepository.save(alarm);
             System.out.println("==== 알람만들기 success ==== ");
         }

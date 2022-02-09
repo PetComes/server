@@ -64,7 +64,7 @@ public class CommentService {
         commentRepository.save(comment);
 
         /* 댓글 작성시 alarm 등록 */
-        Alarm alarm = new Alarm(user,1,0,comment.getCommentId(),diary); // type = 1 : 댓글 / isChecked = 0 : 읽지 않음
+        Alarm alarm = new Alarm(diary.getUser(),1,0,comment.getCommentId(),diary); // 해당 다이어리의 주인(알림을 받을 유저),type = 1 : 댓글 / isChecked = 0 : 읽지 않음
         alarmRepository.save(alarm);
 
         if (comment.getCommentCommentId() != null) // 대댓글 달기라면

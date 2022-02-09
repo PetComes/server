@@ -135,14 +135,14 @@ public class UserService {
 
             // 다이어리 댓글인지 핀인지 확인
             if (alarm.getType() == 1) { // 1: 댓글
-                Optional<Comment> isExist = commentRepository.findById(alarm.getContentId()); // comment_id로 찾기
+                Optional<Comment> isExist = commentRepository.findById(alarm.getContentId()); // type == 1 일때 content_id == comment_id
 
                 if (!isExist.isPresent())  // 댓글이 없어졌을 때
                     messageStr = "댓글이 삭제되거나 게시물이 없습니다.";
-                else {
+                else { // 댓글이 존재할 때
                     // comment -> user 정보 찾기
-                    Comment comment = isExist.get();
-                    User usertmp = comment.getUser();// 해당 댓글과 관련있는 유저
+                    Comment comment = isExist.get(); // 댓글 가져오기
+                    User usertmp = comment.getUser(); // 해당 댓글을 작성한 유저
                     imageurl = usertmp.getImageUrl();
                     nickname = usertmp.getNickname();
                     messageStr = nickname + "님이 회원님의 게시글에 댓글을 달았습니다.";
