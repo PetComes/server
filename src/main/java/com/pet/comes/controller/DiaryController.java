@@ -23,8 +23,8 @@ public class DiaryController {
 
     /* D1 : 강아지별 다이어리 조회 API (미완성) : 현재 공개/비공개 글 상관없이 전부 다 조회 -- Tony */
     @GetMapping("/{userId}/{nickName}/{dogName}")
-    public ResponseEntity dogDiaryList(@PathVariable Long userId,@PathVariable String nickName, @PathVariable String dogName) {
-        return diaryService.dogDiaryList(userId,nickName, dogName);
+    public ResponseEntity dogDiaryList(@PathVariable Long userId, @PathVariable String nickName, @PathVariable String dogName) {
+        return diaryService.dogDiaryList(userId, nickName, dogName);
     }
 
     /* D2 다이어리 작성 API -- Tony */

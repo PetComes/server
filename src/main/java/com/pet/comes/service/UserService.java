@@ -158,7 +158,7 @@ public class UserService {
                     messageStr= "존재하지 않는 계정입니다.";
                 User userParam = isUserExist.get();
 
-                Optional<Pin> isExist = pinRepository.findByUserAndDiaryId(userParam,alarm.getDiary()); // 핀을 영속성컨텍스트에서 찾기
+                Optional<Pin> isExist = pinRepository.findByUserAndDiaryId(userParam,alarm.getDiary().getId()); // 핀을 영속성컨텍스트에서 찾기
                 if (!isExist.isPresent())  // 핀이 db상에서 오류 났을 때 ?
                     messageStr = "핀한 다이어리가 존재하지 않습니다.";
 
