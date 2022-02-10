@@ -1,4 +1,4 @@
-package com.pet.comes.config.securiy.component;
+package com.pet.comes.config.component;
 
 
 import lombok.Getter;

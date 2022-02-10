@@ -2,7 +2,7 @@ package com.pet.comes.config.securiy;
 
 // import 생략
 
-import com.pet.comes.config.securiy.component.CommonEncoder;
+import com.pet.comes.config.component.CommonEncoder;
 import com.pet.comes.service.CustomUserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
