@@ -33,6 +33,9 @@ dependencies {
     implementation 'javax.mail:javax.mail-api:1.6.2'
     // spring cloud starter aws
     implementation ('org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE')
+    // https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui
+    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+
 }
 
 test {

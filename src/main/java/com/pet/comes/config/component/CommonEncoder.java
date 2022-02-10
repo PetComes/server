@@ -1,4 +1,4 @@
-package com.pet.comes.config.securiy.component;
+package com.pet.comes.config.component;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;

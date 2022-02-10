@@ -1,9 +1,9 @@
 package com.pet.comes.controller;
 
-import com.pet.comes.dto.Join.UserJoinDto;
-import com.pet.comes.model.Entity.User;
-import com.pet.comes.repository.UserRepository;
 import com.pet.comes.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +23,14 @@ public class UserController {
 //    public ResponseEntity signUp(@RequestBody UserJoinDto userJoinDto) {
 //        return userService.signUp(userJoinDto);
 //    }
+
+    @Operation(summary = "test hello", description = "hello api example")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK !!"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST !!"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND !!"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR !!")
+    })
 
     /* H1 : 내 계정정보 조회 --Tony */
     @GetMapping("account/{id}")
@@ -61,7 +69,7 @@ public class UserController {
         return userService.validNickname(nickname);
     }
 
-    /* S10 : 클릭한 계정 프로필 확인하기 --Tony */
+    /* S9 : 클릭한 계정 프로필 확인하기 --Tony */
     @GetMapping("profile/{userName}")
     public ResponseEntity getUserProfile(@PathVariable String userName) {
         return userService.getUserProfile(userName);

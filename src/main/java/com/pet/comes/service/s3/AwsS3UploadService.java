@@ -4,7 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.pet.comes.config.securiy.component.S3Component;
+import com.pet.comes.config.component.S3Component;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
