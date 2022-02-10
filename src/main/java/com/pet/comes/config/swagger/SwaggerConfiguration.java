@@ -24,7 +24,7 @@ public class SwaggerConfiguration {
         return new Docket(DocumentationType.OAS_30)
                 .useDefaultResponseMessages(false)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.example.springswagger.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.pet.comes.config.swagger"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo());
@@ -33,7 +33,7 @@ public class SwaggerConfiguration {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("Practice Swagger")
-                .description("practice swagger config")
+                .description("practice swagger config--Tony")
                 .version("3.0")
                 .build();
     }
