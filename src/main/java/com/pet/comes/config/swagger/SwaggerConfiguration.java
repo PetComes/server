@@ -9,6 +9,7 @@ import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /*
 *[참고] https://bcp0109.tistory.com/326
@@ -18,23 +19,29 @@ import springfox.documentation.spring.web.plugins.Docket;
 * paths: apis 에 있는 API 중 특정 path 를 선택
 * apiInfo:Swagger UI 로 노출할 정보*/
 @Configuration
+@EnableSwagger2
 public class SwaggerConfiguration {
+
+
     @Bean
-    public Docket api() { // Swagger 설정
-        return new Docket(DocumentationType.OAS_30)
+    public Docket allApi() { // Swagger 설정
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("Swagger Test")
                 .useDefaultResponseMessages(false)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.pet.comes.config.swagger"))
+                .apis(RequestHandlerSelectors.any())
+//                .apis(RequestHandlerSelectors.basePackage("com.pet.comes.config.swagger"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo());
+
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Practice Swagger")
-                .description("practice swagger config--Tony")
-                .version("3.0")
+                .title("Petcomes API")
+                .description("펫컴즈 api ")
+                .version("1.0")
                 .build();
     }
 }

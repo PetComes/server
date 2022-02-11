@@ -34,8 +34,11 @@ dependencies {
     // spring cloud starter aws
     implementation ('org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE')
     // https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui
-    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+//    implementation 'io.springfox:springfox-boot-starter:3.0.0'
 
+    // https://www.youtube.ㄹcom/watch?v=BmfrvbUH-YQ
+    implementation 'io.springfox:springfox-swagger2:2.9.2'
+    implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 }
 
 test {
