@@ -12,7 +12,7 @@ spring:
       max-request-size: 10MB
 
 server:
-  port: 8082
+  port: 8081
 
 ---
 
@@ -41,7 +41,7 @@ spring:
     username: petcomes
     password: petcomes
   jwt:
-    secret : eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJKaWhvQGdtYWlsLmNvbSIsInJvbGVzIjpbIlVTRVIiXSwiaWF0IjoxNjM3OTQ5ODUwLCJleHAiOjE2Mzc5NTM0NTB9.9cxwL02Dy3IWhIXPULbY49Pe4vdlgnOqXpHnBeRNeuQ
+    secret: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJKaWhvQGdtYWlsLmNvbSIsInJvbGVzIjpbIlVTRVIiXSwiaWF0IjoxNjM3OTQ5ODUwLCJleHAiOjE2Mzc5NTM0NTB9.9cxwL02Dy3IWhIXPULbY49Pe4vdlgnOqXpHnBeRNeuQ
   security:
     oauth2:
       client:
@@ -59,17 +59,17 @@ spring:
             token_uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user_name_attribute: id
-  #mail:
-   # host: smtp.gmail.com
-    #port: 587
-    #username: {  }
-    #password: {  }
-    #properties:
-     # mail:
-      #  smtp:
-       #   auth: true
-        #  starttls:
-         #   enable: true
+          #mail:
+          # host: smtp.gmail.com
+          #port: 587
+          #username: {  }
+          #password: {  }
+          #properties:
+          # mail:
+          #  smtp:
+          #   auth: true
+          #  starttls:
+          #   enable: true
 
 ---
 
@@ -109,15 +109,15 @@ spring:
         format_sql: true
         use_sql_comments: true
         show_sql: true
-      #logging:
-       # level:
-        #  org:
-         #   hibernate:
+          #logging:
+          # level:
+          #  org:
+          #   hibernate:
           #    type:
-           #     descriptor:
-            #      sql: trace
-    #hibernate:
-     # ddl-auto: none
+          #     descriptor:
+        #      sql: trace
+      #hibernate:
+      # ddl-auto: none
     #show-sql: true
 
 

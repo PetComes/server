@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 
 import com.pet.comes.config.securiy.JwtTokenProvider;
-import com.pet.comes.config.securiy.component.CommonEncoder;
+import com.pet.comes.config.component.CommonEncoder;
 import com.pet.comes.dto.Join.UserJoinDto;
 import com.pet.comes.dto.Rep.SignResultRepDto;
 import com.pet.comes.dto.Req.RefreshTokenReqDto;

@@ -37,7 +37,7 @@ public class DiaryService {
 
 
     /* D1 : 강아지별 다이어리 조회 API -- Tony */
-    public ResponseEntity dogDiaryList(String nickName, String dogName) {
+    public ResponseEntity dogDiaryList(Long userId, String nickName, String dogName) {
 
         // 조회하고자하는 강아지의 견주 닉네임으로 유저 찾기
         Optional<User> isUser = userRepository.findByNickname(nickName);
@@ -66,28 +66,48 @@ public class DiaryService {
 
         List<DiaryListRepDto> diaryListRepDtoList = new ArrayList<>();
         String createdAt, text;
-        int commentCount, pinCount;
+        int commentCount, pinCount, isPublic;
 
+        if (userId == user.getId()) {// 유저 본인이 자신의 다이어리 조회할 때
+            for (Diary diary : diaryList) {
 
-        for (Diary diary : diaryList) {
-            createdAt = diary.getRegisteredAt().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-            text = diary.getText();
-//            List<Comment> comments = commentRepository.findAllByDiary(diary); // 임의의 값 : 아직 comment 관련 api 만들지않아서
-//            for(Comment comment : comments){
-//                if(!(comment==null))
-//                    commentCount++;
-//            }
-            commentCount = diary.getHowManyComments();
-            pinCount = diary.getHowManyPins();
-            DiaryListRepDto diaryListRepDto = new DiaryListRepDto(createdAt, text, commentCount, pinCount, diary.getId());
-            diaryListRepDtoList.add(diaryListRepDto);
+                createdAt = diary.getRegisteredAt().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+                text = diary.getText();
+                //            List<Comment> comments = commentRepository.findAllByDiary(diary); // 임의의 값 : 아직 comment 관련 api 만들지않아서
+                //            for(Comment comment : comments){
+                //                if(!(comment==null))
+                //                    commentCount++;
+                //            }
+                commentCount = diary.getHowManyComments();
+                pinCount = diary.getHowManyPins();
+                isPublic = diary.getIsPublic();
+                DiaryListRepDto diaryListRepDto = new DiaryListRepDto(createdAt, text, commentCount, pinCount, isPublic, diary.getId());
+                diaryListRepDtoList.add(diaryListRepDto);
+
+            }
+        } else { // 다른 유저가 다이어리를 조회할 때
+            for (Diary diary : diaryList) {
+                if (diary.getIsPublic() == 1) { // 공개인 다이어리만 보여주기
+                    createdAt = diary.getRegisteredAt().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+                    text = diary.getText();
+                    commentCount = diary.getHowManyComments();
+                    pinCount = diary.getHowManyPins();
+                    isPublic = diary.getIsPublic();
+                    DiaryListRepDto diaryListRepDto = new DiaryListRepDto(createdAt, text, commentCount, pinCount, isPublic, diary.getId());
+                    diaryListRepDtoList.add(diaryListRepDto);
+                }
+            }
         }
+
         return new ResponseEntity(DataResponse.response(status.SUCCESS, "다이어리들 불어오기 " + message.SUCCESS, diaryListRepDtoList), HttpStatus.OK);
 
     }
 
     /* D2 :다이어리 작성 API -- Tony */
     public ResponseEntity writeDiary(DiaryReqDto diaryReqDto) {
+        if (diaryReqDto.getUserId() == null) // userId 가 body에 없음
+            return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED + ": userId가 없습니다. body에 userId를 넣어주세요."), HttpStatus.OK);
+
         if (diaryReqDto.getText() == null) // Text data 자체가 없음
             return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED + ": 내용이 없습니다. Text를 작성해 주세요(2글자 이상)"), HttpStatus.OK);
         if (diaryReqDto.getText().length() < 2) // Text는 최소 글자 이상
@@ -211,49 +231,58 @@ public class DiaryService {
 
     /* 다이어리 핀 설정하기/해제하기 API -- Tony */
     public ResponseEntity pinDiary(PinReqDto pinReqDto) {
+
+        System.out.println("start test ==========");
         Optional<User> isExist = userRepository.findById(pinReqDto.getUserId());
+        // 유저 유효성 검사
         if (!isExist.isPresent())
             return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_ACCOUNT + "유저 정보가 없습니다. "), HttpStatus.OK);
 
-        User user = isExist.get();
-        List<Pin> userPinList = user.getPins();
-        Long diaryId = pinReqDto.getDiaryId();
+        User user = isExist.get(); // 유저 객체 가져와서
+        List<Pin> userPinList = user.getPins(); // 유저객체가 참조하고 있는 핀들 가져오기
+        Long diaryId = pinReqDto.getDiaryId(); // 해당 유저가 핀 설정/해제할 다이어리 id
         Optional<Diary> isDiary = diaryRepository.findById(diaryId);
+        // 다이어리 유효성 검사
         if (!isDiary.isPresent())
             return new ResponseEntity(NoDataResponse.response(status.INVALID_ID
                     , new ResponseMessage().NO_DIARY
             ), HttpStatus.NOT_FOUND);
 
-        Diary diary = isDiary.get();
+        Diary diary = isDiary.get(); // 다이어리 객체 가져오기
         int howManypins = diary.getHowManyPins();
 
 
-        // pin 으로 등록되어 있을 때
-        Optional<Pin> isExist2 = pinRepository.findByUserAndDiaryId(user, diary);
+        // pin 으로 이미 등록되어 있을 때 -> 핀 해제하기
+        Optional<Pin> isExist2 = pinRepository.findByUserAndDiaryId(user, diary.getId());
         if (isExist2.isPresent()) { // 이미 등록 되어 있다면
             Pin pin = isExist2.get();
-            userPinList.remove(pin); // user에서 삭제 (양뱡향)
+            userPinList.remove(pin); // user에서 삭제 (양뱡향) : 핀 해제
             pinRepository.delete(pin); // DB에서  Pin 삭제
             diary.setHowManyPins(howManypins - 1); // pin 카운트 하나 삭제
-            userRepository.save(user);
-            diaryRepository.save(diary);
+            userRepository.save(user); // db 반영
+            diaryRepository.save(diary); // db 반영
             return new ResponseEntity(NoDataResponse.response(status.SUCCESS, message.SUCCESS + " : 핀 하기 해제"), HttpStatus.OK);
         }
 
         // pin 으로 등록되어 있지 않을 때
-        Pin pin = new Pin(user, diaryId);  // 핀 생성 ( pin -> user 관계 )
+        Pin pin = new Pin(user, diaryId);  // 핀 생성 ( pin -> user 관계  )
         userPinList.add(pin); // 핀 추가  ( user -> pin 관계 )
 
         pinRepository.save(pin); // DB에 pin 추가
         diary.setHowManyPins(howManypins + 1); // pin 카운트 하나 증가
-        userRepository.save(user);
-        int type  = 0;
-        Optional<Alarm> isExistAlarm = alarmRepository.findAllByUserAndTypeAndContendId(user,diaryId,type);
-
-        if(!isExistAlarm.isPresent()) { // 해당 다이어리에대한 핀하기를 똑같은 유저가 중복적으로 할경우가 아닐때만 유저에게 알림을 줌.
-            Alarm alarm = new Alarm(user, 0, 0, user.getId(), diary); // type 1 : 댓글 , 0 : 핀하기 / isChecked 1: 읽음, 0: 읽지 않음
+        userRepository.save(user); // db반영
+        int type = 0;
+        System.out.println("===== before Query =====");
+        List<Alarm> isExistAlarm = alarmRepository.findAllByUserAndTypeAndContendId(user, diary, type);
+        System.out.println("===== Query findAllByUserAndTypeANdContendId Success =====" );
+        System.out.println("size : "+isExistAlarm.size());
+        if (isExistAlarm.size() == 0) { // 해당 다이어리에대한 핀하기를 똑같은 유저가 비중복적으로 누를때만 db에 알람 만들어주기
+            System.out.println("==== 중복알람 x, 알람 만들기 ====");
+            Alarm alarm = new Alarm(diary.getUser(), 0, 0, user.getId(), diary); // 해당 다이어리의 주인 ,type = 0 : 핀하기 / isChecked = 0 : 읽지 않음
             alarmRepository.save(alarm);
+            System.out.println("==== 알람만들기 success ==== ");
         }
+
         return new ResponseEntity(NoDataResponse.response(status.SUCCESS, message.SUCCESS + " : 핀 하기 "), HttpStatus.OK);
 
 

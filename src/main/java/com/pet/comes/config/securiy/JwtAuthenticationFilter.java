@@ -12,7 +12,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 
 
 // Jwt 가 유효한 토큰인지 인증하기 위한 filter
