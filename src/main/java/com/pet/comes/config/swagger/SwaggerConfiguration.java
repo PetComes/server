@@ -29,8 +29,8 @@ public class SwaggerConfiguration {
                 .groupName("Swagger Test")
                 .useDefaultResponseMessages(false)
                 .select()
-                .apis(RequestHandlerSelectors.any())
-//                .apis(RequestHandlerSelectors.basePackage("com.pet.comes.config.swagger"))
+                .apis(RequestHandlerSelectors.any()) // Swagger가 어디를 기준으로 RestController를 스캔할지 지정.
+//                .apis(RequestHandlerSelectors.basePackage("com.pet.comes")) // java 밑에 base package를 주로함.
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo());
@@ -44,4 +44,5 @@ public class SwaggerConfiguration {
                 .version("1.0")
                 .build();
     }
+
 }
