@@ -1,9 +1,8 @@
-package com.pet.comes.controller;
+package com.pet.comes.controller.comment;
 
 import com.pet.comes.dto.Req.CommentReqDto;
 import com.pet.comes.service.CommentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

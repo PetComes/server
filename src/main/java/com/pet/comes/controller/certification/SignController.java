@@ -1,4 +1,4 @@
-package com.pet.comes.controller;
+package com.pet.comes.controller.certification;
 
 import java.util.*;
 

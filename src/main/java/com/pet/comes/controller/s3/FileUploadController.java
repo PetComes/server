@@ -1,4 +1,4 @@
-package com.pet.comes.controller;
+package com.pet.comes.controller.s3;
 
 
 import com.pet.comes.service.FileUploadService;
