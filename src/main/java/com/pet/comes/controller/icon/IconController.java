@@ -1,4 +1,4 @@
-package com.pet.comes.controller;
+package com.pet.comes.controller.icon;
 
 import com.pet.comes.service.IconService;
 import lombok.RequiredArgsConstructor;

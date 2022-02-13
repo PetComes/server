@@ -1,11 +1,10 @@
-package com.pet.comes.controller;
+package com.pet.comes.controller.diary;
 
 
 import com.pet.comes.dto.Req.DiaryReqDto;
 import com.pet.comes.dto.Req.PinReqDto;
 import com.pet.comes.service.DiaryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

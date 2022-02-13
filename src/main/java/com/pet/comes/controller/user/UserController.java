@@ -1,4 +1,4 @@
-package com.pet.comes.controller;
+package com.pet.comes.controller.user;
 
 import com.pet.comes.service.UserService;
 import lombok.RequiredArgsConstructor;

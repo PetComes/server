@@ -1,4 +1,4 @@
-package com.pet.comes.controller;
+package com.pet.comes.controller.certification;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
