@@ -152,7 +152,7 @@ public class UserService {
                 }
 
                 // return 해줄 List에 추가하기
-                AlarmListRepDto alarmListRepDto = new AlarmListRepDto(imageurl, nickname, messageStr);
+                AlarmListRepDto alarmListRepDto = new AlarmListRepDto(alarm.getDiary().getId(),imageurl, nickname, messageStr,alarm.getCreatedAt());
                 alarmListRepDtoList.add(alarmListRepDto);
 
             } else if (alarm.getType() == 0) { // 0 : 핀
@@ -173,7 +173,7 @@ public class UserService {
                     messageStr = nickname + "님이 회원님의 게시글을 핀했습니다.";
                 }
                 // return 해줄 List에 추가하기
-                AlarmListRepDto alarmListRepDto = new AlarmListRepDto(imageurl, nickname, messageStr);
+                AlarmListRepDto alarmListRepDto = new AlarmListRepDto(alarm.getDiary().getId(),imageurl, nickname, messageStr,alarm.getCreatedAt());
                 alarmListRepDtoList.add(alarmListRepDto);
             }
         }
