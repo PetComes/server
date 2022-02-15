@@ -39,7 +39,7 @@ public class Diary {//extends Timestamped {
     @Column(name = "image_url",columnDefinition = "TEXT")
     private String diaryImgUrl;
 
-    @OneToOne(fetch = FetchType.LAZY)// default : EAGER
+    @OneToOne(fetch = FetchType.EAGER)// default : EAGER
     @JoinColumn(name = "address_id") // 연관관계 주인 : 주 테이블에 연관관계 주인 있는 것을 선호함.
     private Address address;
 
@@ -52,6 +52,7 @@ public class Diary {//extends Timestamped {
     @Column(name = "how_many_pins")
     private int howManyPins; // 다이어리가 pin된 갯수
 
+//    @Column(name = "registered_at")
     @CreatedDate
     private LocalDateTime registeredAt;
 

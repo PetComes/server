@@ -1,13 +1,14 @@
-package com.pet.comes.repository;
-
-import io.swagger.models.auth.In;
+package com.pet.comes.dto.Rep;
 
 import java.time.LocalDateTime;
 
-public interface IDiaryUserDto {
+//[참고자료] : https://www.baeldung.com/jpa-queries-custom-result-with-aggregation-functions
+public interface IDiaryUserRepDto {
     Long getId();
 
     String getText();
+
+    String getLocationName();
 
     String getImageUrl();
 
@@ -17,9 +18,7 @@ public interface IDiaryUserDto {
 
     int getHowManyPins();
 
-//    LocalDateTime getRegisteredAt();
-
-//    UserInfo getUser();
+    LocalDateTime getRegisteredAt();
 
     Long getUserId();
 

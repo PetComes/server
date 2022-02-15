@@ -2,7 +2,7 @@ package com.pet.comes.service;
 
 
 import com.pet.comes.dto.Rep.DiaryListRepDto;
-import com.pet.comes.dto.Rep.DiaryUserDto;
+import com.pet.comes.dto.Rep.IDiaryUserRepDto;
 import com.pet.comes.dto.Rep.PinListofDiaryDto;
 import com.pet.comes.dto.Req.DiaryReqDto;
 import com.pet.comes.dto.Req.PinReqDto;
@@ -303,9 +303,9 @@ public class DiaryService {
 //                .map(diary -> modelMapper.map(diary, DiaryAllListRepDto.class))
 //                .collect(Collectors.toList());
         if (sortedType.equals(SortedType.CURRENT)) {
-            List<IDiaryUserDto> allByIsPublicOrderByIdDescQuery = diaryRepository.findAllByIsPublicOrderByIdDescQuery()
+            List<IDiaryUserRepDto> allByIsPublicOrderByIdDescQuery = diaryRepository.findAllByIsPublicOrderByIdDescQuery()
                     .stream()
-                    .map(d -> modelMapper.map(d, IDiaryUserDto.class))
+                    .map(d -> modelMapper.map(d, IDiaryUserRepDto.class))
                     .collect(Collectors.toList());
 
             if (allByIsPublicOrderByIdDescQuery.isEmpty())
@@ -314,9 +314,9 @@ public class DiaryService {
             return new ResponseEntity(DataResponse.response(status.SUCCESS, " 공유다이어리 게시물 조회 (최신순) " + message.SUCCESS, allByIsPublicOrderByIdDescQuery), HttpStatus.OK);
 
         } else if (sortedType.equals(SortedType.BEST)) {
-            List<IDiaryUserDto> allByIsPublicOrderByIdDescQuery = diaryRepository.findAllByIsPublicOrderByHowManyPinsDescQuery()
+            List<IDiaryUserRepDto> allByIsPublicOrderByIdDescQuery = diaryRepository.findAllByIsPublicOrderByHowManyPinsDescQuery()
                     .stream()
-                    .map(d -> modelMapper.map(d, IDiaryUserDto.class))
+                    .map(d -> modelMapper.map(d, IDiaryUserRepDto.class))
                     .collect(Collectors.toList());
 
             if (allByIsPublicOrderByIdDescQuery.isEmpty())
