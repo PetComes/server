@@ -10,6 +10,7 @@ import com.pet.comes.model.Timestamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +25,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "user")
+//@NamedEntityGraph(name = "UserWithFamily", attributeNodes = @NamedAttributeNode("family"))
 public class User extends Timestamped implements UserDetails {
 
     @Id
