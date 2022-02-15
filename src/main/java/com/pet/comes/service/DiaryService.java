@@ -2,17 +2,20 @@ package com.pet.comes.service;
 
 
 import com.pet.comes.dto.Rep.DiaryListRepDto;
+import com.pet.comes.dto.Rep.DiaryUserDto;
 import com.pet.comes.dto.Rep.PinListofDiaryDto;
 import com.pet.comes.dto.Req.DiaryReqDto;
 import com.pet.comes.dto.Req.PinReqDto;
 import com.pet.comes.model.Entity.*;
 
+import com.pet.comes.model.EnumType.SortedType;
 import com.pet.comes.repository.*;
 import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
 import com.pet.comes.response.Status;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +38,7 @@ public class DiaryService {
     private final AlarmRepository alarmRepository;
     private final Status status;
     private final ResponseMessage message;
-
+    private final ModelMapper modelMapper;
 
     /* D1 : 강아지별 다이어리 조회 API -- Tony */
     public ResponseEntity dogDiaryList(Long userId, String nickName, String dogName) {
@@ -242,6 +246,7 @@ public class DiaryService {
         List<Pin> userPinList = user.getPins(); // 유저객체가 참조하고 있는 핀들 가져오기
         Long diaryId = pinReqDto.getDiaryId(); // 해당 유저가 핀 설정/해제할 다이어리 id
         Optional<Diary> isDiary = diaryRepository.findById(diaryId);
+
         // 다이어리 유효성 검사
         if (!isDiary.isPresent())
             return new ResponseEntity(NoDataResponse.response(status.INVALID_ID
@@ -274,8 +279,8 @@ public class DiaryService {
         int type = 0;
         System.out.println("===== before Query =====");
         List<Alarm> isExistAlarm = alarmRepository.findAllByUserAndTypeAndContendId(user, diary, type);
-        System.out.println("===== Query findAllByUserAndTypeANdContendId Success =====" );
-        System.out.println("size : "+isExistAlarm.size());
+        System.out.println("===== Query findAllByUserAndTypeANdContendId Success =====");
+        System.out.println("size : " + isExistAlarm.size());
         if (isExistAlarm.size() == 0) { // 해당 다이어리에대한 핀하기를 똑같은 유저가 비중복적으로 누를때만 db에 알람 만들어주기
             System.out.println("==== 중복알람 x, 알람 만들기 ====");
             Alarm alarm = new Alarm(diary.getUser(), 0, 0, user.getId(), diary); // 해당 다이어리의 주인 ,type = 0 : 핀하기 / isChecked = 0 : 읽지 않음
@@ -288,5 +293,43 @@ public class DiaryService {
 
     }
 
+    /* S1 인기순, 최신순 다이어리 정렬, 조회 -- Tony */
+    public ResponseEntity getAllDiary(SortedType sortedType) {
+//        List<Diary> diaryList = diaryRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+//          List<Diary> diaries = diaryRepository.findAllByIsPublicOrderByIdDesc(1);
+
+//        List<DiaryAllListRepDto> diaryListRepDtoList = diaryRepository.findAllByIsPublicOrderByIdDesc(1)//findAll(Sort.by(Sort.Direction.DESC,"id"))
+//                .stream()
+//                .map(diary -> modelMapper.map(diary, DiaryAllListRepDto.class))
+//                .collect(Collectors.toList());
+        if (sortedType.equals(SortedType.CURRENT)) {
+            List<IDiaryUserDto> allByIsPublicOrderByIdDescQuery = diaryRepository.findAllByIsPublicOrderByIdDescQuery()
+                    .stream()
+                    .map(d -> modelMapper.map(d, IDiaryUserDto.class))
+                    .collect(Collectors.toList());
+
+            if (allByIsPublicOrderByIdDescQuery.isEmpty())
+                return new ResponseEntity(NoDataResponse.response(status.DB_NO_DATA, message.NO_COMMUNITY_CONTENTS), HttpStatus.OK);
+
+            return new ResponseEntity(DataResponse.response(status.SUCCESS, " 공유다이어리 게시물 조회 (최신순) " + message.SUCCESS, allByIsPublicOrderByIdDescQuery), HttpStatus.OK);
+
+        } else if (sortedType.equals(SortedType.BEST)) {
+            List<IDiaryUserDto> allByIsPublicOrderByIdDescQuery = diaryRepository.findAllByIsPublicOrderByHowManyPinsDescQuery()
+                    .stream()
+                    .map(d -> modelMapper.map(d, IDiaryUserDto.class))
+                    .collect(Collectors.toList());
+
+            if (allByIsPublicOrderByIdDescQuery.isEmpty())
+                return new ResponseEntity(NoDataResponse.response(status.DB_NO_DATA, message.NO_COMMUNITY_CONTENTS), HttpStatus.OK);
+
+            return new ResponseEntity(DataResponse.response(status.SUCCESS, " 공유다이어리 게시물 조회 (인기순) " + message.SUCCESS, allByIsPublicOrderByIdDescQuery), HttpStatus.OK);
+
+        }
+//        if(!isDiary.isPresent())
+//            return new ResponseEntity(NoDataResponse.response(status.DB_NO_DATA, message.NO_DIARY  ), HttpStatus.OK);
+
+        return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_ENTERED + " 파라미터에 BEST, CURRENT를 입력해주세요."), HttpStatus.OK);
+
+    }
 
 }
