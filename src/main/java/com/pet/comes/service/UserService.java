@@ -2,6 +2,7 @@ package com.pet.comes.service;
 
 import com.pet.comes.dto.Join.UserJoinDto;
 import com.pet.comes.dto.Rep.*;
+import com.pet.comes.dto.Req.AlarmCheckedReqDto;
 import com.pet.comes.model.Entity.*;
 import com.pet.comes.repository.*;
 import com.pet.comes.response.DataResponse;
@@ -12,8 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.modelmapper.ModelMapper;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -152,7 +155,7 @@ public class UserService {
                 }
 
                 // return 해줄 List에 추가하기
-                AlarmListRepDto alarmListRepDto = new AlarmListRepDto(alarm.getDiary().getId(),imageurl, nickname, messageStr,alarm.getCreatedAt());
+                AlarmListRepDto alarmListRepDto = new AlarmListRepDto(alarm.getDiary().getId(), imageurl, nickname, messageStr, alarm.getCreatedAt());
                 alarmListRepDtoList.add(alarmListRepDto);
 
             } else if (alarm.getType() == 0) { // 0 : 핀
@@ -173,7 +176,7 @@ public class UserService {
                     messageStr = nickname + "님이 회원님의 게시글을 핀했습니다.";
                 }
                 // return 해줄 List에 추가하기
-                AlarmListRepDto alarmListRepDto = new AlarmListRepDto(alarm.getDiary().getId(),imageurl, nickname, messageStr,alarm.getCreatedAt());
+                AlarmListRepDto alarmListRepDto = new AlarmListRepDto(alarm.getDiary().getId(), imageurl, nickname, messageStr, alarm.getCreatedAt());
                 alarmListRepDtoList.add(alarmListRepDto);
             }
         }
@@ -243,6 +246,30 @@ public class UserService {
         return new ResponseEntity(NoDataResponse.response(
                 404, "내 가족 목록 조회 : " + new ResponseMessage().NO_FAMILY
         ), HttpStatus.NOT_FOUND);
+    }
+
+    /* H11 : 알림확인(체크하기) -- Tony */
+    public ResponseEntity checkAlarm(Long userId){
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalAccessError("잘못된 userId입니다."));
+
+        List<Alarm> allByUser = alarmRepository.findAllByUser(user);
+
+        if (allByUser.isEmpty())
+            return new ResponseEntity(NoDataResponse.response(status.DB_NO_DATA, message.NO_ALARMS), HttpStatus.NOT_FOUND);
+
+        for (Alarm alarm : allByUser) {
+            alarm.setIsChecked(1);
+        }
+
+        alarmRepository.saveAll(allByUser);
+
+
+        return new ResponseEntity(DataResponse.response(
+                status.SUCCESS, "알림체크 " + message.SUCCESS, user.getId()
+        ), HttpStatus.OK);
+
     }
 
     /* U5 : 닉네임 중복여부 확인(유저 닉네임) -- Tony */
