@@ -276,7 +276,7 @@ public class BadgeService {
         }
     }
 
-    private ResponseEntity giveTheBadge(Long userId, Long badgeId) {
+    private ResponseEntity giveTheBadge(Long userId, Long badgeId) { // 배지 부여
         Optional<Badge> badge = badgeListRepository.findById(badgeId);
         if(badge.isEmpty()) {
             return new ResponseEntity(NoDataResponse.response(status.INVALID_BADGE, "유효하지 않은 badgeId 입니다."), HttpStatus.OK);
@@ -287,7 +287,7 @@ public class BadgeService {
 
     }
 
-    private ResponseEntity takeTheBadgeIfActivated(Long userId, Long badgeId) {
+    private ResponseEntity takeTheBadgeIfActivated(Long userId, Long badgeId) { // 배지 회수
         Optional<ActivatedBadge> activatedBadge = badgeRepository.findAllByUserIdAndBadgeId(userId, badgeId);
         if(activatedBadge.isEmpty() || activatedBadge.get().getStatus() != BadgeStatus.CANCELED) {
             return new ResponseEntity(NoDataResponse.response(status.NOT_ACHIEVED, badgeId + "번 배지 조건 미달"), HttpStatus.OK);
