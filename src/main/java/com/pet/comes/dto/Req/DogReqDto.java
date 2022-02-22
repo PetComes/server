@@ -17,7 +17,7 @@ public class DogReqDto {
     private final float weight;
     private final Sex sex;
     private final int isNeutered; // 중성화 여부
-    private final String registerationNo ; // 반려견 등록번호
+//    private final String registerationNo ; // 반려견 등록번호
 
 
 
