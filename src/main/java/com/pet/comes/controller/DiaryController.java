@@ -1,4 +1,4 @@
-package com.pet.comes.controller.diary;
+package com.pet.comes.controller;
 
 
 import com.pet.comes.dto.Req.DiaryReqDto;

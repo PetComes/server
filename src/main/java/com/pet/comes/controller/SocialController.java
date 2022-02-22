@@ -1,4 +1,4 @@
-package com.pet.comes.controller.social;
+package com.pet.comes.controller;
 
 import com.pet.comes.service.SocialService;
 import com.pet.comes.util.social.SocialLogInType;

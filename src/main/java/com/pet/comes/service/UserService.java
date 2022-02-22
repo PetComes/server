@@ -249,7 +249,7 @@ public class UserService {
     }
 
     /* H11 : 알림확인(체크하기) -- Tony */
-    public ResponseEntity checkAlarm(Long userId){
+    public ResponseEntity checkAlarm(Long userId) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalAccessError("잘못된 userId입니다."));
@@ -290,6 +290,7 @@ public class UserService {
 
     /* S9 : 클릭한 계정 프로필 확인하기 --Tony */
     public ResponseEntity getUserProfile(@PathVariable String userName) {
+
         Optional<User> isExist = userRepository.findByNickname(userName);
         if (!isExist.isPresent())
             return new ResponseEntity(NoDataResponse.response(status.INVALID_ID

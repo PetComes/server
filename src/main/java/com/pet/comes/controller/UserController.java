@@ -1,4 +1,4 @@
-package com.pet.comes.controller.user;
+package com.pet.comes.controller;
 
 import com.pet.comes.dto.Req.AlarmCheckedReqDto;
 import com.pet.comes.service.UserService;
