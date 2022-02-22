@@ -26,6 +26,8 @@ public interface IDiaryUserRepDto {
 
     String getUserImageUrl();
 
+    String getDogName();
+
 //    interface UserInfo {
 //
 //        Long getUserId();
