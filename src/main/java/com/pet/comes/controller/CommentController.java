@@ -1,4 +1,4 @@
-package com.pet.comes.controller.comment;
+package com.pet.comes.controller;
 
 import com.pet.comes.dto.Req.CommentReqDto;
 import com.pet.comes.service.CommentService;

@@ -1,4 +1,4 @@
-package com.pet.comes.controller.dog;
+package com.pet.comes.controller;
 
 import com.pet.comes.dto.Req.AnimalRegistrationReqDto;
 import com.pet.comes.dto.Req.DogBodyInformationDto;
