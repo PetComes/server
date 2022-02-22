@@ -148,7 +148,7 @@ public class UserService {
                     User usertmp = comment.getUser(); // 해당 댓글을 작성한 유저
                     imageurl = usertmp.getImageUrl();
                     nickname = usertmp.getNickname();
-                    messageStr = nickname + "님이 회원님의 게시글에 댓글을 달았습니다.";
+                    messageStr = "님이 회원님의 게시글에 댓글을 달았습니다.";
                 }
 
                 // return 해줄 List에 추가하기
@@ -170,7 +170,7 @@ public class UserService {
                     User usertmp = pin.getUser(); // 해당 핀 객체를 가진 유저
                     imageurl = usertmp.getImageUrl();
                     nickname = usertmp.getNickname();
-                    messageStr = nickname + "님이 회원님의 게시글을 핀했습니다.";
+                    messageStr = "님이 회원님의 게시글을 핀했습니다.";
                 }
                 // return 해줄 List에 추가하기
                 AlarmListRepDto alarmListRepDto = new AlarmListRepDto(alarm.getDiary().getId(), imageurl, nickname, messageStr, alarm.getCreatedAt());

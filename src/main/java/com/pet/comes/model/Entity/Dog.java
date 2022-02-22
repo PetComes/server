@@ -77,7 +77,7 @@ public class Dog  {
         this.imageUrl = dogReqDto.getImageUrl();
         this.sex = dogReqDto.getSex();
         this.isNeutered = dogReqDto.getIsNeutered();
-        this.registerationNo = dogReqDto.getRegisterationNo();
+//        this.registerationNo = dogReqDto.getRegisterationNo();
         this.modifiedBy = userId;
     }
 
