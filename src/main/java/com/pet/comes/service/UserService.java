@@ -2,7 +2,6 @@ package com.pet.comes.service;
 
 import com.pet.comes.dto.Join.UserJoinDto;
 import com.pet.comes.dto.Rep.*;
-import com.pet.comes.dto.Req.AlarmCheckedReqDto;
 import com.pet.comes.model.Entity.*;
 import com.pet.comes.repository.*;
 import com.pet.comes.response.DataResponse;
@@ -13,10 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.modelmapper.ModelMapper;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -299,38 +296,41 @@ public class UserService {
 
         User user = isExist.get();
 
-        List<GetProfileRepDto> getProfileRepDtoList = new ArrayList<>();
+//        List<GetProfileRepDto> getProfileRepDtoList = new ArrayList<>();
 
         // 뱃지 연관관계 결정되면 넣기
         // 유저관련 정보들
         GetProfileRepDto getProfileRepDto = new GetProfileRepDto(user.getNickname(), user.getImageUrl(), user.getIntroduction(), "뱃지관련은 작업후 추가");
 
         // 반환할 결과 리스트에 추가
-        getProfileRepDtoList.add(getProfileRepDto);
+//        getProfileRepDtoList.add(getProfileRepDto);
 
         Family family = user.getFamily();
         if (family == null) // 반려견이 없을 때 (최초 생성 하지 않으면 family 없음)
             return new ResponseEntity(DataResponse.response(
-                    status.SUCCESS, new ResponseMessage().SUCCESS + " 반려견을 등록하지 않음.", getProfileRepDtoList
+                    status.SUCCESS, new ResponseMessage().SUCCESS + " 반려견을 등록하지 않음.", getProfileRepDto
             ), HttpStatus.OK);
 
         // 반려견 관련 정보들
         List<Dog> dogList = dogRepository.findAllByFamily(family);
         if (dogList.isEmpty()) // 반려견이 없을 때
             return new ResponseEntity(DataResponse.response(
-                    status.SUCCESS, new ResponseMessage().SUCCESS + " 반려견을 등록하지 않음.", getProfileRepDtoList
+                    status.SUCCESS, new ResponseMessage().SUCCESS + " 반려견을 등록하지 않음.", getProfileRepDto
             ), HttpStatus.OK);
 
         // 반려견이 있을 때 -> 반려견 이름, 반려견 사진
+        List<DogsProfileRepDto> params = new ArrayList<>();
         for (Dog dog : dogList) {
             // 반려견 관련 정보들
-            GetProfileRepDto getProfileRepDto1 = new GetProfileRepDto(dog.getName(), dog.getImageUrl());
-            getProfileRepDtoList.add(getProfileRepDto1);
+            DogsProfileRepDto dto = new DogsProfileRepDto(dog.getName(), dog.getImageUrl());
+            params.add(dto);
+            getProfileRepDto.setGetDogsProfileRepDtoList(params);
+
         }
 
 
         return new ResponseEntity(DataResponse.response(
-                status.SUCCESS, new ResponseMessage().SUCCESS + "유저, 반려견 모두 등록", getProfileRepDtoList
+                status.SUCCESS, new ResponseMessage().SUCCESS + "유저, 반려견 모두 등록", getProfileRepDto
         ), HttpStatus.OK);
 
     }
