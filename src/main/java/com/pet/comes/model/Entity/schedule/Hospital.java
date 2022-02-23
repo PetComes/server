@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -29,18 +30,24 @@ public class Hospital {
 
 	private LocalDate date; // YYYY-MM-DD
 	private LocalTime time; // HH:mm:ss
+
+	@Column(columnDefinition = "TEXT")
 	private String memo;    // 자유메모
 
-	private String disease;
-	private String kind;
-	private String prescriptionUrl;
+	private String disease; // 질병 VARCHAR(255)
+
+	@Column(columnDefinition = "TEXT")
+	private String kind; // 시술/수술 종류 TEXT
+
+	@Column(columnDefinition = "TEXT")
+	private String prescriptionUrl; // 처방전 URL
 	private int expenses;
 
 	@ManyToOne
 	@JoinColumn(name = "address_id")
 	private Address address;
 
-	private Double weight; // 여기서 해줄지 DogLog API 처럼 할지 고민 아님 둘 다 할지?
+	private Double weight; // 테이블에도 데이터 넣고, DogLog 에도 남기기 : 비즈니스로직에 반영
 
 	private LocalDateTime modifiedAt;
 	private LocalDateTime registeredAt;
