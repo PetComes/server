@@ -39,9 +39,9 @@ public class Feeding {
 	@Column(columnDefinition = "TEXT")
 	private String memo;    // 자유메모
 
-	private String kind;
-	private DryOrWetFeed dryOrWet;
-	private String amount;
+	private String kind; // VARCHAR(255)
+	private DryOrWetFeed dryOrWet; // DRY(건식), WET(습식)
+	private String amount; // VARCHAR(255)
 
 	private LocalDateTime modifiedAt;
 	private LocalDateTime registeredAt;
