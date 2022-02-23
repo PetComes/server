@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -24,24 +25,13 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class CommentService {
+
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
-    private final UserService userService;
     private final DiaryRepository diaryRepository;
     private final Status status;
     private final ResponseMessage message;
     private final AlarmRepository alarmRepository;
-
-//    @Autowired
-//    public CommentService(UserService userService, DiaryRepository diaryRepository, UserRepository userRepository, CommentRepository commentRepository, Status status, ResponseMessage message) {
-//        this.commentRepository = commentRepository;
-//        this.userRepository = userRepository;
-//        this.diaryRepository = diaryRepository;
-//        this.userService = userService;
-//        this.message = message;
-//        this.status = status;
-//    }
-
 
     /* D6 : 다이어리 댓글 상세보기 API -- Tony */
     public ResponseEntity readComments(Long diaryId) {
@@ -87,7 +77,7 @@ public class CommentService {
 
         Optional<Diary> isExist = diaryRepository.findById(commentReqDto.getDiaryId());
         if (!isExist.isPresent())
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NO_DIARY ), HttpStatus.OK);
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NO_DIARY), HttpStatus.OK);
 
         Diary diary = isExist.get();
         int commentsCnt = diary.getHowManyComments();
@@ -98,7 +88,7 @@ public class CommentService {
         commentRepository.save(comment);
 
         /* 댓글 작성시 alarm 등록 */
-        Alarm alarm = new Alarm(diary.getUser(),1,0,comment.getCommentId(),diary); // 해당 다이어리의 주인(알림을 받을 유저),type = 1 : 댓글 / isChecked = 0 : 읽지 않음
+        Alarm alarm = new Alarm(diary.getUser(), 1, 0, comment.getCommentId(), diary); // 해당 다이어리의 주인(알림을 받을 유저),type = 1 : 댓글 / isChecked = 0 : 읽지 않음
         alarmRepository.save(alarm);
 
         if (comment.getCommentCommentId() != null) // 대댓글 달기라면
@@ -107,6 +97,25 @@ public class CommentService {
 
         return new ResponseEntity(DataResponse.response(status.SUCCESS,
                 "다이러리 댓글 작성 " + message.SUCCESS + "해당 댓글 다이어리 id : " + comment.getDiaryId(), comment.getDiaryId()), HttpStatus.OK);
+    }
+
+    /* D9 : 다이어리 댓글 삭제 API --Tony */
+    public ResponseEntity deleteComment(Long commentId) {
+
+        // 댓글 존재하는지 유효성 검사
+        Optional<Comment> byId = commentRepository.findById(commentId);
+        if (!byId.isPresent()) // 댓글 존재 x
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "해당 댓글이 존재하지 않습니다."), HttpStatus.NOT_FOUND);
+        Comment comment = byId.get(); // 댓글 존재
+
+
+        comment.setText("(삭제된 댓글)"); // 댓글 삭제
+
+        commentRepository.save(comment);
+
+        return new ResponseEntity(DataResponse.response(status.SUCCESS,
+                "다이러리 댓글 삭제 " + message.SUCCESS + "해당 댓글 다이어리 id : " + comment.getDiaryId(), comment.getDiaryId()), HttpStatus.OK);
+
     }
 
 }
