@@ -67,7 +67,7 @@ public class Diary {//extends Timestamped {
         this.text = diaryReqDto.getText();
         this.howManyDogs = diaryReqDto.getHowManyDogs();
         this.isPublic = diaryReqDto.getIsPublic();
-        this.isDeleted = diaryReqDto.getIsDeleted();
+//        this.isDeleted = diaryReqDto.getIsDeleted();
         this.diaryImgUrl = diaryReqDto.getImageUrl();
     }
 
@@ -75,7 +75,7 @@ public class Diary {//extends Timestamped {
         this.howManyDogs = diaryReqDto.getHowManyDogs();
         this.isPublic = diaryReqDto.getIsPublic();
         this.text = diaryReqDto.getText();
-        this.isDeleted = diaryReqDto.getIsDeleted();
+//        this.isDeleted = diaryReqDto.getIsDeleted();
         this.diaryImgUrl = diaryReqDto.getImageUrl();
     }
 

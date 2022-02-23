@@ -5,6 +5,7 @@ import com.pet.comes.dto.Rep.DiaryListRepDto;
 import com.pet.comes.dto.Rep.IDiaryUserRepDto;
 import com.pet.comes.dto.Rep.PinListofDiaryDto;
 import com.pet.comes.dto.Req.DiaryReqDto;
+import com.pet.comes.dto.Req.DiaryUpdateReqDto;
 import com.pet.comes.dto.Req.PinReqDto;
 import com.pet.comes.model.Entity.*;
 
@@ -109,8 +110,14 @@ public class DiaryService {
 
     /* D2 :다이어리 작성 API -- Tony */
     public ResponseEntity writeDiary(DiaryReqDto diaryReqDto) {
-        if (diaryReqDto.getUserId() == null) // userId 가 body에 없음
-            return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED + ": userId가 없습니다. body에 userId를 넣어주세요."), HttpStatus.OK);
+        Optional<User> byId = userRepository.findById(diaryReqDto.getUserId());
+
+
+        if (!byId.isPresent()) // userId 가 body에 없음
+            return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.INVALID_ACCOUNT + ": 해당 유저가 없습니다."), HttpStatus.OK);
+
+        // User 가져오기
+        User user = byId.get();
 
         if (diaryReqDto.getText() == null) // Text data 자체가 없음
             return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED + ": 내용이 없습니다. Text를 작성해 주세요(2글자 이상)"), HttpStatus.OK);
@@ -118,9 +125,6 @@ public class DiaryService {
             return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED + " Text를 2글자 이상 작성해주세요. "), HttpStatus.OK);
 
         // diary <-> user 다대일 양방향 매핑을 위해
-        Optional<User> user = userRepository.findById(diaryReqDto.getUserId());
-        if (!user.isPresent()) //
-            return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.INVALID_ACCOUNT + ": 해당 유저가 없습니다."), HttpStatus.OK);
 
         //
         Long dogId = diaryReqDto.getDogId();
@@ -129,10 +133,14 @@ public class DiaryService {
         if (!dog.isPresent())
             return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.INVALID_ACCOUNT + ": 해당 반려견이 없습니다."), HttpStatus.OK);
 
-        if (!user.get().getFamily().getDogs().contains(dog.get()))
+        if (!user.getFamily().getDogs().contains(dog.get()))
             return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.INVALID_ACCOUNT + ": 해당 반려견이 없습니다."), HttpStatus.OK);
 
         Diary diary = new Diary(diaryReqDto); // 이 시점에서는 비영속 상태  , connection pool을 가져오지 않는다다        diary.setUser(user.get()); // diary <-> user 다대일 양방향 매핑
+
+        // diary <-> user 매핑
+        diary.setUser(user); // diary -> user @ManyToOne
+        user.setDiaries(diary); // user -> diary @OneToMany
 
         if (diaryReqDto.getLocationName() == null) { // 위치 정보 없을 때
 
@@ -160,17 +168,33 @@ public class DiaryService {
     }
 
     /* 다이어리 수정 API -- Tony */
-    public ResponseEntity modifyDiary(Long diaryId, DiaryReqDto diaryReqDto) {
-        Optional<Diary> tmpDiary = diaryRepository.findById(diaryId);
+    public ResponseEntity modifyDiary(Long diaryId, DiaryUpdateReqDto diaryUpdateReqDto) {
+        Optional<Diary> byId = diaryRepository.findById(diaryId);
 
-        if (!tmpDiary.isPresent()) {
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "수정할 " + message.NO_DIARY), HttpStatus.OK);
-        } else if (diaryReqDto.getText() == null)
-            return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, "다이어리들 불어오기 " + message.NOT_ENTERED + " : 반려견에게 어떤 일이 있었는지 작성해주세요 !"), HttpStatus.OK);
+        if (!byId.isPresent())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "수정할 " + message.NO_DIARY), HttpStatus.NOT_FOUND);
 
-        tmpDiary.get().modify(diaryReqDto);
+        Diary diary = byId.get();
+        String imageUrl = diaryUpdateReqDto.getImageUrl();
+        String text = diaryUpdateReqDto.getText();
+        int isPublic = diaryUpdateReqDto.getIsPublic();
 
-        diaryRepository.save(tmpDiary.get());
+        // imageUrl 수정
+        if (imageUrl != null && imageUrl.length() > 5)
+            diary.setDiaryImgUrl(imageUrl);
+        // imageUrl 수정
+        if (text != null && text.length() > 3)
+            diary.setText(text);
+
+        // 다이어리 공개/비공개 수정
+        if(isPublic != diary.getIsPublic())
+            diary.setIsPublic(isPublic);
+
+        //DB 반영
+        diaryRepository.save(diary);
+
+
+
 
         return new ResponseEntity(DataResponse.response(status.SUCCESS, message.SUCCESS + ": 다이어리 수정", diaryId), HttpStatus.OK);
 

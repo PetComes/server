@@ -2,6 +2,7 @@ package com.pet.comes.controller;
 
 
 import com.pet.comes.dto.Req.DiaryReqDto;
+import com.pet.comes.dto.Req.DiaryUpdateReqDto;
 import com.pet.comes.dto.Req.PinReqDto;
 import com.pet.comes.model.EnumType.SortedType;
 import com.pet.comes.service.DiaryService;
@@ -36,9 +37,9 @@ public class DiaryController {
     }
 
     /* D3 다이어리 수정 API -- Tony */
-    @PutMapping("/{diaryId}")
-    public ResponseEntity modifyDiary(@PathVariable Long diaryId, @RequestBody DiaryReqDto diaryReqDto) {
-        return diaryService.modifyDiary(diaryId, diaryReqDto);
+    @PatchMapping("/{diaryId}")
+    public ResponseEntity modifyDiary(@PathVariable Long diaryId, @RequestBody DiaryUpdateReqDto diaryUpdateReqDto) {
+        return diaryService.modifyDiary(diaryId, diaryUpdateReqDto);
     }
 
     /* D4 다이어리 삭제 API -- Tony */
