@@ -109,8 +109,14 @@ public class DiaryService {
 
     /* D2 :다이어리 작성 API -- Tony */
     public ResponseEntity writeDiary(DiaryReqDto diaryReqDto) {
-        if (diaryReqDto.getUserId() == null) // userId 가 body에 없음
-            return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED + ": userId가 없습니다. body에 userId를 넣어주세요."), HttpStatus.OK);
+        Optional<User> byId = userRepository.findById(diaryReqDto.getUserId());
+
+
+        if (!byId.isPresent()) // userId 가 body에 없음
+            return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.INVALID_ACCOUNT + ": 해당 유저가 없습니다."), HttpStatus.OK);
+
+        // User 가져오기
+        User user = byId.get();
 
         if (diaryReqDto.getText() == null) // Text data 자체가 없음
             return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED + ": 내용이 없습니다. Text를 작성해 주세요(2글자 이상)"), HttpStatus.OK);
@@ -118,9 +124,6 @@ public class DiaryService {
             return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED + " Text를 2글자 이상 작성해주세요. "), HttpStatus.OK);
 
         // diary <-> user 다대일 양방향 매핑을 위해
-        Optional<User> user = userRepository.findById(diaryReqDto.getUserId());
-        if (!user.isPresent()) //
-            return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.INVALID_ACCOUNT + ": 해당 유저가 없습니다."), HttpStatus.OK);
 
         //
         Long dogId = diaryReqDto.getDogId();
@@ -129,10 +132,14 @@ public class DiaryService {
         if (!dog.isPresent())
             return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.INVALID_ACCOUNT + ": 해당 반려견이 없습니다."), HttpStatus.OK);
 
-        if (!user.get().getFamily().getDogs().contains(dog.get()))
+        if (!user.getFamily().getDogs().contains(dog.get()))
             return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.INVALID_ACCOUNT + ": 해당 반려견이 없습니다."), HttpStatus.OK);
 
         Diary diary = new Diary(diaryReqDto); // 이 시점에서는 비영속 상태  , connection pool을 가져오지 않는다다        diary.setUser(user.get()); // diary <-> user 다대일 양방향 매핑
+
+        // diary <-> user 매핑
+        diary.setUser(user); // diary -> user @ManyToOne
+        user.setDiaries(diary); // user -> diary @OneToMany
 
         if (diaryReqDto.getLocationName() == null) { // 위치 정보 없을 때
 

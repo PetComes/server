@@ -24,4 +24,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {//<Comm
             "where c.diaryId= :diaryId")
     List<Object[]> findAllByDiaryIdForH3(@Param("diaryId") Long diaryId);
 
+
+//    @Query("select c " +
+//            "from Comment c  ")
+
+
 }
