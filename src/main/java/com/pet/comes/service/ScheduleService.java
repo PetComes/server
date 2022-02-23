@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import com.pet.comes.repository.ScheduleRepository;
+//import com.pet.comes.repository.ScheduleRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ScheduleService {
 
-    private final ScheduleRepository scheduleRepository;
+    //private final ScheduleRepository scheduleRepository;
     private final int FEEDING = 1;
     private final int SNACK = 2;
     private final int POTTY = 3;
@@ -31,7 +31,7 @@ public class ScheduleService {
         int iconId = Integer.parseInt(scheduleParameters.get("iconId"));
 
         // Schedule schedule  = new Schedule(scheduleParameters); // 공통항목들
-        List<Addition> additionList;
+        // List<Addition> additionList;
 
         if(iconId == FEEDING) {
 
