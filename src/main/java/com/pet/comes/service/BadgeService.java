@@ -31,7 +31,7 @@ public class BadgeService {
     private final BadgeListRepository badgeListRepository;
     private final PinRepository pinRepository;
     private final CommentRepository commentRepository;
-    private final ScheduleRepository scheduleRepository;
+    //private final ScheduleRepository scheduleRepository;
 
     private final int ICON_ID_OF_GROOMING = 1;
 
@@ -231,46 +231,47 @@ public class BadgeService {
                 return takeTheBadgeIfActivated(userId, badgeId);
             }
         }
-        else if(badgeId == 11) { /* 비지도그 : 최근 한달동안 일정 5개 이상 등록 */
-            LocalDateTime start = LocalDateTime.now();
-            LocalDateTime end = start.plusMonths(1);
-            List<Schedule> scheduleList = scheduleRepository.findByUserIdAndRegisteredAtBetween(userId, end, start);
-            if(scheduleList.size() == 0) {
-                return new ResponseEntity(NoDataResponse.response(status.SCHEDULE_UNREGISTERED, badgeId + "번 배지 조건 미달 : 최근 한달동안 등록된 일정 없음"), HttpStatus.OK);
-            }
-            else if(scheduleList.size() >= 5) {
-                return giveTheBadge(userId, badgeId);
-            }
-            else {
-                return takeTheBadgeIfActivated(userId, badgeId);
-            }
-        }
-        else if(badgeId == 12) { /* 패셔니스타 : 최근 한달기준 2회이상 미용시 */
-            LocalDateTime start = LocalDateTime.now();
-            LocalDateTime end = start.plusMonths(1);
-            List<Schedule> scheduleList = scheduleRepository.findByUserIdAndRegisteredAtBetween(userId, end, start);
-            if(scheduleList.size() == 0) {
-                return new ResponseEntity(NoDataResponse.response(status.SCHEDULE_UNREGISTERED, badgeId + "번 배지 조건 미달 : 최근 한달동안 등록된 일정 없음"), HttpStatus.OK);
-            }
-
-            int grooming = 0;
-            boolean canActivate = false;
-            for(Schedule schedule : scheduleList) {
-                if(grooming >= 2) {
-                    canActivate = true;
-                    break;
-                }
-                if(schedule.getIconId() == ICON_ID_OF_GROOMING) {
-                    grooming++;
-                }
-            }
-            if(canActivate) {
-                return giveTheBadge(userId, badgeId);
-            }
-            else {
-                return takeTheBadgeIfActivated(userId, badgeId);
-            }
-        }
+        // schedule 때문에 잠시 주석처리
+        // else if(badgeId == 11) { /* 비지도그 : 최근 한달동안 일정 5개 이상 등록 */
+        //     LocalDateTime start = LocalDateTime.now();
+        //     LocalDateTime end = start.plusMonths(1);
+        //     List<Schedule> scheduleList = scheduleRepository.findByUserIdAndRegisteredAtBetween(userId, end, start);
+        //     if(scheduleList.size() == 0) {
+        //         return new ResponseEntity(NoDataResponse.response(status.SCHEDULE_UNREGISTERED, badgeId + "번 배지 조건 미달 : 최근 한달동안 등록된 일정 없음"), HttpStatus.OK);
+        //     }
+        //     else if(scheduleList.size() >= 5) {
+        //         return giveTheBadge(userId, badgeId);
+        //     }
+        //     else {
+        //         return takeTheBadgeIfActivated(userId, badgeId);
+        //     }
+        // }
+        // else if(badgeId == 12) { /* 패셔니스타 : 최근 한달기준 2회이상 미용시 */
+        //     LocalDateTime start = LocalDateTime.now();
+        //     LocalDateTime end = start.plusMonths(1);
+        //     List<Schedule> scheduleList = scheduleRepository.findByUserIdAndRegisteredAtBetween(userId, end, start);
+        //     if(scheduleList.size() == 0) {
+        //         return new ResponseEntity(NoDataResponse.response(status.SCHEDULE_UNREGISTERED, badgeId + "번 배지 조건 미달 : 최근 한달동안 등록된 일정 없음"), HttpStatus.OK);
+        //     }
+        //
+        //     int grooming = 0;
+        //     boolean canActivate = false;
+        //     for(Schedule schedule : scheduleList) {
+        //         if(grooming >= 2) {
+        //             canActivate = true;
+        //             break;
+        //         }
+        //         if(schedule.getIconId() == ICON_ID_OF_GROOMING) {
+        //             grooming++;
+        //         }
+        //     }
+        //     if(canActivate) {
+        //         return giveTheBadge(userId, badgeId);
+        //     }
+        //     else {
+        //         return takeTheBadgeIfActivated(userId, badgeId);
+        //     }
+        // }
         else { // 없는 배지를 조회하려고 하는 경우
             return new ResponseEntity(NoDataResponse.response(status.INVALID_BADGE, "유효하지 않은 badgeId입니다."), HttpStatus.OK);
         }

@@ -5,10 +5,6 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import com.pet.comes.model.Entity.Addition;
-import com.pet.comes.model.Entity.Schedule;
-import com.pet.comes.model.schedule.Feeding;
-import com.pet.comes.model.schedule.CommonItems;
 import com.pet.comes.repository.ScheduleRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -34,7 +30,7 @@ public class ScheduleService {
     public String registerSchedule(Map<String, String> scheduleParameters) {
         int iconId = Integer.parseInt(scheduleParameters.get("iconId"));
 
-        Schedule schedule  = new Schedule(scheduleParameters); // 공통항목들
+        // Schedule schedule  = new Schedule(scheduleParameters); // 공통항목들
         List<Addition> additionList;
 
         if(iconId == FEEDING) {
@@ -62,7 +58,7 @@ public class ScheduleService {
 
         }
 
-        scheduleRepository.save(schedule);
+        // scheduleRepository.save(schedule);
         return "true";
     }
 }

@@ -24,9 +24,9 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
     private final Status status;
 
-    @PostMapping
-    public ResponseEntity<Object> registerSchedule(@RequestBody Map<String, String> schedule) {
-        return new ResponseEntity<>(NoDataResponse.response(status.SUCCESS, scheduleService.registerSchedule(schedule)),
-            HttpStatus.OK);
-    }
+    // @PostMapping
+    // public ResponseEntity<Object> registerSchedule(@RequestBody Map<String, String> schedule) {
+    //     return new ResponseEntity<>(NoDataResponse.response(status.SUCCESS, scheduleService.registerSchedule(schedule)),
+    //         HttpStatus.OK);
+    // }
 }
