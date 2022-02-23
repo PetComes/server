@@ -1,5 +1,6 @@
 package com.pet.comes.model.Entity.schedule;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,6 +21,8 @@ public class AdditionalItem {
 	@JoinColumn(name = "etc_id")
 	private Etc etc;
 
-	private String key;
-	private String value;
+	private String key; // 추가되는 항목 VARCHAR(255)
+
+	@Column(columnDefinition = "TEXT")
+	private String value; // 항목의 값
 }
