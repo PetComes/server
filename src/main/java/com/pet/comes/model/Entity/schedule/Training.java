@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -28,6 +29,8 @@ public class Training {
 
 	private LocalDate date; // YYYY-MM-DD
 	private LocalTime time; // HH:mm:ss
+
+	@Column(columnDefinition = "TEXT")
 	private String memo;    // 자유메모
 
 	private LocalDateTime modifiedAt;
