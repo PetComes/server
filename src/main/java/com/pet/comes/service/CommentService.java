@@ -42,39 +42,6 @@ public class CommentService {
 //        this.status = status;
 //    }
 
-    /* 다이어리 댓글 작성 API --Tony */
-    public ResponseEntity writeComment(CommentReqDto commentReqDto) {
-        if (commentReqDto.getText() == null || commentReqDto.getText().length() < 1) {
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_ENTERED + " 댓글이 비어있습니다."), HttpStatus.OK);
-        }
-        Optional<User> isExistUser = userRepository.findById(commentReqDto.getUserId());
-        if (!isExistUser.isPresent())
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_ENTERED + "해당 유저가 없습니다."), HttpStatus.OK);
-
-        Optional<Diary> isExist = diaryRepository.findById(commentReqDto.getDiaryId());
-        if (!isExist.isPresent())
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NO_DIARY ), HttpStatus.OK);
-
-        Diary diary = isExist.get();
-        int commentsCnt = diary.getHowManyComments();
-        diary.setHowManyComments(commentsCnt + 1); // 댓글 카운트 하나 증가
-
-        User user = isExistUser.get();
-        Comment comment = new Comment(commentReqDto, user);
-        commentRepository.save(comment);
-
-        /* 댓글 작성시 alarm 등록 */
-        Alarm alarm = new Alarm(diary.getUser(),1,0,comment.getCommentId(),diary); // 해당 다이어리의 주인(알림을 받을 유저),type = 1 : 댓글 / isChecked = 0 : 읽지 않음
-        alarmRepository.save(alarm);
-
-        if (comment.getCommentCommentId() != null) // 대댓글 달기라면
-            return new ResponseEntity(DataResponse.response(status.SUCCESS,
-                    "대댓글 작성 " + message.SUCCESS + "해당 대댓글 다이어리 id : " + comment.getDiaryId(), comment.getDiaryId()), HttpStatus.OK);
-
-        return new ResponseEntity(DataResponse.response(status.SUCCESS,
-                "다이러리 댓글 작성 " + message.SUCCESS + "해당 댓글 다이어리 id : " + comment.getDiaryId(), comment.getDiaryId()), HttpStatus.OK);
-    }
-
 
     /* D6 : 다이어리 댓글 상세보기 API -- Tony */
     public ResponseEntity readComments(Long diaryId) {
@@ -108,4 +75,38 @@ public class CommentService {
                 "다이러리 댓글 조회 " + message.SUCCESS + "해당 댓글들의 다이어리 id : " + diary.get().getId(), dtos), HttpStatus.OK);
 
     }
+
+    /* D8 : 다이어리 댓글 작성 API --Tony */
+    public ResponseEntity writeComment(CommentReqDto commentReqDto) {
+        if (commentReqDto.getText() == null || commentReqDto.getText().length() < 1) {
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_ENTERED + " 댓글이 비어있습니다."), HttpStatus.OK);
+        }
+        Optional<User> isExistUser = userRepository.findById(commentReqDto.getUserId());
+        if (!isExistUser.isPresent())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_ENTERED + "해당 유저가 없습니다."), HttpStatus.OK);
+
+        Optional<Diary> isExist = diaryRepository.findById(commentReqDto.getDiaryId());
+        if (!isExist.isPresent())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NO_DIARY ), HttpStatus.OK);
+
+        Diary diary = isExist.get();
+        int commentsCnt = diary.getHowManyComments();
+        diary.setHowManyComments(commentsCnt + 1); // 댓글 카운트 하나 증가
+
+        User user = isExistUser.get();
+        Comment comment = new Comment(commentReqDto, user);
+        commentRepository.save(comment);
+
+        /* 댓글 작성시 alarm 등록 */
+        Alarm alarm = new Alarm(diary.getUser(),1,0,comment.getCommentId(),diary); // 해당 다이어리의 주인(알림을 받을 유저),type = 1 : 댓글 / isChecked = 0 : 읽지 않음
+        alarmRepository.save(alarm);
+
+        if (comment.getCommentCommentId() != null) // 대댓글 달기라면
+            return new ResponseEntity(DataResponse.response(status.SUCCESS,
+                    "대댓글 작성 " + message.SUCCESS + "해당 대댓글 다이어리 id : " + comment.getDiaryId(), comment.getDiaryId()), HttpStatus.OK);
+
+        return new ResponseEntity(DataResponse.response(status.SUCCESS,
+                "다이러리 댓글 작성 " + message.SUCCESS + "해당 댓글 다이어리 id : " + comment.getDiaryId(), comment.getDiaryId()), HttpStatus.OK);
+    }
+
 }

@@ -5,6 +5,7 @@ import com.pet.comes.dto.Rep.DiaryListRepDto;
 import com.pet.comes.dto.Rep.IDiaryUserRepDto;
 import com.pet.comes.dto.Rep.PinListofDiaryDto;
 import com.pet.comes.dto.Req.DiaryReqDto;
+import com.pet.comes.dto.Req.DiaryUpdateReqDto;
 import com.pet.comes.dto.Req.PinReqDto;
 import com.pet.comes.model.Entity.*;
 
@@ -167,17 +168,33 @@ public class DiaryService {
     }
 
     /* 다이어리 수정 API -- Tony */
-    public ResponseEntity modifyDiary(Long diaryId, DiaryReqDto diaryReqDto) {
-        Optional<Diary> tmpDiary = diaryRepository.findById(diaryId);
+    public ResponseEntity modifyDiary(Long diaryId, DiaryUpdateReqDto diaryUpdateReqDto) {
+        Optional<Diary> byId = diaryRepository.findById(diaryId);
 
-        if (!tmpDiary.isPresent()) {
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "수정할 " + message.NO_DIARY), HttpStatus.OK);
-        } else if (diaryReqDto.getText() == null)
-            return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, "다이어리들 불어오기 " + message.NOT_ENTERED + " : 반려견에게 어떤 일이 있었는지 작성해주세요 !"), HttpStatus.OK);
+        if (!byId.isPresent())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "수정할 " + message.NO_DIARY), HttpStatus.NOT_FOUND);
 
-        tmpDiary.get().modify(diaryReqDto);
+        Diary diary = byId.get();
+        String imageUrl = diaryUpdateReqDto.getImageUrl();
+        String text = diaryUpdateReqDto.getText();
+        int isPublic = diaryUpdateReqDto.getIsPublic();
 
-        diaryRepository.save(tmpDiary.get());
+        // imageUrl 수정
+        if (imageUrl != null && imageUrl.length() > 5)
+            diary.setDiaryImgUrl(imageUrl);
+        // imageUrl 수정
+        if (text != null && text.length() > 3)
+            diary.setText(text);
+
+        // 다이어리 공개/비공개 수정
+        if(isPublic != diary.getIsPublic())
+            diary.setIsPublic(isPublic);
+
+        //DB 반영
+        diaryRepository.save(diary);
+
+
+
 
         return new ResponseEntity(DataResponse.response(status.SUCCESS, message.SUCCESS + ": 다이어리 수정", diaryId), HttpStatus.OK);
 

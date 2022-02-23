@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.PushBuilder;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -15,15 +17,19 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    /* D8 : 다이어리 댓글 작성 API --Tony*/
-    @PostMapping()
-    public ResponseEntity writeComment(@RequestBody CommentReqDto commentReqDto) {
-        return commentService.writeComment(commentReqDto);
-    }
 
     /* D6 : 다이어리 댓글 상세보기 API --Tony*/
     @GetMapping("/{diaryId}")
     public ResponseEntity readComments(@PathVariable Long diaryId) {
         return commentService.readComments(diaryId);
     }
+
+    /* D8 : 다이어리 댓글 작성 API --Tony*/
+    @PostMapping()
+    public ResponseEntity writeComment(@RequestBody CommentReqDto commentReqDto) {
+        return commentService.writeComment(commentReqDto);
+    }
+
+
+
 }
