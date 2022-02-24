@@ -4,6 +4,7 @@ import com.pet.comes.dto.Rep.IDiaryUserRepDto;
 import com.pet.comes.model.Entity.Diary;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -40,6 +41,26 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
             "order by d.howManyPins desc")
     List<IDiaryUserRepDto> findAllByIsPublicOrderByHowManyPinsDescQuery();
 
+    @Query("select d.id as id, d.text as text, a.locationName as locationName , d.diaryImgUrl as diaryImageUrl , d.isPublic as isPublic, d.howManyComments as howManyComments, d.howManyPins as howManyPins, d.registeredAt as registeredAt , " +
+            "u.imageUrl as userImageUrl, u.nickname as nickName, u.id as userId , dog.name as dogName " +
+            "from Diary d left join User u on d.user = u left outer join Address a on d.address = a " +
+            "left join Dog dog on d.dogId = dog.id " +
+            "where d.text like :text" )
+    List<IDiaryUserRepDto> findAllByTextContainingQuery(@Param("text") String text);
+
+    @Query("select d.id as id, d.text as text, a.locationName as locationName , d.diaryImgUrl as diaryImageUrl , d.isPublic as isPublic, d.howManyComments as howManyComments, d.howManyPins as howManyPins, d.registeredAt as registeredAt , " +
+            "u.imageUrl as userImageUrl, u.nickname as nickName, u.id as userId , dog.name as dogName " +
+            "from Diary d left join User u on d.user = u left outer join Address a on d.address = a " +
+            "left join Dog dog on d.dogId = dog.id " +
+            "where u.nickname like :text" )
+    List<IDiaryUserRepDto> findAllByNickNameContainingQuery(@Param("text") String text);
+
+    @Query("select d.id as id, d.text as text, a.locationName as locationName , d.diaryImgUrl as diaryImageUrl , d.isPublic as isPublic, d.howManyComments as howManyComments, d.howManyPins as howManyPins, d.registeredAt as registeredAt , " +
+            "u.imageUrl as userImageUrl, u.nickname as nickName, u.id as userId , dog.name as dogName " +
+            "from Diary d left join User u on d.user = u left outer join Address a on d.address = a " +
+            "left join Dog dog on d.dogId = dog.id " +
+            "where dog.name like :text" )
+    List<IDiaryUserRepDto> findAllByDogNameContainingQuery(@Param("text") String text);
 
 //    List<Diary> findAllByIsPublicOrderByIdDesc( Pageable pageable); // 페이징 처리
 //    @Query("")}

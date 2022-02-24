@@ -4,8 +4,10 @@ package com.pet.comes.controller;
 import com.pet.comes.dto.Req.DiaryReqDto;
 import com.pet.comes.dto.Req.DiaryUpdateReqDto;
 import com.pet.comes.dto.Req.PinReqDto;
+import com.pet.comes.model.EnumType.SearchType;
 import com.pet.comes.model.EnumType.SortedType;
 import com.pet.comes.service.DiaryService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -64,6 +66,12 @@ public class DiaryController {
     @GetMapping("/{sorted}")
     public ResponseEntity getAllDiary(@PathVariable SortedType sorted) {
         return diaryService.getAllDiary(sorted);
+    }
+
+    /* S2 공유다이어리 "내용, 작성자, 강아지" 이름으로 검색 --Tony */
+    @GetMapping("/{option}/{text}")
+    public ResponseEntity searchDiary(@PathVariable SearchType option, @PathVariable String text){
+       return diaryService.searchDiary(option,text);
     }
 
     /* S9 다이어리 핀 설정하기/해제하기 API -- Tony */

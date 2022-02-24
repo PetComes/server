@@ -9,6 +9,7 @@ import com.pet.comes.dto.Req.DiaryUpdateReqDto;
 import com.pet.comes.dto.Req.PinReqDto;
 import com.pet.comes.model.Entity.*;
 
+import com.pet.comes.model.EnumType.SearchType;
 import com.pet.comes.model.EnumType.SortedType;
 import com.pet.comes.repository.*;
 import com.pet.comes.response.DataResponse;
@@ -20,6 +21,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -326,7 +329,7 @@ public class DiaryService {
 //                .stream()
 //                .map(diary -> modelMapper.map(diary, DiaryAllListRepDto.class))
 //                .collect(Collectors.toList());
-        if (sortedType.equals(SortedType.CURRENT)) {
+        if (sortedType.equals(SortedType.CURRENT)) { // 최신순으로 설정
             List<IDiaryUserRepDto> allByIsPublicOrderByIdDescQuery = diaryRepository.findAllByIsPublicOrderByIdDescQuery()
                     .stream()
                     .map(d -> modelMapper.map(d, IDiaryUserRepDto.class))
@@ -337,7 +340,7 @@ public class DiaryService {
 
             return new ResponseEntity(DataResponse.response(status.SUCCESS, " 공유다이어리 게시물 조회 (최신순) " + message.SUCCESS, allByIsPublicOrderByIdDescQuery), HttpStatus.OK);
 
-        } else if (sortedType.equals(SortedType.BEST)) {
+        } else if (sortedType.equals(SortedType.BEST)) { // 인기순으로 설정
             List<IDiaryUserRepDto> allByIsPublicOrderByIdDescQuery = diaryRepository.findAllByIsPublicOrderByHowManyPinsDescQuery()
                     .stream()
                     .map(d -> modelMapper.map(d, IDiaryUserRepDto.class))
@@ -353,6 +356,40 @@ public class DiaryService {
 //            return new ResponseEntity(NoDataResponse.response(status.DB_NO_DATA, message.NO_DIARY  ), HttpStatus.OK);
 
         return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_ENTERED + " 파라미터에 BEST, CURRENT를 입력해주세요."), HttpStatus.OK);
+
+    }
+
+    /* S2 공유다이어리 "내용, 작성자, 강아지" 이름으로 검색 --Tony */
+    public ResponseEntity searchDiary(@PathVariable SearchType option, @PathVariable String text){
+        if(text.length() < 2)
+            return new ResponseEntity(NoDataResponse.response(status.DB_NO_DATA, "검색실패 : 2글자 이상 입력해 주세요." ), HttpStatus.NOT_FOUND);
+
+        List<IDiaryUserRepDto> allByTextContainingQuery;
+        if(option.equals(SearchType.CONTENTS)){// 내용으로 검색
+            allByTextContainingQuery = diaryRepository.findAllByTextContainingQuery("%"+text+"%")
+                    .stream()
+                    .map(d -> modelMapper.map(d,IDiaryUserRepDto.class))
+                    .collect(Collectors.toList());
+
+        }else if(option.equals(SearchType.NICKNAME)){ // 닉네임으로 검색
+            allByTextContainingQuery = diaryRepository.findAllByNickNameContainingQuery("%"+text+"%")
+                    .stream()
+                    .map(d -> modelMapper.map(d,IDiaryUserRepDto.class))
+                    .collect(Collectors.toList());
+
+        }else if(option.equals(SearchType.DOGNAME)){ // 강아지로 검색
+            allByTextContainingQuery = diaryRepository.findAllByDogNameContainingQuery("%"+text+"%")
+                    .stream()
+                    .map(d -> modelMapper.map(d,IDiaryUserRepDto.class))
+                    .collect(Collectors.toList());
+
+        }else // 옵션 선택 잘못함 (모바일 개발자 실수)
+            return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED + ": option 선택을 하세요."), HttpStatus.NOT_FOUND);
+
+        if(allByTextContainingQuery.isEmpty())
+            return new ResponseEntity(NoDataResponse.response(status.DB_NO_DATA, "검색실패 : "+message.NO_COMMUNITY_CONTENTS ), HttpStatus.NOT_FOUND);
+
+        return new ResponseEntity(DataResponse.response(status.SUCCESS, " 공유다이어리 검색 "+ option + message.SUCCESS, allByTextContainingQuery), HttpStatus.OK);
 
     }
 
