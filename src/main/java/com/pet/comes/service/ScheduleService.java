@@ -8,10 +8,12 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.pet.comes.model.Entity.User;
+import com.pet.comes.model.Entity.schedule.Drug;
 import com.pet.comes.model.Entity.schedule.Feeding;
 import com.pet.comes.model.Entity.schedule.Potty;
 import com.pet.comes.model.Entity.schedule.Snack;
 import com.pet.comes.repository.UserRepository;
+import com.pet.comes.repository.schedule.DrugRepository;
 import com.pet.comes.repository.schedule.FeedingRepository;
 import com.pet.comes.repository.schedule.PottyRepository;
 import com.pet.comes.repository.schedule.SnackRepository;
@@ -25,6 +27,7 @@ public class ScheduleService {
     private final FeedingRepository feedingRepository;
     private final SnackRepository snackRepository;
     private final PottyRepository pottyRepository;
+    private final DrugRepository drugRepository;
     private final UserRepository userRepository;
 
     /* iconId */
@@ -53,10 +56,13 @@ public class ScheduleService {
 
         scheduleMap.putIfAbsent("date", LocalDate.now().toString().substring(0,10));
         scheduleMap.putIfAbsent("time", LocalTime.now().toString().substring(0,6) + "00");
-        scheduleMap.putIfAbsent("memo", "");
+        scheduleMap.putIfAbsent("memo", null);
 
         if(!scheduleMap.get("date").matches("^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$")) {
             return "잘못된 형식입니다. date(YYYY-MM-DD) : " + scheduleMap.get("date");
+        }
+        if(scheduleMap.get("time").length() == 5) {
+            scheduleMap.put("time", scheduleMap.get("time") + ":00");
         }
         if(!scheduleMap.get("time").matches("^\\d{2}:([0-5][0-9]):(00)$")) {
             return "잘못된 형식입니다. time(HH:MM:00) : " + scheduleMap.get("time");
@@ -90,7 +96,13 @@ public class ScheduleService {
             return "schedule 등록 성공";
         }
         if(iconId == DRUG) {
+            scheduleMap.putIfAbsent("kind", null);
+            scheduleMap.putIfAbsent("prescriptionUrl", null);
+            scheduleMap.putIfAbsent("expenses", "-1");
 
+            Drug drug = new Drug(scheduleMap, user.get());
+            drugRepository.save(drug);
+            return "schedule 등록 성공";
         }
         if(iconId == HOSPITAL) {
 
