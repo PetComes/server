@@ -37,7 +37,6 @@ public class DiaryService {
     private final UserRepository userRepository;
     private final DogRepository dogRepository;
     private final PinRepository pinRepository;
-    private final CommentRepository commentRepository;
     private final AddressRepository addressRepository;
     private final AlarmRepository alarmRepository;
     private final Status status;
@@ -196,9 +195,6 @@ public class DiaryService {
         //DB 반영
         diaryRepository.save(diary);
 
-
-
-
         return new ResponseEntity(DataResponse.response(status.SUCCESS, message.SUCCESS + ": 다이어리 수정", diaryId), HttpStatus.OK);
 
     }
@@ -322,13 +318,7 @@ public class DiaryService {
 
     /* S1 인기순, 최신순 다이어리 정렬, 조회 -- Tony */
     public ResponseEntity getAllDiary(SortedType sortedType) {
-//        List<Diary> diaryList = diaryRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-//          List<Diary> diaries = diaryRepository.findAllByIsPublicOrderByIdDesc(1);
 
-//        List<DiaryAllListRepDto> diaryListRepDtoList = diaryRepository.findAllByIsPublicOrderByIdDesc(1)//findAll(Sort.by(Sort.Direction.DESC,"id"))
-//                .stream()
-//                .map(diary -> modelMapper.map(diary, DiaryAllListRepDto.class))
-//                .collect(Collectors.toList());
         if (sortedType.equals(SortedType.CURRENT)) { // 최신순으로 설정
             List<IDiaryUserRepDto> allByIsPublicOrderByIdDescQuery = diaryRepository.findAllByIsPublicOrderByIdDescQuery()
                     .stream()
@@ -352,9 +342,6 @@ public class DiaryService {
             return new ResponseEntity(DataResponse.response(status.SUCCESS, " 공유다이어리 게시물 조회 (인기순) " + message.SUCCESS, allByIsPublicOrderByIdDescQuery), HttpStatus.OK);
 
         }
-//        if(!isDiary.isPresent())
-//            return new ResponseEntity(NoDataResponse.response(status.DB_NO_DATA, message.NO_DIARY  ), HttpStatus.OK);
-
         return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_ENTERED + " 파라미터에 BEST, CURRENT를 입력해주세요."), HttpStatus.OK);
 
     }
