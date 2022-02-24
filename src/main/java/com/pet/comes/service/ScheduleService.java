@@ -1,6 +1,5 @@
 package com.pet.comes.service;
 
-import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Optional;
 
@@ -8,8 +7,10 @@ import org.springframework.stereotype.Service;
 
 import com.pet.comes.model.Entity.User;
 import com.pet.comes.model.Entity.schedule.Feeding;
+import com.pet.comes.model.Entity.schedule.Snack;
 import com.pet.comes.repository.UserRepository;
 import com.pet.comes.repository.schedule.FeedingRepository;
+import com.pet.comes.repository.schedule.SnackRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class ScheduleService {
 
     private final FeedingRepository feedingRepository;
+    private final SnackRepository snackRepository;
     private final UserRepository userRepository;
 
     /* iconId */
@@ -43,16 +45,18 @@ public class ScheduleService {
         if(user.isEmpty()) {
             return "유효하지 않은 userId 입니다. userId : " + scheduleMap.get("userId");
         }
+        if(!scheduleMap.get("date").matches("^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$")) {
+            return "잘못된 형식입니다. date(YYYY-MM-DD) : " + scheduleMap.get("date");
+        }
+        if(!scheduleMap.get("time").matches("^\\d{2}:([0-5][0-9]):(00)$")) {
+            return "잘못된 형식입니다. time(HH:MM:00) : " + scheduleMap.get("time");
+        }
+        scheduleMap.putIfAbsent("memo", "");
 
         if(iconId == FEEDING) {
-            if(!scheduleMap.get("dryOrWet").equals("DRY") && !scheduleMap.get("dryOrWet").equals("WET")) {
-                return "잘못된 입력입니다. dryOrWet(DRY/WET) : " + scheduleMap.get("dryOrWet");
-            }
-            if(!scheduleMap.get("date").matches("^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$")) {
-                return "잘못된 형식입니다. date(YYYY-MM-DD) : " + scheduleMap.get("date");
-            }
-            if(!scheduleMap.get("time").matches("^\\d{2}:([0-5][0-9]):(00)$")) {
-                return "잘못된 형식입니다. time(HH:MM:00) : " + scheduleMap.get("time");
+            String dryOrWet = scheduleMap.get("dryOrWet");
+            if(!dryOrWet.equals("DRY") && !dryOrWet.equals("WET")) {
+                return "잘못된 입력입니다. dryOrWet(DRY/WET) : " + dryOrWet;
             }
             Feeding feeding = new Feeding(scheduleMap, user.get());
             feedingRepository.save(feeding);
@@ -60,7 +64,14 @@ public class ScheduleService {
             return "schedule 등록 성공";
         }
         if(iconId == SNACK) {
+            String kind = scheduleMap.get("kind");
+            if(!kind.contains("홈메이드 : ") && !kind.contains("구매 : ")) {
+                return "kind 는 \'홈메이드 : \' 또는 \'구매 : \' 로 시작해야 합니다. kind : " + kind;
+            }
+            Snack snack = new Snack(scheduleMap, user.get());
+            snackRepository.save(snack);
 
+            return "schedule 등록 성공";
         }
         if(iconId == POTTY) {
 

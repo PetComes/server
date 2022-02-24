@@ -3,9 +3,12 @@ package com.pet.comes.model.Entity.schedule;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -13,15 +16,23 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import com.pet.comes.model.Entity.User;
+import com.pet.comes.model.EnumType.DryOrWetFeed;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @Table(name = "snack")
+@EntityListeners(AuditingEntityListener.class)
 public class Snack {
 
 	@Id
@@ -40,6 +51,16 @@ public class Snack {
 
 	private String kind; 	// 간식종류 VARCHAR(255)
 
+	@LastModifiedDate
 	private LocalDateTime modifiedAt;
+	@CreatedDate
 	private LocalDateTime registeredAt;
+
+	public Snack (Map<String, String> feedingMap, User user) {
+		this.user = user;
+		this.date = LocalDate.parse(feedingMap.get("date"), DateTimeFormatter.ISO_DATE);
+		this.time = LocalTime.parse(feedingMap.get("time"));
+		this.memo = feedingMap.get("memo");
+		this.kind = feedingMap.get("kind");
+	}
 }
