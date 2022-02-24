@@ -31,7 +31,7 @@ public class Dog  {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne // ManyToOne : default fetchType = LAZY
+    @ManyToOne(fetch = FetchType.LAZY) // ManyToOne : default fetchType = EGAER
     @JoinColumn(name="family_id")
     private Family family; // 외래키 : Dog.family 가 연관관계의 주인임. 주인만이 외래 키를 관리(등록,삭제,수정) 가능, 주인이 아닌 엔티티는 읽기만 가능
 
@@ -52,7 +52,7 @@ public class Dog  {
 
     private float weight;
 
-    @OneToMany(mappedBy = "dog")
+    @OneToMany(mappedBy = "dog",fetch = FetchType.LAZY)
     private List<DogLog> bodyInfoLogs = new ArrayList<>();
 
     @Enumerated(value=EnumType.STRING)
@@ -77,19 +77,20 @@ public class Dog  {
         this.imageUrl = dogReqDto.getImageUrl();
         this.sex = dogReqDto.getSex();
         this.isNeutered = dogReqDto.getIsNeutered();
-        this.registerationNo = dogReqDto.getRegisterationNo();
+//        this.registerationNo = dogReqDto.getRegisterationNo();
         this.modifiedBy = userId;
     }
 
 
     public void setFamily(Family family){ // 양방향 매핑 : 양방향 관계는 항상 서로를 참조해야됨.
         // 양뱡향에서 다대일측(Dog) 에서 기존 연관관계를 끊기
-        if(this.family != null) { // 기존의 family가 있으면
-            this.family.getDogs().remove(this); // Family의 dog에서 삭제
-        }
+//        if(this.family != null) { // 기존의 family가 있으면
+//            this.family.getDogs().remove(this); // Family의 dog에서 삭제
+//        }
+
         this.family = family;
         if(!family.getDogs().contains(this)) { // 무한 루프 방지
-            family.setDogs(this);
+            family.getDogs().add(this);
         }
     }
 

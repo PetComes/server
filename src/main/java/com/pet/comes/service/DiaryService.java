@@ -2,17 +2,21 @@ package com.pet.comes.service;
 
 
 import com.pet.comes.dto.Rep.DiaryListRepDto;
+import com.pet.comes.dto.Rep.IDiaryUserRepDto;
 import com.pet.comes.dto.Rep.PinListofDiaryDto;
 import com.pet.comes.dto.Req.DiaryReqDto;
+import com.pet.comes.dto.Req.DiaryUpdateReqDto;
 import com.pet.comes.dto.Req.PinReqDto;
 import com.pet.comes.model.Entity.*;
 
+import com.pet.comes.model.EnumType.SortedType;
 import com.pet.comes.repository.*;
 import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
 import com.pet.comes.response.Status;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,6 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +39,7 @@ public class DiaryService {
     private final AlarmRepository alarmRepository;
     private final Status status;
     private final ResponseMessage message;
-
+    private final ModelMapper modelMapper;
 
     /* D1 : 강아지별 다이어리 조회 API -- Tony */
     public ResponseEntity dogDiaryList(Long userId, String nickName, String dogName) {
@@ -105,8 +110,14 @@ public class DiaryService {
 
     /* D2 :다이어리 작성 API -- Tony */
     public ResponseEntity writeDiary(DiaryReqDto diaryReqDto) {
-        if (diaryReqDto.getUserId() == null) // userId 가 body에 없음
-            return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED + ": userId가 없습니다. body에 userId를 넣어주세요."), HttpStatus.OK);
+        Optional<User> byId = userRepository.findById(diaryReqDto.getUserId());
+
+
+        if (!byId.isPresent()) // userId 가 body에 없음
+            return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.INVALID_ACCOUNT + ": 해당 유저가 없습니다."), HttpStatus.OK);
+
+        // User 가져오기
+        User user = byId.get();
 
         if (diaryReqDto.getText() == null) // Text data 자체가 없음
             return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED + ": 내용이 없습니다. Text를 작성해 주세요(2글자 이상)"), HttpStatus.OK);
@@ -114,9 +125,6 @@ public class DiaryService {
             return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, message.NOT_ENTERED + " Text를 2글자 이상 작성해주세요. "), HttpStatus.OK);
 
         // diary <-> user 다대일 양방향 매핑을 위해
-        Optional<User> user = userRepository.findById(diaryReqDto.getUserId());
-        if (!user.isPresent()) //
-            return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.INVALID_ACCOUNT + ": 해당 유저가 없습니다."), HttpStatus.OK);
 
         //
         Long dogId = diaryReqDto.getDogId();
@@ -125,10 +133,14 @@ public class DiaryService {
         if (!dog.isPresent())
             return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.INVALID_ACCOUNT + ": 해당 반려견이 없습니다."), HttpStatus.OK);
 
-        if (!user.get().getFamily().getDogs().contains(dog.get()))
+        if (!user.getFamily().getDogs().contains(dog.get()))
             return new ResponseEntity(NoDataResponse.response(status.DB_INVALID_VALUE, message.INVALID_ACCOUNT + ": 해당 반려견이 없습니다."), HttpStatus.OK);
 
         Diary diary = new Diary(diaryReqDto); // 이 시점에서는 비영속 상태  , connection pool을 가져오지 않는다다        diary.setUser(user.get()); // diary <-> user 다대일 양방향 매핑
+
+        // diary <-> user 매핑
+        diary.setUser(user); // diary -> user @ManyToOne
+        user.setDiaries(diary); // user -> diary @OneToMany
 
         if (diaryReqDto.getLocationName() == null) { // 위치 정보 없을 때
 
@@ -156,17 +168,33 @@ public class DiaryService {
     }
 
     /* 다이어리 수정 API -- Tony */
-    public ResponseEntity modifyDiary(Long diaryId, DiaryReqDto diaryReqDto) {
-        Optional<Diary> tmpDiary = diaryRepository.findById(diaryId);
+    public ResponseEntity modifyDiary(Long diaryId, DiaryUpdateReqDto diaryUpdateReqDto) {
+        Optional<Diary> byId = diaryRepository.findById(diaryId);
 
-        if (!tmpDiary.isPresent()) {
-            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "수정할 " + message.NO_DIARY), HttpStatus.OK);
-        } else if (diaryReqDto.getText() == null)
-            return new ResponseEntity(NoDataResponse.response(status.NOT_ENTERED, "다이어리들 불어오기 " + message.NOT_ENTERED + " : 반려견에게 어떤 일이 있었는지 작성해주세요 !"), HttpStatus.OK);
+        if (!byId.isPresent())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "수정할 " + message.NO_DIARY), HttpStatus.NOT_FOUND);
 
-        tmpDiary.get().modify(diaryReqDto);
+        Diary diary = byId.get();
+        String imageUrl = diaryUpdateReqDto.getImageUrl();
+        String text = diaryUpdateReqDto.getText();
+        int isPublic = diaryUpdateReqDto.getIsPublic();
 
-        diaryRepository.save(tmpDiary.get());
+        // imageUrl 수정
+        if (imageUrl != null && imageUrl.length() > 5)
+            diary.setDiaryImgUrl(imageUrl);
+        // imageUrl 수정
+        if (text != null && text.length() > 3)
+            diary.setText(text);
+
+        // 다이어리 공개/비공개 수정
+        if(isPublic != diary.getIsPublic())
+            diary.setIsPublic(isPublic);
+
+        //DB 반영
+        diaryRepository.save(diary);
+
+
+
 
         return new ResponseEntity(DataResponse.response(status.SUCCESS, message.SUCCESS + ": 다이어리 수정", diaryId), HttpStatus.OK);
 
@@ -242,6 +270,7 @@ public class DiaryService {
         List<Pin> userPinList = user.getPins(); // 유저객체가 참조하고 있는 핀들 가져오기
         Long diaryId = pinReqDto.getDiaryId(); // 해당 유저가 핀 설정/해제할 다이어리 id
         Optional<Diary> isDiary = diaryRepository.findById(diaryId);
+
         // 다이어리 유효성 검사
         if (!isDiary.isPresent())
             return new ResponseEntity(NoDataResponse.response(status.INVALID_ID
@@ -274,8 +303,8 @@ public class DiaryService {
         int type = 0;
         System.out.println("===== before Query =====");
         List<Alarm> isExistAlarm = alarmRepository.findAllByUserAndTypeAndContendId(user, diary, type);
-        System.out.println("===== Query findAllByUserAndTypeANdContendId Success =====" );
-        System.out.println("size : "+isExistAlarm.size());
+        System.out.println("===== Query findAllByUserAndTypeANdContendId Success =====");
+        System.out.println("size : " + isExistAlarm.size());
         if (isExistAlarm.size() == 0) { // 해당 다이어리에대한 핀하기를 똑같은 유저가 비중복적으로 누를때만 db에 알람 만들어주기
             System.out.println("==== 중복알람 x, 알람 만들기 ====");
             Alarm alarm = new Alarm(diary.getUser(), 0, 0, user.getId(), diary); // 해당 다이어리의 주인 ,type = 0 : 핀하기 / isChecked = 0 : 읽지 않음
@@ -288,5 +317,43 @@ public class DiaryService {
 
     }
 
+    /* S1 인기순, 최신순 다이어리 정렬, 조회 -- Tony */
+    public ResponseEntity getAllDiary(SortedType sortedType) {
+//        List<Diary> diaryList = diaryRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+//          List<Diary> diaries = diaryRepository.findAllByIsPublicOrderByIdDesc(1);
+
+//        List<DiaryAllListRepDto> diaryListRepDtoList = diaryRepository.findAllByIsPublicOrderByIdDesc(1)//findAll(Sort.by(Sort.Direction.DESC,"id"))
+//                .stream()
+//                .map(diary -> modelMapper.map(diary, DiaryAllListRepDto.class))
+//                .collect(Collectors.toList());
+        if (sortedType.equals(SortedType.CURRENT)) {
+            List<IDiaryUserRepDto> allByIsPublicOrderByIdDescQuery = diaryRepository.findAllByIsPublicOrderByIdDescQuery()
+                    .stream()
+                    .map(d -> modelMapper.map(d, IDiaryUserRepDto.class))
+                    .collect(Collectors.toList());
+
+            if (allByIsPublicOrderByIdDescQuery.isEmpty())
+                return new ResponseEntity(NoDataResponse.response(status.DB_NO_DATA, message.NO_COMMUNITY_CONTENTS), HttpStatus.OK);
+
+            return new ResponseEntity(DataResponse.response(status.SUCCESS, " 공유다이어리 게시물 조회 (최신순) " + message.SUCCESS, allByIsPublicOrderByIdDescQuery), HttpStatus.OK);
+
+        } else if (sortedType.equals(SortedType.BEST)) {
+            List<IDiaryUserRepDto> allByIsPublicOrderByIdDescQuery = diaryRepository.findAllByIsPublicOrderByHowManyPinsDescQuery()
+                    .stream()
+                    .map(d -> modelMapper.map(d, IDiaryUserRepDto.class))
+                    .collect(Collectors.toList());
+
+            if (allByIsPublicOrderByIdDescQuery.isEmpty())
+                return new ResponseEntity(NoDataResponse.response(status.DB_NO_DATA, message.NO_COMMUNITY_CONTENTS), HttpStatus.OK);
+
+            return new ResponseEntity(DataResponse.response(status.SUCCESS, " 공유다이어리 게시물 조회 (인기순) " + message.SUCCESS, allByIsPublicOrderByIdDescQuery), HttpStatus.OK);
+
+        }
+//        if(!isDiary.isPresent())
+//            return new ResponseEntity(NoDataResponse.response(status.DB_NO_DATA, message.NO_DIARY  ), HttpStatus.OK);
+
+        return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.NOT_ENTERED + " 파라미터에 BEST, CURRENT를 입력해주세요."), HttpStatus.OK);
+
+    }
 
 }

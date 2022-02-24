@@ -5,14 +5,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class AlarmListRepDto {
 
+    private Long diaryId;
     private String imageurl;
     private String nickname;
     private String message;
+    private LocalDateTime createdAt;
     // private Long diaryId; //다이어리 id 표시해주기
     /*예시
     *

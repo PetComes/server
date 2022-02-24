@@ -2,12 +2,15 @@ package com.pet.comes.controller;
 
 
 import com.pet.comes.dto.Req.DiaryReqDto;
+import com.pet.comes.dto.Req.DiaryUpdateReqDto;
 import com.pet.comes.dto.Req.PinReqDto;
+import com.pet.comes.model.EnumType.SortedType;
 import com.pet.comes.service.DiaryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.awt.print.Pageable;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,9 +37,9 @@ public class DiaryController {
     }
 
     /* D3 다이어리 수정 API -- Tony */
-    @PutMapping("/{diaryId}")
-    public ResponseEntity modifyDiary(@PathVariable Long diaryId, @RequestBody DiaryReqDto diaryReqDto) {
-        return diaryService.modifyDiary(diaryId, diaryReqDto);
+    @PatchMapping("/{diaryId}")
+    public ResponseEntity modifyDiary(@PathVariable Long diaryId, @RequestBody DiaryUpdateReqDto diaryUpdateReqDto) {
+        return diaryService.modifyDiary(diaryId, diaryUpdateReqDto);
     }
 
     /* D4 다이어리 삭제 API -- Tony */
@@ -55,6 +58,12 @@ public class DiaryController {
     @GetMapping("/pin/{diaryId}")
     public ResponseEntity getPinListofDiary(@PathVariable Long diaryId) {
         return diaryService.getPinListofDiary(diaryId);
+    }
+
+    /* S1 인기순, 최신순 다이어리 정렬, 조회 -- Tony */
+    @GetMapping("/{sorted}")
+    public ResponseEntity getAllDiary(@PathVariable SortedType sorted) {
+        return diaryService.getAllDiary(sorted);
     }
 
     /* S9 다이어리 핀 설정하기/해제하기 API -- Tony */

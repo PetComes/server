@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.modelmapper.ModelMapper;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class UserService {
     private final CommentRepository commentRepository;
     private final PinRepository pinRepository;
     private final DogRepository dogRepository;
+    private final ModelMapper modelMapper;
 
     @Transactional // 해당 메소드가 호출될 때 바뀐 내용을 DB에 반영
     public Long setFamilyId(Long id, Family family) {
@@ -146,20 +148,20 @@ public class UserService {
                     User usertmp = comment.getUser(); // 해당 댓글을 작성한 유저
                     imageurl = usertmp.getImageUrl();
                     nickname = usertmp.getNickname();
-                    messageStr = nickname + "님이 회원님의 게시글에 댓글을 달았습니다.";
+                    messageStr = "님이 회원님의 게시글에 댓글을 달았습니다.";
                 }
 
                 // return 해줄 List에 추가하기
-                AlarmListRepDto alarmListRepDto = new AlarmListRepDto(imageurl, nickname, messageStr);
+                AlarmListRepDto alarmListRepDto = new AlarmListRepDto(alarm.getDiary().getId(), imageurl, nickname, messageStr, alarm.getCreatedAt());
                 alarmListRepDtoList.add(alarmListRepDto);
 
             } else if (alarm.getType() == 0) { // 0 : 핀
                 Optional<User> isUserExist = userRepository.findById(alarm.getContentId());// user_id로 pin 조회
-                if(!isUserExist.isPresent()) // 해당 유저가 탈퇴할 경우
-                    messageStr= "존재하지 않는 계정입니다.";
+                if (!isUserExist.isPresent()) // 해당 유저가 탈퇴할 경우
+                    messageStr = "존재하지 않는 계정입니다.";
                 User userParam = isUserExist.get();
 
-                Optional<Pin> isExist = pinRepository.findByUserAndDiaryId(userParam,alarm.getDiary().getId()); // 핀을 영속성컨텍스트에서 찾기
+                Optional<Pin> isExist = pinRepository.findByUserAndDiaryId(userParam, alarm.getDiary().getId()); // 핀을 영속성컨텍스트에서 찾기
                 if (!isExist.isPresent())  // 핀이 db상에서 오류 났을 때 ?
                     messageStr = "핀한 다이어리가 존재하지 않습니다.";
 
@@ -168,10 +170,10 @@ public class UserService {
                     User usertmp = pin.getUser(); // 해당 핀 객체를 가진 유저
                     imageurl = usertmp.getImageUrl();
                     nickname = usertmp.getNickname();
-                    messageStr = nickname + "님이 회원님의 게시글을 핀했습니다.";
+                    messageStr = "님이 회원님의 게시글을 핀했습니다.";
                 }
                 // return 해줄 List에 추가하기
-                AlarmListRepDto alarmListRepDto = new AlarmListRepDto(imageurl, nickname, messageStr);
+                AlarmListRepDto alarmListRepDto = new AlarmListRepDto(alarm.getDiary().getId(), imageurl, nickname, messageStr, alarm.getCreatedAt());
                 alarmListRepDtoList.add(alarmListRepDto);
             }
         }
@@ -198,7 +200,7 @@ public class UserService {
                 return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_ACCOUNT + "유저 다이어리가 없습니다. "), HttpStatus.OK);
             Diary diary = isExist2.get();
             pinListRepDto.setText(diary.getText());
-            pinListRepDto.setContentImageUrl(diary.getImageUrl());
+            pinListRepDto.setContentImageUrl(diary.getDiaryImgUrl());
 
             User usertmp = diary.getUser();
             if (usertmp == null)
@@ -243,6 +245,30 @@ public class UserService {
         ), HttpStatus.NOT_FOUND);
     }
 
+    /* H11 : 알림확인(체크하기) -- Tony */
+    public ResponseEntity checkAlarm(Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalAccessError("잘못된 userId입니다."));
+
+        List<Alarm> allByUser = alarmRepository.findAllByUser(user);
+
+        if (allByUser.isEmpty())
+            return new ResponseEntity(NoDataResponse.response(status.DB_NO_DATA, message.NO_ALARMS), HttpStatus.NOT_FOUND);
+
+        for (Alarm alarm : allByUser) {
+            alarm.setIsChecked(1);
+        }
+
+        alarmRepository.saveAll(allByUser);
+
+
+        return new ResponseEntity(DataResponse.response(
+                status.SUCCESS, "알림체크 " + message.SUCCESS, user.getId()
+        ), HttpStatus.OK);
+
+    }
+
     /* U5 : 닉네임 중복여부 확인(유저 닉네임) -- Tony */
     public ResponseEntity validNickname(String nickname) {
         Optional<User> isExist = userRepository.findByNickname(nickname);
@@ -261,6 +287,7 @@ public class UserService {
 
     /* S9 : 클릭한 계정 프로필 확인하기 --Tony */
     public ResponseEntity getUserProfile(@PathVariable String userName) {
+
         Optional<User> isExist = userRepository.findByNickname(userName);
         if (!isExist.isPresent())
             return new ResponseEntity(NoDataResponse.response(status.INVALID_ID
@@ -269,38 +296,41 @@ public class UserService {
 
         User user = isExist.get();
 
-        List<GetProfileRepDto> getProfileRepDtoList = new ArrayList<>();
+//        List<GetProfileRepDto> getProfileRepDtoList = new ArrayList<>();
 
         // 뱃지 연관관계 결정되면 넣기
         // 유저관련 정보들
-        GetProfileRepDto getProfileRepDto = new GetProfileRepDto(user.getNickname(),user.getImageUrl(),user.getIntroduction(),"뱃지관련은 작업후 추가");
+        GetProfileRepDto getProfileRepDto = new GetProfileRepDto(user.getNickname(), user.getImageUrl(), user.getIntroduction(), "뱃지관련은 작업후 추가");
 
         // 반환할 결과 리스트에 추가
-        getProfileRepDtoList.add(getProfileRepDto);
+//        getProfileRepDtoList.add(getProfileRepDto);
 
         Family family = user.getFamily();
         if (family == null) // 반려견이 없을 때 (최초 생성 하지 않으면 family 없음)
             return new ResponseEntity(DataResponse.response(
-                    status.SUCCESS,   new ResponseMessage().SUCCESS + " 반려견을 등록하지 않음.", getProfileRepDtoList
+                    status.SUCCESS, new ResponseMessage().SUCCESS + " 반려견을 등록하지 않음.", getProfileRepDto
             ), HttpStatus.OK);
 
         // 반려견 관련 정보들
         List<Dog> dogList = dogRepository.findAllByFamily(family);
-        if(dogList.isEmpty()) // 반려견이 없을 때
+        if (dogList.isEmpty()) // 반려견이 없을 때
             return new ResponseEntity(DataResponse.response(
-                    status.SUCCESS,   new ResponseMessage().SUCCESS + " 반려견을 등록하지 않음.", getProfileRepDtoList
+                    status.SUCCESS, new ResponseMessage().SUCCESS + " 반려견을 등록하지 않음.", getProfileRepDto
             ), HttpStatus.OK);
 
         // 반려견이 있을 때 -> 반려견 이름, 반려견 사진
+        List<DogsProfileRepDto> params = new ArrayList<>();
         for (Dog dog : dogList) {
             // 반려견 관련 정보들
-            GetProfileRepDto getProfileRepDto1 = new GetProfileRepDto(dog.getName(),dog.getImageUrl());
-            getProfileRepDtoList.add(getProfileRepDto1);
+            DogsProfileRepDto dto = new DogsProfileRepDto(dog.getName(), dog.getImageUrl());
+            params.add(dto);
+            getProfileRepDto.setGetDogsProfileRepDtoList(params);
+
         }
 
 
         return new ResponseEntity(DataResponse.response(
-                status.SUCCESS,   new ResponseMessage().SUCCESS + "유저, 반려견 모두 등록", getProfileRepDtoList
+                status.SUCCESS, new ResponseMessage().SUCCESS + "유저, 반려견 모두 등록", getProfileRepDto
         ), HttpStatus.OK);
 
     }

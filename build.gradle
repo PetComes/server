@@ -39,6 +39,9 @@ dependencies {
     // https://www.youtube.ㄹcom/watch?v=BmfrvbUH-YQ
     implementation 'io.springfox:springfox-swagger2:2.9.2'
     implementation 'io.springfox:springfox-swagger-ui:2.9.2'
+
+    // ModelMapper
+    implementation('org.modelmapper:modelmapper:0.7.8')
 }
 
 test {

@@ -22,4 +22,5 @@ public class ResponseMessage {
     public String EXISTED_NICKNAME = "이미 닉네임이 존재합니다. 다른 닉네임을 작성해 주세요.";
     public String NO_ALARMS = "알림이 없습니다.";
     public String INVALID_USER = "유효하지 않은 userId 입니다.";
+    public String NO_COMMUNITY_CONTENTS = "공유다이어리에 게시된 다이어리가 없습니다.";
 }

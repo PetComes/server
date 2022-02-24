@@ -2,15 +2,12 @@ package com.pet.comes.model.Entity;
 
 
 import com.pet.comes.dto.Req.DiaryReqDto;
-import com.pet.comes.model.Timestamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.tomcat.jni.Local;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.persistence.*;
@@ -34,25 +31,28 @@ public class Diary {//extends Timestamped {
     private Long dogId;
 
     @Column(columnDefinition = "TEXT") //
-    private String Text;
+    private String text;
 
     private int howManyDogs;
 
 
-    @Column(columnDefinition = "TEXT")
-    private String imageUrl;
+    @Column(name = "image_url",columnDefinition = "TEXT")
+    private String diaryImgUrl;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)// default : EAGER
     @JoinColumn(name = "address_id") // 연관관계 주인 : 주 테이블에 연관관계 주인 있는 것을 선호함.
     private Address address;
 
-    @Column(nullable = false, columnDefinition = "TINYINT", length = 1) // DBMS의 테이블과 매핑시 오류방지
+    @Column(name = "is_public",nullable = false, columnDefinition = "TINYINT", length = 1) // DBMS의 테이블과 매핑시 오류방지
     private int isPublic; // 1: 공개 , 0 : 비공개
 
+    @Column(name = "how_many_comments")
     private int howManyComments; // 다이어리에 달린 댓글 수
 
+    @Column(name = "how_many_pins")
     private int howManyPins; // 다이어리가 pin된 갯수
 
+//    @Column(name = "registered_at")
     @CreatedDate
     private LocalDateTime registeredAt;
 
@@ -64,19 +64,19 @@ public class Diary {//extends Timestamped {
 
     public Diary(@RequestBody DiaryReqDto diaryReqDto) {
         this.dogId = diaryReqDto.getDogId();
-        this.Text = diaryReqDto.getText();
+        this.text = diaryReqDto.getText();
         this.howManyDogs = diaryReqDto.getHowManyDogs();
         this.isPublic = diaryReqDto.getIsPublic();
-        this.isDeleted = diaryReqDto.getIsDeleted();
-        this.imageUrl = diaryReqDto.getImageUrl();
+//        this.isDeleted = diaryReqDto.getIsDeleted();
+        this.diaryImgUrl = diaryReqDto.getImageUrl();
     }
 
     public void modify(DiaryReqDto diaryReqDto) {
         this.howManyDogs = diaryReqDto.getHowManyDogs();
         this.isPublic = diaryReqDto.getIsPublic();
-        this.Text = diaryReqDto.getText();
-        this.isDeleted = diaryReqDto.getIsDeleted();
-        this.imageUrl = diaryReqDto.getImageUrl();
+        this.text = diaryReqDto.getText();
+//        this.isDeleted = diaryReqDto.getIsDeleted();
+        this.diaryImgUrl = diaryReqDto.getImageUrl();
     }
 
     public void toggle(int isPublic) {

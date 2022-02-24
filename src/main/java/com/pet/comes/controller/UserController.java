@@ -1,5 +1,6 @@
 package com.pet.comes.controller;
 
+import com.pet.comes.dto.Req.AlarmCheckedReqDto;
 import com.pet.comes.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +44,7 @@ public class UserController {
     }
 
     /* H3 : 알림 목록 조회 --Tony */
-    @GetMapping("list/alarm/{userId}")
+    @GetMapping("alarm/list/{userId}")
     public ResponseEntity showAlarmList(@PathVariable Long userId){
         return userService.showAlarmList(userId);
     }
@@ -58,6 +59,12 @@ public class UserController {
     @GetMapping("family/{id}")
     public ResponseEntity myFamily(@PathVariable Long id) {
         return userService.myFamily(id);
+    }
+
+    /* H11 : 알림확인(체크하기) -- Tony */
+    @PatchMapping("alarm/{userId}")
+    public ResponseEntity checkAlarm(@PathVariable Long userId){
+        return userService.checkAlarm(userId);
     }
 
     /* U1 : 회원가입 및 로그인 --Tony */
