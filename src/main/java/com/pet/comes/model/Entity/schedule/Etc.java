@@ -6,6 +6,7 @@ import java.time.LocalTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -13,10 +14,22 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import com.pet.comes.model.Entity.User;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 @Table(name = "etc")
+@EntityListeners(AuditingEntityListener.class)
 public class Etc {
 
 	@Id
@@ -35,6 +48,8 @@ public class Etc {
 
 	// Addition 1 양방향 매핑 자리
 
+	@LastModifiedDate
 	private LocalDateTime modifiedAt;
+	@CreatedDate
 	private LocalDateTime registeredAt;
 }
