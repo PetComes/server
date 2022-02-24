@@ -207,7 +207,7 @@ public class DogService {
         // 등록된 몸무게 확인
         float weight = dogForUpdate.getWeight();
 
-        // 몸무게가 이전에 등록되어 있었다면 dog_log에 저장
+        // 몸무게가 이전에 등록되어 있었다면 dog_log에 저장 -> 몸무게 변경 시 항상 dog update, dogLog insert! (dogLog는 이력이 남는 것)
         if(weight != 0.0f) {
             DogLog dogLog = new DogLog(dogBodyInfo, dogForUpdate); // dogLog -> dog 매핑
             dogLogRepository.save(dogLog);

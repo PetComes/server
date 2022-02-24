@@ -26,7 +26,7 @@ public class DogLog implements Serializable {
     private float weight;
 
     @CreatedDate
-    private LocalDateTime registeredAt;
+    private LocalDateTime registeredAt = LocalDateTime.now();
 
     public void setDog(Dog dog) {
         if (!dog.getBodyInfoLogs().contains(this)) {
@@ -42,5 +42,14 @@ public class DogLog implements Serializable {
         }
         this.weight = dogBodyInformationDto.getWeight();
 
+    }
+
+    public DogLog(Dog dog, float weight) {
+        this.dog.setDog(dog);
+
+        if(!dog.getBodyInfoLogs().contains(this)) {
+            dog.getBodyInfoLogs().add(this);
+        }
+        this.weight = weight;
     }
 }

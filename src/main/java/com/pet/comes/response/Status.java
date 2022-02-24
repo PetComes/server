@@ -35,6 +35,9 @@ public class Status {
     public int DIARY_UNREGISTERED = 318;
     public int COMMENT_UNREGISTERED = 319;
     public int SCHEDULE_UNREGISTERED = 320;
+    public int INVALID_DATE = 321;
+    public int INVALID_TIME = 322;
+    public int INVALID_VALUE = 323;
 
     public int DB_INVALID_VALUE = 500;
     public int DB_NO_DATA = 501;

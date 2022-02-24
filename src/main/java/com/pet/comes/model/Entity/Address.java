@@ -1,6 +1,8 @@
 package com.pet.comes.model.Entity;
 
 
+import java.util.Map;
+
 import com.pet.comes.dto.Req.DiaryReqDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,5 +50,12 @@ public class Address {
     public void setDiary(Diary diary) {
         if (this.diary == null)
             this.diary = diary;
+    }
+
+    public Address(Map<String, String> addressMap) {
+        this.address = addressMap.get("address");
+        this.locationName = addressMap.get("locationName");
+        this.x = addressMap.get("x");
+        this.y = addressMap.get("y");
     }
 }
