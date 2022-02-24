@@ -56,11 +56,11 @@ public class Snack {
 	@CreatedDate
 	private LocalDateTime registeredAt;
 
-	public Snack (Map<String, String> feedingMap, User user) {
+	public Snack (Map<String, String> snackMap, User user) {
 		this.user = user;
-		this.date = LocalDate.parse(feedingMap.get("date"), DateTimeFormatter.ISO_DATE);
-		this.time = LocalTime.parse(feedingMap.get("time"));
-		this.memo = feedingMap.get("memo");
-		this.kind = feedingMap.get("kind");
+		this.date = LocalDate.parse(snackMap.get("date"), DateTimeFormatter.ISO_DATE);
+		this.time = LocalTime.parse(snackMap.get("time"));
+		this.memo = snackMap.get("memo");
+		this.kind = snackMap.get("kind");
 	}
 }
