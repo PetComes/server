@@ -16,7 +16,8 @@ public class Icon {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
+    private String title; // VARCHAR(45)
+    private String name;  // VARCHAR(45)
 
     @Column(columnDefinition = "TEXT")
     private String imageUrl;

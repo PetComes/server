@@ -9,10 +9,8 @@ import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
 import com.pet.comes.response.Status;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.jni.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -158,7 +156,7 @@ public class BadgeService {
             for(Diary diary : diaryList) {
                 dateCreated = diary.getRegisteredAt();
                 standard = dateCreated.plusDays(7);
-                numOfPin = pinRepository.countPinByDiaryIdAndPinnedAtBetween(diary.getId(), dateCreated, standard);
+                numOfPin = pinRepository.countPinByDiaryIdAndPinedAtBetween(diary.getId(), dateCreated, standard);
                 if(numOfPin >= 100) {
                     doesMeetTheCondition = true;
                     break;

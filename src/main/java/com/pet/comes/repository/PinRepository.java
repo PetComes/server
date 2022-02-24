@@ -15,6 +15,6 @@ public interface PinRepository extends JpaRepository<Pin,Long> {
 
     Optional<Pin> findByUserAndDiaryId(User user,Long diary);
     List<Pin> findAllByDiaryId(Long diaryId);
-    int countPinByDiaryIdAndPinnedAtBetween(Long diaryId, LocalDateTime start, LocalDateTime end);
+    int countPinByDiaryIdAndPinedAtBetween(Long diaryId, LocalDateTime start, LocalDateTime end);
 
 }
