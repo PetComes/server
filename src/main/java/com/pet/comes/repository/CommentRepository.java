@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -23,10 +24,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {//<Comm
     @Query("select u.nickname, u.imageUrl from Comment c left join User u " +
             "where c.diaryId= :diaryId")
     List<Object[]> findAllByDiaryIdForH3(@Param("diaryId") Long diaryId);
-
-
-//    @Query("select c " +
-//            "from Comment c  ")
-
+  
+    List<Comment> findByUserIdAndCommentedAtBetween(Long userId, LocalDateTime start, LocalDateTime end);
 
 }

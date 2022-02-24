@@ -6,12 +6,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface DiaryRepository extends JpaRepository<Diary, Long> {
 
     List<Diary> findAllByDogId(Long dogId);
+    List<Diary> findByUserId(Long userId);
+    List<Diary> findByUserIdAndRegisteredAtBetween(Long UserId, LocalDateTime start, LocalDateTime end);
 
     List<Diary> findAllByIsPublicOrderByIdDesc(int isPublic);
 

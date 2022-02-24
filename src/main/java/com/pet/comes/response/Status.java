@@ -25,6 +25,19 @@ public class Status {
     public int EMPTY_VALUE = 309;
     public int TOO_LONG_VALUE = 310;
     public int INVALID_NO = 311;
+    public int NOTHING = 312;
+    public int NOT_ACHIEVED = 313;
+    public int TAKEN_BADGE = 314;
+    public int INVALID_BADGE = 315;
+    public int FAMILY_UNREGISTERED = 316;
+    public int PIN_UNREGISTERED = 317;
+    public int BADGE_ACHIEVEMENT_CONDITION_UNREGISTERED = 318;
+    public int DIARY_UNREGISTERED = 318;
+    public int COMMENT_UNREGISTERED = 319;
+    public int SCHEDULE_UNREGISTERED = 320;
+    public int INVALID_DATE = 321;
+    public int INVALID_TIME = 322;
+    public int INVALID_VALUE = 323;
 
     public int DB_INVALID_VALUE = 500;
     public int DB_NO_DATA = 501;
