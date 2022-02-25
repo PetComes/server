@@ -3,6 +3,8 @@ package com.pet.comes.model.Entity.schedule;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -50,4 +52,11 @@ public class Training {
 	private LocalDateTime modifiedAt;
 	@CreatedDate
 	private LocalDateTime registeredAt;
+
+	public Training(Map<String, String> trainingMap, User user) {
+		this.user = user;
+		this.date = LocalDate.parse(trainingMap.get("date"), DateTimeFormatter.ISO_DATE);
+		this.time = LocalTime.parse(trainingMap.get("time"));
+		this.memo = trainingMap.get("memo");
+	}
 }

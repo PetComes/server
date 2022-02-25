@@ -3,6 +3,10 @@ package com.pet.comes.model.Entity.schedule;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +16,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -46,10 +51,25 @@ public class Etc {
 	@Column(columnDefinition = "TEXT")
 	private String memo;    // 자유메모
 
-	// Addition 1 양방향 매핑 자리
+	@OneToMany(mappedBy = "etc")
+	private List<AdditionalItem> additionalItemList = new ArrayList<>();
 
 	@LastModifiedDate
 	private LocalDateTime modifiedAt;
 	@CreatedDate
 	private LocalDateTime registeredAt;
+
+	public void addAdditionalItem(AdditionalItem additionalItem) {
+		if(additionalItem.getEtc() != this) {
+			additionalItem.changeEtc(this);
+		}
+		this.additionalItemList.add(additionalItem);
+	}
+
+	public Etc(Map<String, String> etcMap, User user) {
+		this.user = user;
+		this.date = LocalDate.parse(etcMap.get("date"), DateTimeFormatter.ISO_DATE);
+		this.time = LocalTime.parse(etcMap.get("time"));
+		this.memo = etcMap.get("memo");
+	}
 }

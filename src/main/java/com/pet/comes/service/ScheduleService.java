@@ -14,20 +14,38 @@ import com.pet.comes.model.Entity.Address;
 import com.pet.comes.model.Entity.Dog;
 import com.pet.comes.model.Entity.DogLog;
 import com.pet.comes.model.Entity.User;
+import com.pet.comes.model.Entity.schedule.AdditionalItem;
+import com.pet.comes.model.Entity.schedule.Bath;
 import com.pet.comes.model.Entity.schedule.Drug;
+import com.pet.comes.model.Entity.schedule.Etc;
 import com.pet.comes.model.Entity.schedule.Feeding;
 import com.pet.comes.model.Entity.schedule.Hospital;
+import com.pet.comes.model.Entity.schedule.Menstruation;
+import com.pet.comes.model.Entity.schedule.Playing;
 import com.pet.comes.model.Entity.schedule.Potty;
+import com.pet.comes.model.Entity.schedule.Salon;
+import com.pet.comes.model.Entity.schedule.Sleep;
 import com.pet.comes.model.Entity.schedule.Snack;
+import com.pet.comes.model.Entity.schedule.Training;
+import com.pet.comes.model.Entity.schedule.Walk;
 import com.pet.comes.repository.AddressRepository;
 import com.pet.comes.repository.DogLogRepository;
 import com.pet.comes.repository.DogRepository;
 import com.pet.comes.repository.UserRepository;
+import com.pet.comes.repository.schedule.AdditionalItemRepository;
+import com.pet.comes.repository.schedule.BathRepository;
 import com.pet.comes.repository.schedule.DrugRepository;
+import com.pet.comes.repository.schedule.EtcRepository;
 import com.pet.comes.repository.schedule.FeedingRepository;
 import com.pet.comes.repository.schedule.HospitalRepository;
+import com.pet.comes.repository.schedule.MenstruationRepository;
+import com.pet.comes.repository.schedule.PlayingRepository;
 import com.pet.comes.repository.schedule.PottyRepository;
+import com.pet.comes.repository.schedule.SalonRepository;
+import com.pet.comes.repository.schedule.SleepRepository;
 import com.pet.comes.repository.schedule.SnackRepository;
+import com.pet.comes.repository.schedule.TrainingRepository;
+import com.pet.comes.repository.schedule.WalkRepository;
 import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
 import com.pet.comes.response.Status;
@@ -43,6 +61,15 @@ public class ScheduleService {
 	private final PottyRepository pottyRepository;
 	private final DrugRepository drugRepository;
 	private final HospitalRepository hospitalRepository;
+	private final SalonRepository salonRepository;
+	private final BathRepository bathRepository;
+	private final SleepRepository sleepRepository;
+	private final PlayingRepository playingRepository;
+	private final TrainingRepository trainingRepository;
+	private final MenstruationRepository menstruationRepository;
+	private final WalkRepository walkRepository;
+	private final EtcRepository etcRepository;
+	private final AdditionalItemRepository additionalItemRepository;
 
 	private final UserRepository userRepository;
 	private final AddressRepository addressRepository;
@@ -129,6 +156,17 @@ public class ScheduleService {
 		scheduleMap.putIfAbsent("weight", "-1");
 	}
 
+	public void setSalonParametersIfAbsent(Map<String, String> scheduleMap) {
+		scheduleMap.putIfAbsent("expenses", "-1");
+	}
+
+	public void setWalkParametersIfAbsent(Map<String, String> scheduleMap) {
+		LocalTime now = LocalTime.now();
+		LocalTime end = now.plusHours(1);
+		scheduleMap.putIfAbsent("startTime", now.toString().substring(0, 6) + "00");
+		scheduleMap.putIfAbsent("endTime", end.toString().substring(0, 6) + "00");
+	}
+
 	@Transactional
 	public ResponseEntity<String> registerSchedule(Map<String, String> scheduleMap) {
 		int iconId = Integer.parseInt(scheduleMap.get("iconId"));
@@ -143,7 +181,8 @@ public class ScheduleService {
 		setDateTimeMemoIfAbsent(scheduleMap);
 		if (!scheduleMap.get("date").matches("^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$")) {
 			return new ResponseEntity(
-				NoDataResponse.response(status.INVALID_DATE, "잘못된 형식입니다. date(YYYY-MM-DD) : " + scheduleMap.get("date")),
+				NoDataResponse.response(status.INVALID_DATE,
+					"잘못된 형식입니다. date(YYYY-MM-DD) : " + scheduleMap.get("date")),
 				HttpStatus.BAD_REQUEST);
 		}
 
@@ -162,7 +201,6 @@ public class ScheduleService {
 				return new ResponseEntity(NoDataResponse.response(status.INVALID_VALUE,
 					"dryOrWet 값은 DRY 또는 WET 중 하나여야 합니다. dryOrWet : " + dryOrWet), HttpStatus.OK);
 			}
-
 			Feeding feeding = new Feeding(scheduleMap, user.get());
 			feedingRepository.save(feeding);
 			return new ResponseEntity(
@@ -227,7 +265,7 @@ public class ScheduleService {
 			}
 
 			Address address = setAddress(scheduleMap);
-			if(address != null) {
+			if (address != null) {
 				addressRepository.save(address);
 			}
 			setHospitalParametersIfAbsent(scheduleMap);
@@ -237,31 +275,79 @@ public class ScheduleService {
 				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
 		}
 		if (iconId == SALON) {
-
+			Address address = setAddress(scheduleMap);
+			if (address != null) {
+				addressRepository.save(address);
+			}
+			setSalonParametersIfAbsent(scheduleMap);
+			Salon salon = new Salon(scheduleMap, user.get(), address);
+			salonRepository.save(salon);
+			return new ResponseEntity(
+				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
 		}
 		if (iconId == BATH) {
-
+			Bath bath = new Bath(scheduleMap, user.get());
+			bathRepository.save(bath);
+			return new ResponseEntity(
+				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
 		}
 		if (iconId == SLEEP) {
-
+			Sleep sleep = new Sleep(scheduleMap, user.get());
+			sleepRepository.save(sleep);
+			return new ResponseEntity(
+				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
 		}
 		if (iconId == PLAYING) {
-
+			Playing playing = new Playing(scheduleMap, user.get());
+			playingRepository.save(playing);
+			return new ResponseEntity(
+				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
 		}
 		if (iconId == TRAINING) {
-
+			Training training = new Training(scheduleMap, user.get());
+			trainingRepository.save(training);
+			return new ResponseEntity(
+				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
 		}
 		if (iconId == MENSTRUATION) {
-
+			Menstruation menstruation = new Menstruation(scheduleMap, user.get());
+			menstruationRepository.save(menstruation);
+			return new ResponseEntity(
+				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
 		}
 		if (iconId == WALK) {
-
+			setWalkParametersIfAbsent(scheduleMap); // 기본 1시간 산책
+			Walk walk = new Walk(scheduleMap, user.get());
+			walkRepository.save(walk);
+			return new ResponseEntity(
+				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
 		}
 		if (iconId == ETC) {
+			if(!scheduleMap.containsKey("additionalItemNo")) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.EMPTY_VALUE, "additionalItemNo " + responseMessage.EMPTY_VALUE), HttpStatus.OK);
+			}
 
+			int number = Integer.parseInt(scheduleMap.get("additionalItemNo"));
+			Etc etc = new Etc(scheduleMap, user.get());
+			etcRepository.save(etc);
+			System.out.println(etc.getId());
+			AdditionalItem additionalItem;
+			String item, value;
+			for(int i = 0; i<number; i++) {
+				item = scheduleMap.get("item" + i);
+				value = scheduleMap.get("value" + i);
+				additionalItem = new AdditionalItem(item, value, etc);
+				etc.addAdditionalItem(additionalItem);
+				additionalItemRepository.save(additionalItem);
+			}
+			etcRepository.save(etc);
+			return new ResponseEntity(
+				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
 		}
 		return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "유효하지 않은 iconId 입니다. iconId : " + iconId),
 			HttpStatus.OK);
 
 	}
+
 }
