@@ -329,6 +329,11 @@ public class ScheduleService {
 			}
 
 			int number = Integer.parseInt(scheduleMap.get("additionalItemNo"));
+			if(number == 0) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.INVALID_VALUE, "additionalItemNo가 0입니다. 추가항목이 있어야 등록 가능합니다. "), HttpStatus.OK);
+			}
+
 			Etc etc = new Etc(scheduleMap, user.get());
 			etcRepository.save(etc);
 			System.out.println(etc.getId());
