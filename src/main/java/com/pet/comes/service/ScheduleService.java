@@ -81,7 +81,7 @@ public class ScheduleService {
 
 	public void setFeedingParametersIfAbsent(Map<String, String> scheduleMap) {
 		scheduleMap.putIfAbsent("kind", null);
-		scheduleMap.putIfAbsent("dryOrWet", null);
+		scheduleMap.putIfAbsent("dryOrWet", "DRY");
 		scheduleMap.putIfAbsent("amount", null);
 	}
 
@@ -171,7 +171,7 @@ public class ScheduleService {
 		if (iconId == SNACK) {
 			scheduleMap.putIfAbsent("kind", null);
 			String kind = scheduleMap.get("kind");
-			if (!kind.contains("홈메이드 : ") && !kind.contains("구매 : ")) {
+			if (kind != null && !kind.contains("홈메이드 : ") && !kind.contains("구매 : ")) {
 				return new ResponseEntity(NoDataResponse.response(status.INVALID_VALUE,
 					"kind 값은 \'홈메이드 : \' 또는 \'구매 : \' 로 시작해야 합니다. kind : " + kind), HttpStatus.OK);
 			}
@@ -181,7 +181,7 @@ public class ScheduleService {
 				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
 		}
 		if (iconId == POTTY) {
-			scheduleMap.putIfAbsent("kind", null);
+			scheduleMap.putIfAbsent("kind", "URINE");
 			String kind = scheduleMap.get("kind");
 			if (!kind.equals("URINE") && !kind.equals("FECES")) {
 				return new ResponseEntity(NoDataResponse.response(status.INVALID_VALUE,

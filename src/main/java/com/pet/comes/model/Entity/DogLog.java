@@ -20,8 +20,15 @@ import java.time.LocalDateTime;
 @Table(name = "dog_log")
 public class DogLog implements Serializable {
 
-    @EmbeddedId
-    private DogLogId dog = new DogLogId();
+    // @EmbeddedId
+    // private DogLogId dog = new DogLogId();
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "dog_id")
+    private Dog dog;
 
     private float weight;
 
@@ -35,7 +42,7 @@ public class DogLog implements Serializable {
     }
 
     public DogLog(DogBodyInformationDto dogBodyInformationDto, Dog dog) {
-        this.dog.setDog(dog);
+        this.dog = dog;
 
         if (!dog.getBodyInfoLogs().contains(this)) {
             dog.getBodyInfoLogs().add(this);
@@ -45,7 +52,7 @@ public class DogLog implements Serializable {
     }
 
     public DogLog(Dog dog, float weight) {
-        this.dog.setDog(dog);
+        this.dog = dog;
 
         if(!dog.getBodyInfoLogs().contains(this)) {
             dog.getBodyInfoLogs().add(this);
