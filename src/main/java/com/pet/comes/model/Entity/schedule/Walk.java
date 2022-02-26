@@ -3,6 +3,8 @@ package com.pet.comes.model.Entity.schedule;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -51,4 +53,12 @@ public class Walk {
 	private LocalDateTime modifiedAt;
 	@CreatedDate
 	private LocalDateTime registeredAt;
+
+	public Walk(Map<String, String> walkMap, User user) {
+		this.user = user;
+		this.date = LocalDate.parse(walkMap.get("date"), DateTimeFormatter.ISO_DATE);
+		this.startTime = LocalTime.parse(walkMap.get("startTime"));
+		this.endTime = LocalTime.parse(walkMap.get("endTime"));
+		this.memo = walkMap.get("memo");
+	}
 }

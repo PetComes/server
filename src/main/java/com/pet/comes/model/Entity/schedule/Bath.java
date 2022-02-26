@@ -3,6 +3,8 @@ package com.pet.comes.model.Entity.schedule;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,6 +21,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.pet.comes.model.Entity.User;
+import com.pet.comes.model.EnumType.KindOfPotty;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -50,4 +53,11 @@ public class Bath {
 	private LocalDateTime modifiedAt;
 	@CreatedDate
 	private LocalDateTime registeredAt;
+
+	public Bath(Map<String, String> bathMap, User user) {
+		this.user = user;
+		this.date = LocalDate.parse(bathMap.get("date"), DateTimeFormatter.ISO_DATE);
+		this.time = LocalTime.parse(bathMap.get("time"));
+		this.memo = bathMap.get("memo");
+	}
 }
