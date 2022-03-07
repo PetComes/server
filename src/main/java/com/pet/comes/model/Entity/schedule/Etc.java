@@ -19,6 +19,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -52,6 +54,7 @@ public class Etc {
 	private String memo;    // 자유메모
 
 	@OneToMany(mappedBy = "etc")
+	@Cascade(value = CascadeType.ALL)
 	private List<AdditionalItem> additionalItemList = new ArrayList<>();
 
 	@LastModifiedDate
