@@ -25,4 +25,5 @@ public class ResponseMessage {
     public String NO_COMMUNITY_CONTENTS = "공유다이어리에 게시된 다이어리가 없습니다.";
     public String SUCCESS_REGISTER_SCHEDULE = "schedule 등록 성공";
     public String EMPTY_VALUE = "값이 없습니다.";
+    public String SUCCESS_DELETE_SCHEDULE = "schedule 삭제 성공";
 }
