@@ -46,6 +46,7 @@ import com.pet.comes.repository.schedule.SleepRepository;
 import com.pet.comes.repository.schedule.SnackRepository;
 import com.pet.comes.repository.schedule.TrainingRepository;
 import com.pet.comes.repository.schedule.WalkRepository;
+import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
 import com.pet.comes.response.Status;
@@ -204,7 +205,7 @@ public class ScheduleService {
 			Feeding feeding = new Feeding(scheduleMap, user.get());
 			feedingRepository.save(feeding);
 			return new ResponseEntity(
-				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE, feeding.getId()), HttpStatus.OK);
 		}
 		if (iconId == SNACK) {
 			scheduleMap.putIfAbsent("kind", null);
@@ -216,7 +217,7 @@ public class ScheduleService {
 			Snack snack = new Snack(scheduleMap, user.get());
 			snackRepository.save(snack);
 			return new ResponseEntity(
-				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE, snack.getId()), HttpStatus.OK);
 		}
 		if (iconId == POTTY) {
 			scheduleMap.putIfAbsent("kind", "URINE");
@@ -228,14 +229,14 @@ public class ScheduleService {
 			Potty potty = new Potty(scheduleMap, user.get());
 			pottyRepository.save(potty);
 			return new ResponseEntity(
-				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE, potty.getId()), HttpStatus.OK);
 		}
 		if (iconId == DRUG) {
 			setDrugParametersIfAbsent(scheduleMap);
 			Drug drug = new Drug(scheduleMap, user.get());
 			drugRepository.save(drug);
 			return new ResponseEntity(
-				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE, drug.getId()), HttpStatus.OK);
 		}
 		if (iconId == HOSPITAL) {
 			if (scheduleMap.containsKey("weight")) { // 몸무게가 입력된 경우
@@ -272,7 +273,7 @@ public class ScheduleService {
 			Hospital hospital = new Hospital(scheduleMap, user.get(), address);
 			hospitalRepository.save(hospital);
 			return new ResponseEntity(
-				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE, hospital.getId()), HttpStatus.OK);
 		}
 		if (iconId == SALON) {
 			Address address = setAddress(scheduleMap);
@@ -283,44 +284,44 @@ public class ScheduleService {
 			Salon salon = new Salon(scheduleMap, user.get(), address);
 			salonRepository.save(salon);
 			return new ResponseEntity(
-				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE, salon.getId()), HttpStatus.OK);
 		}
 		if (iconId == BATH) {
 			Bath bath = new Bath(scheduleMap, user.get());
 			bathRepository.save(bath);
 			return new ResponseEntity(
-				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE, bath.getId()), HttpStatus.OK);
 		}
 		if (iconId == SLEEP) {
 			Sleep sleep = new Sleep(scheduleMap, user.get());
 			sleepRepository.save(sleep);
 			return new ResponseEntity(
-				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE, sleep.getId()), HttpStatus.OK);
 		}
 		if (iconId == PLAYING) {
 			Playing playing = new Playing(scheduleMap, user.get());
 			playingRepository.save(playing);
 			return new ResponseEntity(
-				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE, playing.getId()), HttpStatus.OK);
 		}
 		if (iconId == TRAINING) {
 			Training training = new Training(scheduleMap, user.get());
 			trainingRepository.save(training);
 			return new ResponseEntity(
-				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE, training.getId()), HttpStatus.OK);
 		}
 		if (iconId == MENSTRUATION) {
 			Menstruation menstruation = new Menstruation(scheduleMap, user.get());
 			menstruationRepository.save(menstruation);
 			return new ResponseEntity(
-				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE, menstruation.getId()), HttpStatus.OK);
 		}
 		if (iconId == WALK) {
 			setWalkParametersIfAbsent(scheduleMap); // 기본 1시간 산책
 			Walk walk = new Walk(scheduleMap, user.get());
 			walkRepository.save(walk);
 			return new ResponseEntity(
-				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE, walk.getId()), HttpStatus.OK);
 		}
 		if (iconId == ETC) {
 			if(!scheduleMap.containsKey("additionalItemNo")) {
@@ -348,11 +349,31 @@ public class ScheduleService {
 			}
 			etcRepository.save(etc);
 			return new ResponseEntity(
-				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE), HttpStatus.OK);
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE, etc.getId()), HttpStatus.OK);
 		}
+
 		return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "유효하지 않은 iconId 입니다. iconId : " + iconId),
 			HttpStatus.OK);
 
+	}
+
+	public ResponseEntity<String> modifySchedule(Map<String, String> scheduleMap) {
+		Optional<User> user = userRepository.findById(Long.parseLong(scheduleMap.get("userId")));
+		if (user.isEmpty()) {
+			return new ResponseEntity(
+				NoDataResponse.response(status.INVALID_ID, "유효하지 않은 userId 입니다. userId : " + scheduleMap.get("userId")),
+				HttpStatus.BAD_REQUEST);
+		}
+
+		// 스케줄 가져오기
+		int iconId = Integer.parseInt(scheduleMap.get("iconId"));
+
+
+		// 유저 권한검사 (작성자 본인인지, 가족에 속해있는지)
+
+
+		return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "유효하지 않은 iconId 입니다. iconId : " + iconId),
+			HttpStatus.OK);
 	}
 
 }
