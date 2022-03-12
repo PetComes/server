@@ -31,9 +31,10 @@ public class CommentController {
     }
 
     /* D9 : 다이어리 댓글 삭제 API --Tony */
-    @PatchMapping("/{commentId}")
-    public ResponseEntity deleteComment(@PathVariable Long commentId ){
-        return commentService.deleteComment(commentId);
+    @PatchMapping("/{commentId}/{userId}")
+    public ResponseEntity deleteComment(@PathVariable Long commentId,
+                                        @PathVariable Long userId){
+        return commentService.deleteComment(commentId, userId);
     }
 
 
