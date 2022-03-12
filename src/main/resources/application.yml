@@ -102,7 +102,7 @@ spring:
     activate:
       on-profile: "common"
   jpa:
-    database-platform: org.hibernate.dialect.MySQL5Dialect
+    database-platform: org.hibernate.dialect.MySQL5Dialect # 데이터베이스 Dialect : 데이터베이스 종류 바뀔시 다른거 변경없이 방언만 변경해주면 됨.
     open-in-view: false
     properties:
       hibernate:

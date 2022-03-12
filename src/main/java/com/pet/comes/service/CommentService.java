@@ -100,7 +100,7 @@ public class CommentService {
     }
 
     /* D9 : 다이어리 댓글 삭제 API --Tony */
-    public ResponseEntity deleteComment(Long commentId) {
+    public ResponseEntity deleteComment(Long commentId, Long userId) {
 
         // 댓글 존재하는지 유효성 검사
         Optional<Comment> byId = commentRepository.findById(commentId);
@@ -108,6 +108,14 @@ public class CommentService {
             return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "해당 댓글이 존재하지 않습니다."), HttpStatus.NOT_FOUND);
         Comment comment = byId.get(); // 댓글 존재
 
+        // 유저 유효성 검사
+        Optional<User> byId1 = userRepository.findById(userId);
+        if (!byId1.isPresent())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, message.INVALID_USER), HttpStatus.NOT_FOUND);
+        User user = byId1.get();
+
+        if (user.getId() != comment.getUser().getId())
+            return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "해당유저는 삭제 권한이 없습니다."), HttpStatus.NOT_FOUND);
 
         comment.setText("(삭제된 댓글)"); // 댓글 삭제
 
