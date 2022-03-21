@@ -3,7 +3,9 @@ package com.pet.comes.service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
@@ -906,7 +908,59 @@ public class ScheduleService {
 				HttpStatus.OK);
 		}
 		if (iconId == ETC) {
+			Optional<Etc> optionalEtc = etcRepository.findById((long)scheduleId);
+			if(optionalEtc.isEmpty()) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
+					HttpStatus.BAD_REQUEST);
+			}
+			Etc etc = optionalEtc.get();
+			List<AdditionalItem> additionalItemList = additionalItemRepository.findAdditionalItemsByEtc(etc);
 
+			if(scheduleMap.containsKey("delete")) { // 삭제할 항목 구분자 ',' 사용
+				String[] itemListToDelete = scheduleMap.get("delete").split(",");
+				for(String item : itemListToDelete) {
+					Optional<AdditionalItem> optionalItem = additionalItemList.stream()
+						.filter(x -> x.getItem().equals(item)).findFirst();
+
+					if(optionalItem.isEmpty()) {
+						return new ResponseEntity(
+							NoDataResponse.response(status.INVALID_ITEM, "유효하지 않은 item 입니다. item : " + item),
+							HttpStatus.BAD_REQUEST);
+					}
+					AdditionalItem itemToDelete = optionalItem.get();
+					etc.getAdditionalItemList().remove(itemToDelete);
+					additionalItemRepository.delete(itemToDelete);
+				}
+			}
+			if(scheduleMap.containsKey("addItemNo")) { // 추가할 아이템 개수
+				int numberOfItemToAdd = Integer.parseInt(scheduleMap.get("addItemNo"));
+				for(int i = 0; i<numberOfItemToAdd; i++) {
+					AdditionalItem additionalItem = new AdditionalItem(scheduleMap.get("item" + i), scheduleMap.get("value" + i), etc);
+					additionalItemRepository.save(additionalItem);
+				}
+			}
+			if(scheduleMap.containsKey("modifyItemNo")) { // 수정할 아이템 개수
+				int numberOfItemToModify = Integer.parseInt(scheduleMap.get("modifyItemNo"));
+				for(int i = 0; i<numberOfItemToModify; i++) {
+					String key = scheduleMap.get("item" + i);
+					Optional<AdditionalItem> optionalItem = additionalItemList.stream()
+						.filter(x -> x.getItem().equals(key)).findFirst();
+
+					if(optionalItem.isEmpty()) {
+						return new ResponseEntity(
+							NoDataResponse.response(status.INVALID_ITEM, "유효하지 않은 item 입니다. item" + (i+1) + " : " + key),
+							HttpStatus.BAD_REQUEST);
+					}
+					AdditionalItem itemToModify = optionalItem.get();
+					itemToModify.setValue(scheduleMap.get("value" + i));
+					additionalItemRepository.save(itemToModify);
+				}
+			}
+			etcRepository.save(etc);
+			return new ResponseEntity(
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_MODIFY_SCHEDULE, etc.getId()),
+				HttpStatus.OK);
 		}
 
 		return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "유효하지 않은 iconId 입니다. iconId : " + iconId),
