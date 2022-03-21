@@ -1,6 +1,7 @@
 package com.pet.comes.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -181,13 +182,13 @@ public class ScheduleService {
 		if (iconId == HOSPITAL) {
 			if (scheduleMap.containsKey("weight")) { // 몸무게가 입력된 경우
 				float afterWeight = Float.parseFloat(scheduleMap.get("weight"));
-				if (afterWeight != 0.0f) {
-					new ResponseEntity(
+				if (afterWeight <= 0.0f) {
+					return new ResponseEntity(
 						NoDataResponse.response(status.INVALID_VALUE, "유효한 weight 값이 아닙니다. weight : " + afterWeight),
 						HttpStatus.OK);
 				}
 				if (!scheduleMap.containsKey("dogId")) {
-					new ResponseEntity(NoDataResponse.response(status.INVALID_DOGID, "dogId가 입력되지 않았습니다."),
+					return new ResponseEntity(NoDataResponse.response(status.INVALID_DOGID, "dogId가 입력되지 않았습니다."),
 						HttpStatus.OK);
 				}
 				String dogId = scheduleMap.get("dogId");
@@ -474,12 +475,12 @@ public class ScheduleService {
 				feed.setDryOrWet(DryOrWetFeed.valueOf(scheduleMap.get("dryOrWet")));
 			}
 			if(containsKey(scheduleMap, "amount")) {
-				feed.setAmount(scheduleMap.get("amout"));
+				feed.setAmount(scheduleMap.get("amount"));
 			}
-
+			feed.setModifiedAt(LocalDateTime.now());
 			feedingRepository.save(feed);
 			return new ResponseEntity(
-				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE, feed.getId()),
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_MODIFY_SCHEDULE, feed.getId()),
 				HttpStatus.OK);
 
 		}
@@ -512,10 +513,10 @@ public class ScheduleService {
 			if(containsKey(scheduleMap, "kind")) {
 				snack.setKind(scheduleMap.get("kind"));
 			}
-
+			snack.setModifiedAt(LocalDateTime.now());
 			snackRepository.save(snack);
 			return new ResponseEntity(
-				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE, snack.getId()),
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_MODIFY_SCHEDULE, snack.getId()),
 				HttpStatus.OK);
 		}
 		if (iconId == POTTY) {
@@ -552,10 +553,10 @@ public class ScheduleService {
 				}
 				potty.setKind(KindOfPotty.valueOf(scheduleMap.get("kind")));
 			}
-
+			potty.setModifiedAt(LocalDateTime.now());
 			pottyRepository.save(potty);
 			return new ResponseEntity(
-				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE, potty.getId()),
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_MODIFY_SCHEDULE, potty.getId()),
 				HttpStatus.OK);
 		}
 		if (iconId == DRUG) {
@@ -593,9 +594,10 @@ public class ScheduleService {
 			if(containsKey(scheduleMap, "expenses")) {
 				drug.setExpenses(Integer.parseInt(scheduleMap.get("expenses")));
 			}
+			drug.setModifiedAt(LocalDateTime.now());
 			drugRepository.save(drug);
 			return new ResponseEntity(
-				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE, drug.getId()),
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_MODIFY_SCHEDULE, drug.getId()),
 				HttpStatus.OK);
 
 		}
@@ -644,13 +646,13 @@ public class ScheduleService {
 			}
 			if (scheduleMap.containsKey("weight")) { // 몸무게가 입력된 경우
 				float afterWeight = Float.parseFloat(scheduleMap.get("weight"));
-				if (afterWeight != 0.0f) {
-					new ResponseEntity(
+				if (afterWeight <= 0.0f) {
+					return new ResponseEntity(
 						NoDataResponse.response(status.INVALID_VALUE, "유효한 weight 값이 아닙니다. weight : " + afterWeight),
 						HttpStatus.OK);
 				}
 				if (!scheduleMap.containsKey("dogId")) {
-					new ResponseEntity(NoDataResponse.response(status.INVALID_DOGID, "dogId가 입력되지 않았습니다."),
+					return new ResponseEntity(NoDataResponse.response(status.INVALID_DOGID, "dogId가 입력되지 않았습니다."),
 						HttpStatus.OK);
 				}
 				String dogId = scheduleMap.get("dogId");
@@ -666,8 +668,9 @@ public class ScheduleService {
 					saveDogWeightLog(dog, afterWeight);
 					updateDogWeight(dog, afterWeight);
 				}
+				hospital.setWeight(afterWeight);
 			}
-
+			hospital.setModifiedAt(LocalDateTime.now());
 			hospitalRepository.save(hospital);
 			return new ResponseEntity(
 				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_MODIFY_SCHEDULE, hospital.getId()),
@@ -706,6 +709,7 @@ public class ScheduleService {
 				addressRepository.save(address);
 				salon.setAddress(address);
 			}
+			salon.setModifiedAt(LocalDateTime.now());
 			salonRepository.save(salon);
 			return new ResponseEntity(
 				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_MODIFY_SCHEDULE, salon.getId()),
@@ -736,6 +740,7 @@ public class ScheduleService {
 			if(containsKey(scheduleMap, "memo")) {
 				bath.setMemo(scheduleMap.get("memo"));
 			}
+			bath.setModifiedAt(LocalDateTime.now());
 			bathRepository.save(bath);
 			return new ResponseEntity(
 				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_MODIFY_SCHEDULE, bath.getId()),
@@ -766,6 +771,7 @@ public class ScheduleService {
 			if(containsKey(scheduleMap, "memo")) {
 				sleep.setMemo(scheduleMap.get("memo"));
 			}
+			sleep.setModifiedAt(LocalDateTime.now());
 			sleepRepository.save(sleep);
 			return new ResponseEntity(
 				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_MODIFY_SCHEDULE, sleep.getId()),
@@ -796,6 +802,7 @@ public class ScheduleService {
 			if(containsKey(scheduleMap, "memo")) {
 				playing.setMemo(scheduleMap.get("memo"));
 			}
+			playing.setModifiedAt(LocalDateTime.now());
 			playingRepository.save(playing);
 			return new ResponseEntity(
 				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_MODIFY_SCHEDULE, playing.getId()),
@@ -826,6 +833,7 @@ public class ScheduleService {
 			if(containsKey(scheduleMap, "memo")) {
 				training.setMemo(scheduleMap.get("memo"));
 			}
+			training.setModifiedAt(LocalDateTime.now());
 			trainingRepository.save(training);
 			return new ResponseEntity(
 				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_MODIFY_SCHEDULE, training.getId()),
@@ -856,6 +864,7 @@ public class ScheduleService {
 			if(containsKey(scheduleMap, "memo")) {
 				menstruation.setMemo(scheduleMap.get("memo"));
 			}
+			menstruation.setModifiedAt(LocalDateTime.now());
 			menstruationRepository.save(menstruation);
 			return new ResponseEntity(
 				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_MODIFY_SCHEDULE, menstruation.getId()),
@@ -902,6 +911,7 @@ public class ScheduleService {
 			if(containsKey(scheduleMap, "memo")) {
 				walk.setMemo(scheduleMap.get("memo"));
 			}
+			walk.setModifiedAt(LocalDateTime.now());
 			walkRepository.save(walk);
 			return new ResponseEntity(
 				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_MODIFY_SCHEDULE, walk.getId()),
@@ -915,8 +925,25 @@ public class ScheduleService {
 					HttpStatus.BAD_REQUEST);
 			}
 			Etc etc = optionalEtc.get();
-			List<AdditionalItem> additionalItemList = additionalItemRepository.findAdditionalItemsByEtc(etc);
+			long familyIdOfWriter = etc.getUser().getFamily().getId();
+			long familyIdOfModifier = user.getFamily().getId();
+			if(familyIdOfWriter != familyIdOfModifier) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
+					HttpStatus.BAD_REQUEST);
+			}
+			etc.setUser(user);
+			if(date != null) {
+				etc.setDate(date);
+			}
+			if(time != null) {
+				etc.setTime(time);
+			}
+			if(containsKey(scheduleMap, "memo")) {
+				etc.setMemo(scheduleMap.get("memo"));
+			}
 
+			List<AdditionalItem> additionalItemList = additionalItemRepository.findAdditionalItemsByEtc(etc);
 			if(scheduleMap.containsKey("delete")) { // 삭제할 항목 구분자 ',' 사용
 				String[] itemListToDelete = scheduleMap.get("delete").split(",");
 				for(String item : itemListToDelete) {
@@ -936,27 +963,28 @@ public class ScheduleService {
 			if(scheduleMap.containsKey("addItemNo")) { // 추가할 아이템 개수
 				int numberOfItemToAdd = Integer.parseInt(scheduleMap.get("addItemNo"));
 				for(int i = 0; i<numberOfItemToAdd; i++) {
-					AdditionalItem additionalItem = new AdditionalItem(scheduleMap.get("item" + i), scheduleMap.get("value" + i), etc);
+					AdditionalItem additionalItem = new AdditionalItem(scheduleMap.get("addItem" + i), scheduleMap.get("addValue" + i), etc);
 					additionalItemRepository.save(additionalItem);
 				}
 			}
 			if(scheduleMap.containsKey("modifyItemNo")) { // 수정할 아이템 개수
 				int numberOfItemToModify = Integer.parseInt(scheduleMap.get("modifyItemNo"));
 				for(int i = 0; i<numberOfItemToModify; i++) {
-					String key = scheduleMap.get("item" + i);
+					String key = scheduleMap.get("modifyItem" + i);
 					Optional<AdditionalItem> optionalItem = additionalItemList.stream()
 						.filter(x -> x.getItem().equals(key)).findFirst();
 
 					if(optionalItem.isEmpty()) {
 						return new ResponseEntity(
-							NoDataResponse.response(status.INVALID_ITEM, "유효하지 않은 item 입니다. item" + (i+1) + " : " + key),
+							NoDataResponse.response(status.INVALID_ITEM, "유효하지 않은 item 입니다. modifyItem" + (i+1) + " : " + key),
 							HttpStatus.BAD_REQUEST);
 					}
 					AdditionalItem itemToModify = optionalItem.get();
-					itemToModify.setValue(scheduleMap.get("value" + i));
+					itemToModify.setValue(scheduleMap.get("modifyValue" + i));
 					additionalItemRepository.save(itemToModify);
 				}
 			}
+			etc.setModifiedAt(LocalDateTime.now());
 			etcRepository.save(etc);
 			return new ResponseEntity(
 				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_MODIFY_SCHEDULE, etc.getId()),
