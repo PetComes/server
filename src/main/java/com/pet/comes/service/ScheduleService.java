@@ -588,8 +588,8 @@ public class ScheduleService {
 			if(containsKey(scheduleMap, "prescriptionUrl")) {
 				drug.setPrescriptionUrl(scheduleMap.get("prescriptionUrl"));
 			}
-			if(containsKey(scheduleMap, "expense")) {
-				drug.setExpenses(Integer.parseInt(scheduleMap.get("expense")));
+			if(containsKey(scheduleMap, "expenses")) {
+				drug.setExpenses(Integer.parseInt(scheduleMap.get("expenses")));
 			}
 			drugRepository.save(drug);
 			return new ResponseEntity(
@@ -623,7 +623,6 @@ public class ScheduleService {
 			if(containsKey(scheduleMap, "memo")) {
 				hospital.setMemo(scheduleMap.get("memo"));
 			}
-			//disease
 			if(containsKey(scheduleMap, "disease")) {
 				hospital.setDisease(scheduleMap.get("disease"));
 			}
@@ -633,8 +632,8 @@ public class ScheduleService {
 			if(containsKey(scheduleMap, "prescriptionUrl")) {
 				hospital.setPrescriptionUrl(scheduleMap.get("prescriptionUrl"));
 			}
-			if(containsKey(scheduleMap, "expense")) {
-				hospital.setExpenses(Integer.parseInt(scheduleMap.get("expense")));
+			if(containsKey(scheduleMap, "expenses")) {
+				hospital.setExpenses(Integer.parseInt(scheduleMap.get("expenses")));
 			}
 			Address address = setAddress(scheduleMap);
 			if(address != null) {
@@ -673,22 +672,192 @@ public class ScheduleService {
 				HttpStatus.OK);
 		}
 		if (iconId == SALON) {
-
+			Optional<Salon> optionalSalon = salonRepository.findById((long)scheduleId);
+			if(optionalSalon.isEmpty()) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
+					HttpStatus.BAD_REQUEST);
+			}
+			Salon salon = optionalSalon.get();
+			long familyIdOfWriter = salon.getUser().getFamily().getId();
+			long familyIdOfModifier = user.getFamily().getId();
+			if(familyIdOfWriter != familyIdOfModifier) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
+					HttpStatus.BAD_REQUEST);
+			}
+			salon.setUser(user);
+			if(date != null) {
+				salon.setDate(date);
+			}
+			if(time != null) {
+				salon.setTime(time);
+			}
+			if(containsKey(scheduleMap, "memo")) {
+				salon.setMemo(scheduleMap.get("memo"));
+			}
+			if(containsKey(scheduleMap, "expenses")) {
+				salon.setExpenses(Integer.parseInt(scheduleMap.get("expenses")));
+			}
+			Address address = setAddress(scheduleMap);
+			if (address != null) {
+				addressRepository.save(address);
+				salon.setAddress(address);
+			}
+			salonRepository.save(salon);
+			return new ResponseEntity(
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_MODIFY_SCHEDULE, salon.getId()),
+				HttpStatus.OK);
 		}
 		if (iconId == BATH) {
-
+			Optional<Bath> optionalBath = bathRepository.findById((long)scheduleId);
+			if(optionalBath.isEmpty()) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
+					HttpStatus.BAD_REQUEST);
+			}
+			Bath bath = optionalBath.get();
+			long familyIdOfWriter = bath.getUser().getFamily().getId();
+			long familyIdOfModifier = user.getFamily().getId();
+			if(familyIdOfWriter != familyIdOfModifier) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
+					HttpStatus.BAD_REQUEST);
+			}
+			bath.setUser(user);
+			if(date != null) {
+				bath.setDate(date);
+			}
+			if(time != null) {
+				bath.setTime(time);
+			}
+			if(containsKey(scheduleMap, "memo")) {
+				bath.setMemo(scheduleMap.get("memo"));
+			}
+			bathRepository.save(bath);
+			return new ResponseEntity(
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_MODIFY_SCHEDULE, bath.getId()),
+				HttpStatus.OK);
 		}
 		if (iconId == SLEEP) {
-
+			Optional<Sleep> optionalSleep = sleepRepository.findById((long)scheduleId);
+			if(optionalSleep.isEmpty()) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
+					HttpStatus.BAD_REQUEST);
+			}
+			Sleep sleep = optionalSleep.get();
+			long familyIdOfWriter = sleep.getUser().getFamily().getId();
+			long familyIdOfModifier = user.getFamily().getId();
+			if(familyIdOfWriter != familyIdOfModifier) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
+					HttpStatus.BAD_REQUEST);
+			}
+			sleep.setUser(user);
+			if(date != null) {
+				sleep.setDate(date);
+			}
+			if(time != null) {
+				sleep.setTime(time);
+			}
+			if(containsKey(scheduleMap, "memo")) {
+				sleep.setMemo(scheduleMap.get("memo"));
+			}
+			sleepRepository.save(sleep);
+			return new ResponseEntity(
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_MODIFY_SCHEDULE, sleep.getId()),
+				HttpStatus.OK);
 		}
 		if (iconId == PLAYING) {
-
+			Optional<Playing> optionalPlaying = playingRepository.findById((long)scheduleId);
+			if(optionalPlaying.isEmpty()) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
+					HttpStatus.BAD_REQUEST);
+			}
+			Playing playing = optionalPlaying.get();
+			long familyIdOfWriter = playing.getUser().getFamily().getId();
+			long familyIdOfModifier = user.getFamily().getId();
+			if(familyIdOfWriter != familyIdOfModifier) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
+					HttpStatus.BAD_REQUEST);
+			}
+			playing.setUser(user);
+			if(date != null) {
+				playing.setDate(date);
+			}
+			if(time != null) {
+				playing.setTime(time);
+			}
+			if(containsKey(scheduleMap, "memo")) {
+				playing.setMemo(scheduleMap.get("memo"));
+			}
+			playingRepository.save(playing);
+			return new ResponseEntity(
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_MODIFY_SCHEDULE, playing.getId()),
+				HttpStatus.OK);
 		}
 		if (iconId == TRAINING) {
-
+			Optional<Training> optionalTraining = trainingRepository.findById((long)scheduleId);
+			if(optionalTraining.isEmpty()) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
+					HttpStatus.BAD_REQUEST);
+			}
+			Training training = optionalTraining.get();
+			long familyIdOfWriter = training.getUser().getFamily().getId();
+			long familyIdOfModifier = user.getFamily().getId();
+			if(familyIdOfWriter != familyIdOfModifier) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
+					HttpStatus.BAD_REQUEST);
+			}
+			training.setUser(user);
+			if(date != null) {
+				training.setDate(date);
+			}
+			if(time != null) {
+				training.setTime(time);
+			}
+			if(containsKey(scheduleMap, "memo")) {
+				training.setMemo(scheduleMap.get("memo"));
+			}
+			trainingRepository.save(training);
+			return new ResponseEntity(
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_MODIFY_SCHEDULE, training.getId()),
+				HttpStatus.OK);
 		}
 		if (iconId == MENSTRUATION) {
-
+			Optional<Menstruation> optionalMenstruation = menstruationRepository.findById((long)scheduleId);
+			if(optionalMenstruation.isEmpty()) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
+					HttpStatus.BAD_REQUEST);
+			}
+			Menstruation menstruation = optionalMenstruation.get();
+			long familyIdOfWriter = menstruation.getUser().getFamily().getId();
+			long familyIdOfModifier = user.getFamily().getId();
+			if(familyIdOfWriter != familyIdOfModifier) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
+					HttpStatus.BAD_REQUEST);
+			}
+			menstruation.setUser(user);
+			if(date != null) {
+				menstruation.setDate(date);
+			}
+			if(time != null) {
+				menstruation.setTime(time);
+			}
+			if(containsKey(scheduleMap, "memo")) {
+				menstruation.setMemo(scheduleMap.get("memo"));
+			}
+			menstruationRepository.save(menstruation);
+			return new ResponseEntity(
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_MODIFY_SCHEDULE, menstruation.getId()),
+				HttpStatus.OK);
 		}
 		if (iconId == WALK) {
 
