@@ -39,6 +39,7 @@ public class Status {
     public int INVALID_TIME = 322;
     public int INVALID_VALUE = 323;
     public int NO_PERMISSION = 324;
+    public int INVALID_ITEM = 325;
 
     public int DB_INVALID_VALUE = 500;
     public int DB_NO_DATA = 501;
