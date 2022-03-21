@@ -31,6 +31,7 @@ import com.pet.comes.model.Entity.schedule.Snack;
 import com.pet.comes.model.Entity.schedule.Training;
 import com.pet.comes.model.Entity.schedule.Walk;
 import com.pet.comes.model.EnumType.DryOrWetFeed;
+import com.pet.comes.model.EnumType.KindOfPotty;
 import com.pet.comes.repository.AddressRepository;
 import com.pet.comes.repository.DogLogRepository;
 import com.pet.comes.repository.DogRepository;
@@ -63,7 +64,7 @@ public class ScheduleService {
 	private final FeedingRepository feedingRepository;
 	private final SnackRepository snackRepository;
 	private final PottyRepository pottyRepository;
-	private final DrugRepository bathRepositpory;
+	private final DrugRepository drugRepository;
 	private final HospitalRepository hospitalRepository;
 	private final SalonRepository salonRepository;
 	private final BathRepository bathRepository;
@@ -170,7 +171,7 @@ public class ScheduleService {
 		if (iconId == DRUG) {
 			setDrugParametersIfAbsent(scheduleMap);
 			Drug drug = new Drug(scheduleMap, user.get());
-			bathRepositpory.save(drug);
+			drugRepository.save(drug);
 			return new ResponseEntity(
 				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE, drug.getId()),
 				HttpStatus.OK);
@@ -481,16 +482,195 @@ public class ScheduleService {
 
 		}
 		if (iconId == SNACK) {
-			//kind
+			Optional<Snack> optionalSnack = snackRepository.findById((long)scheduleId);
+			if(optionalSnack.isEmpty()) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
+					HttpStatus.BAD_REQUEST);
+			}
+			Snack snack = optionalSnack.get();
+			long familyIdOfWriter = snack.getUser().getFamily().getId();
+			long familyIdOfModifier = user.getFamily().getId();
+			if(familyIdOfWriter != familyIdOfModifier) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
+					HttpStatus.BAD_REQUEST);
+			}
+
+			snack.setUser(user);
+			if(date != null) {
+				snack.setDate(date);
+			}
+			if(time != null) {
+				snack.setTime(time);
+			}
+			if(containsKey(scheduleMap, "memo")) {
+				snack.setMemo(scheduleMap.get("memo"));
+			}
+			if(containsKey(scheduleMap, "kind")) {
+				snack.setKind(scheduleMap.get("kind"));
+			}
+
+			snackRepository.save(snack);
+			return new ResponseEntity(
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE, snack.getId()),
+				HttpStatus.OK);
 		}
 		if (iconId == POTTY) {
+			Optional<Potty> optionalPotty = pottyRepository.findById((long)scheduleId);
+			if(optionalPotty.isEmpty()) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
+					HttpStatus.BAD_REQUEST);
+			}
+			Potty potty = optionalPotty.get();
+			long familyIdOfWriter = potty.getUser().getFamily().getId();
+			long familyIdOfModifier = user.getFamily().getId();
+			if(familyIdOfWriter != familyIdOfModifier) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
+					HttpStatus.BAD_REQUEST);
+			}
 
+			potty.setUser(user);
+			if(date != null) {
+				potty.setDate(date);
+			}
+			if(time != null) {
+				potty.setTime(time);
+			}
+			if(containsKey(scheduleMap, "memo")) {
+				potty.setMemo(scheduleMap.get("memo"));
+			}
+			if(containsKey(scheduleMap, "kind")) {
+				if (!scheduleMap.get("kind").equals("URINE") && !scheduleMap.get("kind").equals("FECES")) {
+					return new ResponseEntity(NoDataResponse.response(status.INVALID_VALUE,
+						"kind 값은 URINE 또는 FECES 중 하나여야 합니다. kind : " + scheduleMap.get("kind")),
+						HttpStatus.OK);
+				}
+				potty.setKind(KindOfPotty.valueOf(scheduleMap.get("kind")));
+			}
+
+			pottyRepository.save(potty);
+			return new ResponseEntity(
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE, potty.getId()),
+				HttpStatus.OK);
 		}
 		if (iconId == DRUG) {
+			Optional<Drug> optionalDrug = drugRepository.findById((long) scheduleId);
+			if(optionalDrug.isEmpty()) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
+					HttpStatus.BAD_REQUEST);
+			}
+			Drug drug = optionalDrug.get();
+			long familyIdOfWriter = drug.getUser().getFamily().getId();
+			long familyIdOfModifier = user.getFamily().getId();
+			if(familyIdOfWriter != familyIdOfModifier) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
+					HttpStatus.BAD_REQUEST);
+			}
+
+			drug.setUser(user);
+			if(date != null) {
+				drug.setDate(date);
+			}
+			if(time != null) {
+				drug.setTime(time);
+			}
+			if(containsKey(scheduleMap, "memo")) {
+				drug.setMemo(scheduleMap.get("memo"));
+			}
+			if(containsKey(scheduleMap, "kind")) {
+				drug.setKind(scheduleMap.get("kind"));
+			}
+			if(containsKey(scheduleMap, "prescriptionUrl")) {
+				drug.setPrescriptionUrl(scheduleMap.get("prescriptionUrl"));
+			}
+			if(containsKey(scheduleMap, "expense")) {
+				drug.setExpenses(Integer.parseInt(scheduleMap.get("expense")));
+			}
+			drugRepository.save(drug);
+			return new ResponseEntity(
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_REGISTER_SCHEDULE, drug.getId()),
+				HttpStatus.OK);
 
 		}
 		if (iconId == HOSPITAL) {
+			Optional<Hospital> optionalHospital = hospitalRepository.findById((long)scheduleId);
+			if(optionalHospital.isEmpty()) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
+					HttpStatus.BAD_REQUEST);
+			}
+			Hospital hospital = optionalHospital.get();
+			long familyIdOfWriter = hospital.getUser().getFamily().getId();
+			long familyIdOfModifier = user.getFamily().getId();
+			if(familyIdOfWriter != familyIdOfModifier) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
+					HttpStatus.BAD_REQUEST);
+			}
 
+			hospital.setUser(user);
+			if(date != null) {
+				hospital.setDate(date);
+			}
+			if(time != null) {
+				hospital.setTime(time);
+			}
+			if(containsKey(scheduleMap, "memo")) {
+				hospital.setMemo(scheduleMap.get("memo"));
+			}
+			//disease
+			if(containsKey(scheduleMap, "disease")) {
+				hospital.setDisease(scheduleMap.get("disease"));
+			}
+			if(containsKey(scheduleMap, "kind")) {
+				hospital.setKind(scheduleMap.get("kind"));
+			}
+			if(containsKey(scheduleMap, "prescriptionUrl")) {
+				hospital.setPrescriptionUrl(scheduleMap.get("prescriptionUrl"));
+			}
+			if(containsKey(scheduleMap, "expense")) {
+				hospital.setExpenses(Integer.parseInt(scheduleMap.get("expense")));
+			}
+			Address address = setAddress(scheduleMap);
+			if(address != null) {
+				addressRepository.save(address);
+				hospital.setAddress(address);
+			}
+			if (scheduleMap.containsKey("weight")) { // 몸무게가 입력된 경우
+				float afterWeight = Float.parseFloat(scheduleMap.get("weight"));
+				if (afterWeight != 0.0f) {
+					new ResponseEntity(
+						NoDataResponse.response(status.INVALID_VALUE, "유효한 weight 값이 아닙니다. weight : " + afterWeight),
+						HttpStatus.OK);
+				}
+				if (!scheduleMap.containsKey("dogId")) {
+					new ResponseEntity(NoDataResponse.response(status.INVALID_DOGID, "dogId가 입력되지 않았습니다."),
+						HttpStatus.OK);
+				}
+				String dogId = scheduleMap.get("dogId");
+				Optional<Dog> foundDog = dogRepository.findById(Long.parseLong(dogId));
+				Dog dog = foundDog.orElse(null);
+				if (dog == null) {
+					return new ResponseEntity(
+						NoDataResponse.response(status.INVALID_DOGID, "유효하지 않은 dogId 입니다. dogId : " + dogId),
+						HttpStatus.OK);
+				}
+				float beforeWeight = dog.getWeight();
+				if (beforeWeight != afterWeight) {
+					saveDogWeightLog(dog, afterWeight);
+					updateDogWeight(dog, afterWeight);
+				}
+			}
+
+			hospitalRepository.save(hospital);
+			return new ResponseEntity(
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_MODIFY_SCHEDULE, hospital.getId()),
+				HttpStatus.OK);
 		}
 		if (iconId == SALON) {
 
@@ -617,7 +797,7 @@ public class ScheduleService {
 				HttpStatus.OK);
 		}
 		if (iconId == DRUG) {
-			Optional<Drug> optionalDrug = bathRepositpory.findById(scheduleId);
+			Optional<Drug> optionalDrug = drugRepository.findById(scheduleId);
 			if(optionalDrug.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
@@ -630,7 +810,7 @@ public class ScheduleService {
 					NoDataResponse.response(status.NO_PERMISSION, "삭제 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
 			}
-			bathRepositpory.delete(drug);
+			drugRepository.delete(drug);
 			return new ResponseEntity(
 				NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS_DELETE_SCHEDULE),
 				HttpStatus.OK);
