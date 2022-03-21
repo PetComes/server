@@ -416,7 +416,7 @@ public class ScheduleService {
 		}
 		User user = optionalUser.get();
 
-		if(containsKey(scheduleMap, "date")) {
+		if (containsKey(scheduleMap, "date")) {
 			if (!scheduleMap.get("date").matches("^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$")) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_DATE,
@@ -426,11 +426,12 @@ public class ScheduleService {
 			date = LocalDate.parse(scheduleMap.get("date"), DateTimeFormatter.ISO_DATE);
 		}
 
-		if(containsKey(scheduleMap, "time")) {
+		if (containsKey(scheduleMap, "time")) {
 			setTimeFormat(scheduleMap);
 			if (!scheduleMap.get("time").matches("^\\d{2}:([0-5][0-9]):(00)$")) {
 				return new ResponseEntity(
-					NoDataResponse.response(status.INVALID_TIME, "잘못된 형식입니다. time(HH:MM:00) : " + scheduleMap.get("time")),
+					NoDataResponse.response(status.INVALID_TIME,
+						"잘못된 형식입니다. time(HH:MM:00) : " + scheduleMap.get("time")),
 					HttpStatus.BAD_REQUEST);
 			}
 			time = LocalTime.parse(scheduleMap.get("time"));
@@ -439,7 +440,7 @@ public class ScheduleService {
 		/* 로직 시작 */
 		if (iconId == FEEDING) {
 			Optional<Feeding> feeding = feedingRepository.findById((long)scheduleId);
-			if(feeding.isEmpty()) {
+			if (feeding.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
@@ -447,26 +448,26 @@ public class ScheduleService {
 			Feeding feed = feeding.get();
 			long familyIdOfWriter = feed.getUser().getFamily().getId();
 			long familyIdOfModifier = user.getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
 			}
 
 			feed.setUser(user);
-			if(date != null) {
+			if (date != null) {
 				feed.setDate(date);
 			}
-			if(time != null) {
+			if (time != null) {
 				feed.setTime(time);
 			}
-			if(containsKey(scheduleMap, "memo")) {
+			if (containsKey(scheduleMap, "memo")) {
 				feed.setMemo(scheduleMap.get("memo"));
 			}
-			if(containsKey(scheduleMap, "kind")) {
+			if (containsKey(scheduleMap, "kind")) {
 				feed.setKind(scheduleMap.get("kind"));
 			}
-			if(containsKey(scheduleMap, "dryOrWet")) {
+			if (containsKey(scheduleMap, "dryOrWet")) {
 				if (!scheduleMap.get("dryOrWet").equals("DRY") && !scheduleMap.get("dryOrWet").equals("WET")) {
 					return new ResponseEntity(NoDataResponse.response(status.INVALID_VALUE,
 						"dryOrWet 값은 DRY 또는 WET 중 하나여야 합니다. dryOrWet : " + scheduleMap.get("dryOrWet")),
@@ -474,7 +475,7 @@ public class ScheduleService {
 				}
 				feed.setDryOrWet(DryOrWetFeed.valueOf(scheduleMap.get("dryOrWet")));
 			}
-			if(containsKey(scheduleMap, "amount")) {
+			if (containsKey(scheduleMap, "amount")) {
 				feed.setAmount(scheduleMap.get("amount"));
 			}
 			feed.setModifiedAt(LocalDateTime.now());
@@ -486,7 +487,7 @@ public class ScheduleService {
 		}
 		if (iconId == SNACK) {
 			Optional<Snack> optionalSnack = snackRepository.findById((long)scheduleId);
-			if(optionalSnack.isEmpty()) {
+			if (optionalSnack.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
@@ -494,23 +495,23 @@ public class ScheduleService {
 			Snack snack = optionalSnack.get();
 			long familyIdOfWriter = snack.getUser().getFamily().getId();
 			long familyIdOfModifier = user.getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
 			}
 
 			snack.setUser(user);
-			if(date != null) {
+			if (date != null) {
 				snack.setDate(date);
 			}
-			if(time != null) {
+			if (time != null) {
 				snack.setTime(time);
 			}
-			if(containsKey(scheduleMap, "memo")) {
+			if (containsKey(scheduleMap, "memo")) {
 				snack.setMemo(scheduleMap.get("memo"));
 			}
-			if(containsKey(scheduleMap, "kind")) {
+			if (containsKey(scheduleMap, "kind")) {
 				snack.setKind(scheduleMap.get("kind"));
 			}
 			snack.setModifiedAt(LocalDateTime.now());
@@ -521,7 +522,7 @@ public class ScheduleService {
 		}
 		if (iconId == POTTY) {
 			Optional<Potty> optionalPotty = pottyRepository.findById((long)scheduleId);
-			if(optionalPotty.isEmpty()) {
+			if (optionalPotty.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
@@ -529,23 +530,23 @@ public class ScheduleService {
 			Potty potty = optionalPotty.get();
 			long familyIdOfWriter = potty.getUser().getFamily().getId();
 			long familyIdOfModifier = user.getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
 			}
 
 			potty.setUser(user);
-			if(date != null) {
+			if (date != null) {
 				potty.setDate(date);
 			}
-			if(time != null) {
+			if (time != null) {
 				potty.setTime(time);
 			}
-			if(containsKey(scheduleMap, "memo")) {
+			if (containsKey(scheduleMap, "memo")) {
 				potty.setMemo(scheduleMap.get("memo"));
 			}
-			if(containsKey(scheduleMap, "kind")) {
+			if (containsKey(scheduleMap, "kind")) {
 				if (!scheduleMap.get("kind").equals("URINE") && !scheduleMap.get("kind").equals("FECES")) {
 					return new ResponseEntity(NoDataResponse.response(status.INVALID_VALUE,
 						"kind 값은 URINE 또는 FECES 중 하나여야 합니다. kind : " + scheduleMap.get("kind")),
@@ -560,8 +561,8 @@ public class ScheduleService {
 				HttpStatus.OK);
 		}
 		if (iconId == DRUG) {
-			Optional<Drug> optionalDrug = drugRepository.findById((long) scheduleId);
-			if(optionalDrug.isEmpty()) {
+			Optional<Drug> optionalDrug = drugRepository.findById((long)scheduleId);
+			if (optionalDrug.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
@@ -569,29 +570,29 @@ public class ScheduleService {
 			Drug drug = optionalDrug.get();
 			long familyIdOfWriter = drug.getUser().getFamily().getId();
 			long familyIdOfModifier = user.getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
 			}
 
 			drug.setUser(user);
-			if(date != null) {
+			if (date != null) {
 				drug.setDate(date);
 			}
-			if(time != null) {
+			if (time != null) {
 				drug.setTime(time);
 			}
-			if(containsKey(scheduleMap, "memo")) {
+			if (containsKey(scheduleMap, "memo")) {
 				drug.setMemo(scheduleMap.get("memo"));
 			}
-			if(containsKey(scheduleMap, "kind")) {
+			if (containsKey(scheduleMap, "kind")) {
 				drug.setKind(scheduleMap.get("kind"));
 			}
-			if(containsKey(scheduleMap, "prescriptionUrl")) {
+			if (containsKey(scheduleMap, "prescriptionUrl")) {
 				drug.setPrescriptionUrl(scheduleMap.get("prescriptionUrl"));
 			}
-			if(containsKey(scheduleMap, "expenses")) {
+			if (containsKey(scheduleMap, "expenses")) {
 				drug.setExpenses(Integer.parseInt(scheduleMap.get("expenses")));
 			}
 			drug.setModifiedAt(LocalDateTime.now());
@@ -603,7 +604,7 @@ public class ScheduleService {
 		}
 		if (iconId == HOSPITAL) {
 			Optional<Hospital> optionalHospital = hospitalRepository.findById((long)scheduleId);
-			if(optionalHospital.isEmpty()) {
+			if (optionalHospital.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
@@ -611,36 +612,36 @@ public class ScheduleService {
 			Hospital hospital = optionalHospital.get();
 			long familyIdOfWriter = hospital.getUser().getFamily().getId();
 			long familyIdOfModifier = user.getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
 			}
 
 			hospital.setUser(user);
-			if(date != null) {
+			if (date != null) {
 				hospital.setDate(date);
 			}
-			if(time != null) {
+			if (time != null) {
 				hospital.setTime(time);
 			}
-			if(containsKey(scheduleMap, "memo")) {
+			if (containsKey(scheduleMap, "memo")) {
 				hospital.setMemo(scheduleMap.get("memo"));
 			}
-			if(containsKey(scheduleMap, "disease")) {
+			if (containsKey(scheduleMap, "disease")) {
 				hospital.setDisease(scheduleMap.get("disease"));
 			}
-			if(containsKey(scheduleMap, "kind")) {
+			if (containsKey(scheduleMap, "kind")) {
 				hospital.setKind(scheduleMap.get("kind"));
 			}
-			if(containsKey(scheduleMap, "prescriptionUrl")) {
+			if (containsKey(scheduleMap, "prescriptionUrl")) {
 				hospital.setPrescriptionUrl(scheduleMap.get("prescriptionUrl"));
 			}
-			if(containsKey(scheduleMap, "expenses")) {
+			if (containsKey(scheduleMap, "expenses")) {
 				hospital.setExpenses(Integer.parseInt(scheduleMap.get("expenses")));
 			}
 			Address address = setAddress(scheduleMap);
-			if(address != null) {
+			if (address != null) {
 				addressRepository.save(address);
 				hospital.setAddress(address);
 			}
@@ -678,7 +679,7 @@ public class ScheduleService {
 		}
 		if (iconId == SALON) {
 			Optional<Salon> optionalSalon = salonRepository.findById((long)scheduleId);
-			if(optionalSalon.isEmpty()) {
+			if (optionalSalon.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
@@ -686,22 +687,22 @@ public class ScheduleService {
 			Salon salon = optionalSalon.get();
 			long familyIdOfWriter = salon.getUser().getFamily().getId();
 			long familyIdOfModifier = user.getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
 			}
 			salon.setUser(user);
-			if(date != null) {
+			if (date != null) {
 				salon.setDate(date);
 			}
-			if(time != null) {
+			if (time != null) {
 				salon.setTime(time);
 			}
-			if(containsKey(scheduleMap, "memo")) {
+			if (containsKey(scheduleMap, "memo")) {
 				salon.setMemo(scheduleMap.get("memo"));
 			}
-			if(containsKey(scheduleMap, "expenses")) {
+			if (containsKey(scheduleMap, "expenses")) {
 				salon.setExpenses(Integer.parseInt(scheduleMap.get("expenses")));
 			}
 			Address address = setAddress(scheduleMap);
@@ -717,7 +718,7 @@ public class ScheduleService {
 		}
 		if (iconId == BATH) {
 			Optional<Bath> optionalBath = bathRepository.findById((long)scheduleId);
-			if(optionalBath.isEmpty()) {
+			if (optionalBath.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
@@ -725,19 +726,19 @@ public class ScheduleService {
 			Bath bath = optionalBath.get();
 			long familyIdOfWriter = bath.getUser().getFamily().getId();
 			long familyIdOfModifier = user.getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
 			}
 			bath.setUser(user);
-			if(date != null) {
+			if (date != null) {
 				bath.setDate(date);
 			}
-			if(time != null) {
+			if (time != null) {
 				bath.setTime(time);
 			}
-			if(containsKey(scheduleMap, "memo")) {
+			if (containsKey(scheduleMap, "memo")) {
 				bath.setMemo(scheduleMap.get("memo"));
 			}
 			bath.setModifiedAt(LocalDateTime.now());
@@ -748,7 +749,7 @@ public class ScheduleService {
 		}
 		if (iconId == SLEEP) {
 			Optional<Sleep> optionalSleep = sleepRepository.findById((long)scheduleId);
-			if(optionalSleep.isEmpty()) {
+			if (optionalSleep.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
@@ -756,19 +757,19 @@ public class ScheduleService {
 			Sleep sleep = optionalSleep.get();
 			long familyIdOfWriter = sleep.getUser().getFamily().getId();
 			long familyIdOfModifier = user.getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
 			}
 			sleep.setUser(user);
-			if(date != null) {
+			if (date != null) {
 				sleep.setDate(date);
 			}
-			if(time != null) {
+			if (time != null) {
 				sleep.setTime(time);
 			}
-			if(containsKey(scheduleMap, "memo")) {
+			if (containsKey(scheduleMap, "memo")) {
 				sleep.setMemo(scheduleMap.get("memo"));
 			}
 			sleep.setModifiedAt(LocalDateTime.now());
@@ -779,7 +780,7 @@ public class ScheduleService {
 		}
 		if (iconId == PLAYING) {
 			Optional<Playing> optionalPlaying = playingRepository.findById((long)scheduleId);
-			if(optionalPlaying.isEmpty()) {
+			if (optionalPlaying.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
@@ -787,19 +788,19 @@ public class ScheduleService {
 			Playing playing = optionalPlaying.get();
 			long familyIdOfWriter = playing.getUser().getFamily().getId();
 			long familyIdOfModifier = user.getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
 			}
 			playing.setUser(user);
-			if(date != null) {
+			if (date != null) {
 				playing.setDate(date);
 			}
-			if(time != null) {
+			if (time != null) {
 				playing.setTime(time);
 			}
-			if(containsKey(scheduleMap, "memo")) {
+			if (containsKey(scheduleMap, "memo")) {
 				playing.setMemo(scheduleMap.get("memo"));
 			}
 			playing.setModifiedAt(LocalDateTime.now());
@@ -810,7 +811,7 @@ public class ScheduleService {
 		}
 		if (iconId == TRAINING) {
 			Optional<Training> optionalTraining = trainingRepository.findById((long)scheduleId);
-			if(optionalTraining.isEmpty()) {
+			if (optionalTraining.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
@@ -818,19 +819,19 @@ public class ScheduleService {
 			Training training = optionalTraining.get();
 			long familyIdOfWriter = training.getUser().getFamily().getId();
 			long familyIdOfModifier = user.getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
 			}
 			training.setUser(user);
-			if(date != null) {
+			if (date != null) {
 				training.setDate(date);
 			}
-			if(time != null) {
+			if (time != null) {
 				training.setTime(time);
 			}
-			if(containsKey(scheduleMap, "memo")) {
+			if (containsKey(scheduleMap, "memo")) {
 				training.setMemo(scheduleMap.get("memo"));
 			}
 			training.setModifiedAt(LocalDateTime.now());
@@ -841,7 +842,7 @@ public class ScheduleService {
 		}
 		if (iconId == MENSTRUATION) {
 			Optional<Menstruation> optionalMenstruation = menstruationRepository.findById((long)scheduleId);
-			if(optionalMenstruation.isEmpty()) {
+			if (optionalMenstruation.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
@@ -849,19 +850,19 @@ public class ScheduleService {
 			Menstruation menstruation = optionalMenstruation.get();
 			long familyIdOfWriter = menstruation.getUser().getFamily().getId();
 			long familyIdOfModifier = user.getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
 			}
 			menstruation.setUser(user);
-			if(date != null) {
+			if (date != null) {
 				menstruation.setDate(date);
 			}
-			if(time != null) {
+			if (time != null) {
 				menstruation.setTime(time);
 			}
-			if(containsKey(scheduleMap, "memo")) {
+			if (containsKey(scheduleMap, "memo")) {
 				menstruation.setMemo(scheduleMap.get("memo"));
 			}
 			menstruation.setModifiedAt(LocalDateTime.now());
@@ -872,7 +873,7 @@ public class ScheduleService {
 		}
 		if (iconId == WALK) {
 			Optional<Walk> optionalWalk = walkRepository.findById((long)scheduleId);
-			if(optionalWalk.isEmpty()) {
+			if (optionalWalk.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
@@ -880,35 +881,35 @@ public class ScheduleService {
 			Walk walk = optionalWalk.get();
 			long familyIdOfWriter = walk.getUser().getFamily().getId();
 			long familyIdOfModifier = user.getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
 			}
 			walk.setUser(user);
-			if(date != null) {
+			if (date != null) {
 				walk.setDate(date);
 			}
-			if(containsKey(scheduleMap, "startTime") && containsKey(scheduleMap, "endTime")) {
+			if (containsKey(scheduleMap, "startTime") && containsKey(scheduleMap, "endTime")) {
 				LocalTime startTime = LocalTime.parse(scheduleMap.get("startTime"));
 				LocalTime endTime = LocalTime.parse(scheduleMap.get("endTime"));
-				if(startTime.isAfter(endTime)) {
+				if (startTime.isAfter(endTime)) {
 					return new ResponseEntity(
-						NoDataResponse.response(status.INVALID_TIME, "시작 시간은 끝나는 시간보다 빨라야 합니다. startTime : " + startTime + ", endTime : " + endTime),
+						NoDataResponse.response(status.INVALID_TIME,
+							"시작 시간은 끝나는 시간보다 빨라야 합니다. startTime : " + startTime + ", endTime : " + endTime),
 						HttpStatus.BAD_REQUEST);
 				}
 				walk.setStartTime(startTime);
 				walk.setEndTime(endTime);
-			}
-			else {
-				if(containsKey(scheduleMap, "startTime")) {
+			} else {
+				if (containsKey(scheduleMap, "startTime")) {
 					walk.setStartTime(LocalTime.parse(scheduleMap.get("startTime")));
 				}
-				if(containsKey(scheduleMap, "endTime")) {
+				if (containsKey(scheduleMap, "endTime")) {
 					walk.setEndTime(LocalTime.parse(scheduleMap.get("endTime")));
 				}
 			}
-			if(containsKey(scheduleMap, "memo")) {
+			if (containsKey(scheduleMap, "memo")) {
 				walk.setMemo(scheduleMap.get("memo"));
 			}
 			walk.setModifiedAt(LocalDateTime.now());
@@ -919,7 +920,7 @@ public class ScheduleService {
 		}
 		if (iconId == ETC) {
 			Optional<Etc> optionalEtc = etcRepository.findById((long)scheduleId);
-			if(optionalEtc.isEmpty()) {
+			if (optionalEtc.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
@@ -927,30 +928,30 @@ public class ScheduleService {
 			Etc etc = optionalEtc.get();
 			long familyIdOfWriter = etc.getUser().getFamily().getId();
 			long familyIdOfModifier = user.getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
 			}
 			etc.setUser(user);
-			if(date != null) {
+			if (date != null) {
 				etc.setDate(date);
 			}
-			if(time != null) {
+			if (time != null) {
 				etc.setTime(time);
 			}
-			if(containsKey(scheduleMap, "memo")) {
+			if (containsKey(scheduleMap, "memo")) {
 				etc.setMemo(scheduleMap.get("memo"));
 			}
 
 			List<AdditionalItem> additionalItemList = additionalItemRepository.findAdditionalItemsByEtc(etc);
-			if(scheduleMap.containsKey("delete")) { // 삭제할 항목 구분자 ',' 사용
+			if (scheduleMap.containsKey("delete")) { // 삭제할 항목 구분자 ',' 사용
 				String[] itemListToDelete = scheduleMap.get("delete").split(",");
-				for(String item : itemListToDelete) {
+				for (String item : itemListToDelete) {
 					Optional<AdditionalItem> optionalItem = additionalItemList.stream()
 						.filter(x -> x.getItem().equals(item)).findFirst();
 
-					if(optionalItem.isEmpty()) {
+					if (optionalItem.isEmpty()) {
 						return new ResponseEntity(
 							NoDataResponse.response(status.INVALID_ITEM, "유효하지 않은 item 입니다. item : " + item),
 							HttpStatus.BAD_REQUEST);
@@ -960,23 +961,25 @@ public class ScheduleService {
 					additionalItemRepository.delete(itemToDelete);
 				}
 			}
-			if(scheduleMap.containsKey("addItemNo")) { // 추가할 아이템 개수
+			if (scheduleMap.containsKey("addItemNo")) { // 추가할 아이템 개수
 				int numberOfItemToAdd = Integer.parseInt(scheduleMap.get("addItemNo"));
-				for(int i = 0; i<numberOfItemToAdd; i++) {
-					AdditionalItem additionalItem = new AdditionalItem(scheduleMap.get("addItem" + i), scheduleMap.get("addValue" + i), etc);
+				for (int i = 0; i < numberOfItemToAdd; i++) {
+					AdditionalItem additionalItem = new AdditionalItem(scheduleMap.get("addItem" + i),
+						scheduleMap.get("addValue" + i), etc);
 					additionalItemRepository.save(additionalItem);
 				}
 			}
-			if(scheduleMap.containsKey("modifyItemNo")) { // 수정할 아이템 개수
+			if (scheduleMap.containsKey("modifyItemNo")) { // 수정할 아이템 개수
 				int numberOfItemToModify = Integer.parseInt(scheduleMap.get("modifyItemNo"));
-				for(int i = 0; i<numberOfItemToModify; i++) {
+				for (int i = 0; i < numberOfItemToModify; i++) {
 					String key = scheduleMap.get("modifyItem" + i);
 					Optional<AdditionalItem> optionalItem = additionalItemList.stream()
 						.filter(x -> x.getItem().equals(key)).findFirst();
 
-					if(optionalItem.isEmpty()) {
+					if (optionalItem.isEmpty()) {
 						return new ResponseEntity(
-							NoDataResponse.response(status.INVALID_ITEM, "유효하지 않은 item 입니다. modifyItem" + (i+1) + " : " + key),
+							NoDataResponse.response(status.INVALID_ITEM,
+								"유효하지 않은 item 입니다. modifyItem" + (i + 1) + " : " + key),
 							HttpStatus.BAD_REQUEST);
 					}
 					AdditionalItem itemToModify = optionalItem.get();
@@ -1034,14 +1037,14 @@ public class ScheduleService {
 
 		if (iconId == FEEDING) {
 			Optional<Feeding> feeding = feedingRepository.findById(scheduleId);
-			if(feeding.isEmpty()) {
+			if (feeding.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
 			}
 			Feeding feed = feeding.get();
 			long familyIdOfWriter = feed.getUser().getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "삭제 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
@@ -1054,14 +1057,14 @@ public class ScheduleService {
 		}
 		if (iconId == SNACK) {
 			Optional<Snack> optionalSnack = snackRepository.findById(scheduleId);
-			if(optionalSnack.isEmpty()) {
+			if (optionalSnack.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
 			}
 			Snack snack = optionalSnack.get();
 			long familyOfWriter = snack.getUser().getFamily().getId();
-			if(familyOfWriter != familyIdOfModifier) {
+			if (familyOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "삭제 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
@@ -1073,14 +1076,14 @@ public class ScheduleService {
 		}
 		if (iconId == POTTY) {
 			Optional<Potty> optionalPotty = pottyRepository.findById(scheduleId);
-			if(optionalPotty.isEmpty()) {
+			if (optionalPotty.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
 			}
 			Potty potty = optionalPotty.get();
 			long familyIdOfWriter = potty.getUser().getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "삭제 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
@@ -1092,14 +1095,14 @@ public class ScheduleService {
 		}
 		if (iconId == DRUG) {
 			Optional<Drug> optionalDrug = drugRepository.findById(scheduleId);
-			if(optionalDrug.isEmpty()) {
+			if (optionalDrug.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
 			}
 			Drug drug = optionalDrug.get();
 			long familyIdOfWriter = drug.getUser().getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "삭제 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
@@ -1112,14 +1115,14 @@ public class ScheduleService {
 		}
 		if (iconId == HOSPITAL) {
 			Optional<Hospital> optionalHospital = hospitalRepository.findById(scheduleId);
-			if(optionalHospital.isEmpty()) {
+			if (optionalHospital.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
 			}
 			Hospital hospital = optionalHospital.get();
 			long familyIdOfWriter = hospital.getUser().getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "삭제 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
@@ -1131,14 +1134,14 @@ public class ScheduleService {
 		}
 		if (iconId == SALON) {
 			Optional<Salon> optionalSalon = salonRepository.findById(scheduleId);
-			if(optionalSalon.isEmpty()) {
+			if (optionalSalon.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
 			}
 			Salon salon = optionalSalon.get();
 			long familyIdOfWriter = salon.getUser().getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "삭제 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
@@ -1150,14 +1153,14 @@ public class ScheduleService {
 		}
 		if (iconId == BATH) {
 			Optional<Bath> optionalBath = bathRepository.findById(scheduleId);
-			if(optionalBath.isEmpty()) {
+			if (optionalBath.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
 			}
 			Bath bath = optionalBath.get();
 			long familyIdOfWriter = bath.getUser().getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "삭제 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
@@ -1169,14 +1172,14 @@ public class ScheduleService {
 		}
 		if (iconId == SLEEP) {
 			Optional<Sleep> optionalSleep = sleepRepository.findById(scheduleId);
-			if(optionalSleep.isEmpty()) {
+			if (optionalSleep.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
 			}
 			Sleep sleep = optionalSleep.get();
 			long familyIdOfWriter = sleep.getUser().getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "삭제 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
@@ -1188,14 +1191,14 @@ public class ScheduleService {
 		}
 		if (iconId == PLAYING) {
 			Optional<Playing> optionalPlaying = playingRepository.findById(scheduleId);
-			if(optionalPlaying.isEmpty()) {
+			if (optionalPlaying.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
 			}
 			Playing playing = optionalPlaying.get();
 			long familyIdOfWriter = playing.getUser().getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "삭제 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
@@ -1207,14 +1210,14 @@ public class ScheduleService {
 		}
 		if (iconId == TRAINING) {
 			Optional<Training> optionalTraining = trainingRepository.findById(scheduleId);
-			if(optionalTraining.isEmpty()) {
+			if (optionalTraining.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
 			}
 			Training training = optionalTraining.get();
 			long familyIdOfWriter = training.getUser().getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "삭제 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
@@ -1226,14 +1229,14 @@ public class ScheduleService {
 		}
 		if (iconId == MENSTRUATION) {
 			Optional<Menstruation> optionalMenstruation = menstruationRepository.findById(scheduleId);
-			if(optionalMenstruation.isEmpty()) {
+			if (optionalMenstruation.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
 			}
 			Menstruation menstruation = optionalMenstruation.get();
 			long familyIdOfWriter = menstruation.getUser().getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "삭제 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
@@ -1245,14 +1248,14 @@ public class ScheduleService {
 		}
 		if (iconId == WALK) {
 			Optional<Walk> optionalWalk = walkRepository.findById(scheduleId);
-			if(optionalWalk.isEmpty()) {
+			if (optionalWalk.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
 			}
 			Walk walk = optionalWalk.get();
 			long familyIdOfWriter = walk.getUser().getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "삭제 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
@@ -1264,14 +1267,14 @@ public class ScheduleService {
 		}
 		if (iconId == ETC) {
 			Optional<Etc> optionalEtc = etcRepository.findById(scheduleId);
-			if(optionalEtc.isEmpty()) {
+			if (optionalEtc.isEmpty()) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
 					HttpStatus.BAD_REQUEST);
 			}
 			Etc etc = optionalEtc.get();
 			long familyIdOfWriter = etc.getUser().getFamily().getId();
-			if(familyIdOfWriter != familyIdOfModifier) {
+			if (familyIdOfWriter != familyIdOfModifier) {
 				return new ResponseEntity(
 					NoDataResponse.response(status.NO_PERMISSION, "삭제 권한이 없습니다. userId : " + userId),
 					HttpStatus.BAD_REQUEST);
@@ -1283,6 +1286,16 @@ public class ScheduleService {
 		}
 
 		return new ResponseEntity(NoDataResponse.response(status.INVALID_ID, "유효하지 않은 iconId 입니다. iconId : " + iconId),
+			HttpStatus.OK);
+	}
+
+	/**
+	 * W5 : 일정 조회
+	 */
+	public ResponseEntity<String> getSchedule(String date) {
+
+
+		return new ResponseEntity(NoDataResponse.response(status.SUCCESS, responseMessage.SUCCESS),
 			HttpStatus.OK);
 	}
 }
