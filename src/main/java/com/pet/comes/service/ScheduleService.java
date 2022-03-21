@@ -860,7 +860,50 @@ public class ScheduleService {
 				HttpStatus.OK);
 		}
 		if (iconId == WALK) {
-
+			Optional<Walk> optionalWalk = walkRepository.findById((long)scheduleId);
+			if(optionalWalk.isEmpty()) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.INVALID_ID, "유효하지 않은 scheduleId 입니다. scheduleId : " + scheduleId),
+					HttpStatus.BAD_REQUEST);
+			}
+			Walk walk = optionalWalk.get();
+			long familyIdOfWriter = walk.getUser().getFamily().getId();
+			long familyIdOfModifier = user.getFamily().getId();
+			if(familyIdOfWriter != familyIdOfModifier) {
+				return new ResponseEntity(
+					NoDataResponse.response(status.NO_PERMISSION, "수정 권한이 없습니다. userId : " + userId),
+					HttpStatus.BAD_REQUEST);
+			}
+			walk.setUser(user);
+			if(date != null) {
+				walk.setDate(date);
+			}
+			if(containsKey(scheduleMap, "startTime") && containsKey(scheduleMap, "endTime")) {
+				LocalTime startTime = LocalTime.parse(scheduleMap.get("startTime"));
+				LocalTime endTime = LocalTime.parse(scheduleMap.get("endTime"));
+				if(startTime.isAfter(endTime)) {
+					return new ResponseEntity(
+						NoDataResponse.response(status.INVALID_TIME, "시작 시간은 끝나는 시간보다 빨라야 합니다. startTime : " + startTime + ", endTime : " + endTime),
+						HttpStatus.BAD_REQUEST);
+				}
+				walk.setStartTime(startTime);
+				walk.setEndTime(endTime);
+			}
+			else {
+				if(containsKey(scheduleMap, "startTime")) {
+					walk.setStartTime(LocalTime.parse(scheduleMap.get("startTime")));
+				}
+				if(containsKey(scheduleMap, "endTime")) {
+					walk.setEndTime(LocalTime.parse(scheduleMap.get("endTime")));
+				}
+			}
+			if(containsKey(scheduleMap, "memo")) {
+				walk.setMemo(scheduleMap.get("memo"));
+			}
+			walkRepository.save(walk);
+			return new ResponseEntity(
+				DataResponse.response(status.SUCCESS, responseMessage.SUCCESS_MODIFY_SCHEDULE, walk.getId()),
+				HttpStatus.OK);
 		}
 		if (iconId == ETC) {
 
