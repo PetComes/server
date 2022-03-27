@@ -8,7 +8,10 @@ public class ResponseMessage {
      * Set same variable name class Status's variable name
      */
 
-    public String SUCCESS = "성공";
+    public static String SUCCESS = "성공";
+    public static String ILLEGAL_ARGUMENT = "잘못된 입력입니다.";
+    public static String ILLEGAL_STATE = "잘못된 상태입니다.";
+
     public String DUPLICATED_EMAIL = "사용할 수 없는 이메일입니다.(중복)";
     public String NOT_ENTERED = "입력되지 않은 필수 항목이 있습니다.";
     public String DUPLICATED_NICKNAME = "사용할 수 없는 닉네임입니다.(중복)";

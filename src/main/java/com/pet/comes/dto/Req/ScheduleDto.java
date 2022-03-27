@@ -1,16 +1,42 @@
 package com.pet.comes.dto.Req;
 
+import java.util.Map;
+
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
+@Builder
+@NoArgsConstructor
 public class ScheduleDto {
-	private Long iconId;
-	private Long scheduleId;
-	private Long userId;
+	private long iconId;
+	private long scheduleId;
+	private long userId;
+	private String date;
+	private String time;
+	private String memo;
 
-	public ScheduleDto(long iconId, long scheduleId, long userId) {
-		this.iconId = iconId;
-		this.scheduleId = scheduleId;
-		this.userId = userId;
-	}
+	private String kind;
+	private String type;
+	private String amount;
+
+	private String prescriptionUrl;
+	private int expenses;
+
+	private String disease;
+	private long dogId;
+	private float weight;
+	private String address;
+	private String x;
+	private String y;
+	private String locationName;
+
+	private String startTime;
+	private String endTime;
+
+	private int additionalItemNo;
+	private Map<String, String> etcMap;
 }
