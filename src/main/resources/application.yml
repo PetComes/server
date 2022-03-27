@@ -5,7 +5,7 @@ spring:
       - credentials
       - openAPI
       - mail
-    active: devdb
+    active: heatherdb
   servlet:
     multipart:
       max-file-size: 10MB
@@ -114,10 +114,9 @@ spring:
           #  org:
           #   hibernate:
           #    type:
-          #     descriptor:
+        #     descriptor:
         #      sql: trace
       #hibernate:
       # ddl-auto: none
     #show-sql: true
-
 

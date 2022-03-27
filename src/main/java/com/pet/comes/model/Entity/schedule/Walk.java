@@ -1,64 +1,21 @@
 package com.pet.comes.model.Entity.schedule;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Map;
 
-import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import com.pet.comes.model.Entity.User;
+import javax.persistence.PrimaryKeyJoinColumn;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Entity
 @Getter
-@Setter
+@Entity
+@DiscriminatorValue("WALK")
+@PrimaryKeyJoinColumn(name = "schedule_id")
 @NoArgsConstructor
-@Table(name = "walk")
-@EntityListeners(AuditingEntityListener.class)
-public class Walk {
+public class Walk extends Schedule {
 
-	@Id
-	@GeneratedValue(strategy= GenerationType.IDENTITY)
-	private Long id;
-
-	@ManyToOne
-	@JoinColumn(name = "user_id")
-	private User user;
-
-	private LocalDate date; // YYYY-MM-DD
-	private LocalTime startTime; // HH:mm:ss
-	private LocalTime endTime; // HH:mm:ss
-
-	@Column(columnDefinition = "TEXT")
-	private String memo;    // 자유메모
-
-	@LastModifiedDate
-	private LocalDateTime modifiedAt;
-	@CreatedDate
-	private LocalDateTime registeredAt;
-
-	public Walk(Map<String, String> walkMap, User user) {
-		this.user = user;
-		this.date = LocalDate.parse(walkMap.get("date"), DateTimeFormatter.ISO_DATE);
-		this.startTime = LocalTime.parse(walkMap.get("startTime"));
-		this.endTime = LocalTime.parse(walkMap.get("endTime"));
-		this.memo = walkMap.get("memo");
-	}
+	private LocalDate startTime;
+	private LocalDate endTime;
 }

@@ -1,6 +1,6 @@
 package com.pet.comes.model.EnumType;
 
-public enum DryOrWetFeed {
+public enum FeedType {
 	DRY,
 	WET
 }

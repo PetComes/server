@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@DiscriminatorValue("SLEEP")
+@DiscriminatorValue("PLAY")
 @PrimaryKeyJoinColumn(name = "schedule_id")
 @NoArgsConstructor
-public class Sleep extends Schedule {
+public class Play extends Schedule {
 
 }
