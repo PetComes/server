@@ -4,6 +4,8 @@ package com.pet.comes.model.Entity;
 import java.util.Map;
 
 import com.pet.comes.dto.Req.DiaryReqDto;
+import com.pet.comes.dto.Req.ScheduleDto;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -52,10 +54,10 @@ public class Address {
             this.diary = diary;
     }
 
-    public Address(Map<String, String> addressMap) {
-        this.address = addressMap.get("address");
-        this.locationName = addressMap.get("locationName");
-        this.x = addressMap.get("x");
-        this.y = addressMap.get("y");
+    public Address(ScheduleDto scheduleDto) {
+        this.address = scheduleDto.getAddress();
+        this.locationName = scheduleDto.getLocationName();
+        this.x = scheduleDto.getX();
+        this.y = scheduleDto.getY();
     }
 }

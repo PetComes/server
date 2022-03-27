@@ -28,7 +28,7 @@ public class ScheduleDto {
 
 	private String disease;
 	private long dogId;
-	private float weight;
+	private double weight;
 	private String address;
 	private String x;
 	private String y;
