@@ -6,6 +6,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.PrimaryKeyJoinColumn;
 
+import com.pet.comes.dto.Req.ScheduleDto;
+import com.pet.comes.model.Entity.User;
 import com.pet.comes.model.EnumType.FeedType;
 
 import lombok.Getter;
@@ -24,4 +26,15 @@ public class Feed extends Schedule {
 	private FeedType type;
 
 	private String amount;
+
+	/** 생성자 */
+	public Feed(User user, ScheduleDto scheduleDto) {
+		setUser(user);
+		setDate(scheduleDto.getDate());
+		setTime(scheduleDto.getTime());
+		setMemo(scheduleDto.getMemo());
+		this.kind = scheduleDto.getKind();
+		this.type = FeedType.checkEnumValue(scheduleDto.getType());
+		this.amount = scheduleDto.getAmount();
+	}
 }

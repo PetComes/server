@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pet.comes.dto.Req.ScheduleDto;
+import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
 import com.pet.comes.service.ScheduleService;
@@ -22,8 +23,14 @@ public class ScheduleController {
 	private static final NoDataResponse success = new NoDataResponse(Status.SUCCESS, ResponseMessage.SUCCESS);
 
 	@PostMapping("/schedule")
-	public ResponseEntity<NoDataResponse> registerSchedule(@RequestBody ScheduleDto scheduleDto) {
-		scheduleService.registerSchedule(scheduleDto);
-		return new ResponseEntity<>(success, HttpStatus.OK);
+	public ResponseEntity<DataResponse> registerSchedule(@RequestBody ScheduleDto scheduleDto) {
+		long scheduleId = scheduleService.registerSchedule(scheduleDto);
+		if (scheduleId == 0) {
+			return new ResponseEntity<>(
+				DataResponse.response(Status.INTERNAL_SERVER_ERROR, ResponseMessage.INTERNAL_SERVER_ERROR, scheduleId),
+				HttpStatus.OK);
+		}
+		return new ResponseEntity<>(DataResponse.response(Status.SUCCESS, ResponseMessage.SUCCESS, scheduleId),
+			HttpStatus.OK);
 	}
 }

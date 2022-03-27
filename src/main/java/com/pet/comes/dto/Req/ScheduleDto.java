@@ -12,7 +12,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 public class ScheduleDto {
-	private long iconId;
+	private int iconId;
 	private long scheduleId;
 	private long userId;
 	private String date;

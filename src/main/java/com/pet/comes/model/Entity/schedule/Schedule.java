@@ -2,6 +2,7 @@ package com.pet.comes.model.Entity.schedule;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
@@ -19,13 +20,14 @@ import com.pet.comes.model.Timestamped;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "d_type")
-public class Schedule extends Timestamped {
+public abstract class Schedule extends Timestamped {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,4 +43,20 @@ public class Schedule extends Timestamped {
 
 	private String memo;
 
+	/** setter */
+	protected void setUser(User user) {
+		this.user = user;
+	}
+
+	protected void setDate(String date) {
+		this.date = LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE);
+	}
+
+	protected void setTime(String time) {
+		this.time = LocalTime.parse(time, DateTimeFormatter.ISO_LOCAL_TIME);
+	}
+
+	protected void setMemo(String memo) {
+		this.memo = memo;
+	}
 }

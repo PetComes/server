@@ -1,5 +1,7 @@
 package com.pet.comes.config.exception;
 
+import java.util.NoSuchElementException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -29,10 +31,17 @@ public class GlobalExceptionHandler {
 		return new DataResponse(Status.ILLEGAL_STATE, ResponseMessage.ILLEGAL_STATE, exception.getMessage());
 	}
 
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(NoSuchElementException.class)
+	public DataResponse handleNoSuchElementException(NoSuchElementException exception) {
+		log.error(exception.getMessage(), exception);
+		return new DataResponse(Status.ILLEGAL_STATE, ResponseMessage.ILLEGAL_STATE, exception.getMessage());
+	}
+
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(Exception.class)
 	public DataResponse handleUnexpectedException(Exception exception) {
 		log.error(exception.getMessage(), exception);
-		return new DataResponse(Status.ILLEGAL_STATE, ResponseMessage.ILLEGAL_STATE, exception.getMessage());
+		return new DataResponse(Status.INTERNAL_SERVER_ERROR, ResponseMessage.INTERNAL_SERVER_ERROR, exception.getMessage());
 	}
 }

@@ -15,6 +15,7 @@ public class Status {
     public static int SUCCESS = 200;
     public static int ILLEGAL_ARGUMENT = 400;
     public static int ILLEGAL_STATE = 401;
+    public static int INTERNAL_SERVER_ERROR = 5000;
 
     public int DUPLICATED_EMAIL = 301;
     public int NOT_ENTERED = 302;

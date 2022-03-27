@@ -11,6 +11,7 @@ public class ResponseMessage {
     public static String SUCCESS = "성공";
     public static String ILLEGAL_ARGUMENT = "잘못된 입력입니다.";
     public static String ILLEGAL_STATE = "잘못된 상태입니다.";
+    public static String INTERNAL_SERVER_ERROR = "예상치못한 예외가 발생했습니다.";
 
     public String DUPLICATED_EMAIL = "사용할 수 없는 이메일입니다.(중복)";
     public String NOT_ENTERED = "입력되지 않은 필수 항목이 있습니다.";
