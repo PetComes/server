@@ -19,6 +19,10 @@ public enum FeedType {
 	};
 
 	public static FeedType checkEnumValue(String type) {
+		if(type == null) {
+			return null;
+		}
+
 		List<FeedType> feedTypes = new ArrayList<>();
 		feedTypes.add(FeedType.DRY);
 		feedTypes.add(FeedType.WET);

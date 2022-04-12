@@ -7,7 +7,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 
+import com.pet.comes.dto.Req.ScheduleDto;
 import com.pet.comes.model.Entity.Address;
+import com.pet.comes.model.Entity.Dog;
+import com.pet.comes.model.Entity.User;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,4 +27,15 @@ public class Salon extends Schedule {
 	private Address address;
 
 	private Integer expenses;
+
+	/** 생성자 */
+	public Salon(User user, Dog dog, Address address, ScheduleDto scheduleDto) {
+		setUser(user);
+		setDog(dog);
+		setDate(scheduleDto.getDate());
+		setTime(scheduleDto.getTime());
+		setMemo(scheduleDto.getMemo());
+		this.address = address;
+		this.expenses = scheduleDto.getExpenses();
+	}
 }

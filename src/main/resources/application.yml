@@ -5,7 +5,7 @@ spring:
       - credentials
       - openAPI
       - mail
-    active: heatherdb
+    active: devdb
   servlet:
     multipart:
       max-file-size: 10MB
@@ -82,6 +82,21 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/petComes?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
     username: Heather
     password: HeatherMySQL
+#  servlet:
+#    multipart:
+#      max-request-size: 10MB
+#      max-file-size: 10MB
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#      use-new-id-generator-mappings: true
+#    open-in-view: false
+#    show-sql: true
+#    properties:
+#      hibernate:
+#        format_sql: true
+#        use_sql_comments: true
+#        database-platform: org.hibernate.dialect.MySQL8Dialect
 
 ---
 

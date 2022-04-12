@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 
 import com.pet.comes.dto.Req.ScheduleDto;
+import com.pet.comes.model.Entity.Dog;
 import com.pet.comes.model.Entity.User;
 
 import lombok.Getter;
@@ -20,8 +21,9 @@ public class Snack extends Schedule {
 	private String kind;
 
 	/** 생성자 */
-	public Snack(User user, ScheduleDto scheduleDto) {
+	public Snack(User user, Dog dog, ScheduleDto scheduleDto) {
 		setUser(user);
+		setDog(dog);
 		setDate(scheduleDto.getDate());
 		setTime(scheduleDto.getTime());
 		setMemo(scheduleDto.getMemo());

@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 
 import com.pet.comes.dto.Req.ScheduleDto;
+import com.pet.comes.model.Entity.Dog;
 import com.pet.comes.model.Entity.User;
 
 import lombok.Getter;
@@ -26,8 +27,9 @@ public class Drug extends Schedule {
 	private Integer expenses;
 
 	/** 생성자 */
-	public Drug(User user, ScheduleDto scheduleDto) {
+	public Drug(User user, Dog dog, ScheduleDto scheduleDto) {
 		setUser(user);
+		setDog(dog);
 		setDate(scheduleDto.getDate());
 		setTime(scheduleDto.getTime());
 		setMemo(scheduleDto.getMemo());

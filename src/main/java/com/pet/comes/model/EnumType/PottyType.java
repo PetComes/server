@@ -20,6 +20,10 @@ public enum PottyType {
 	};
 
 	public static PottyType checkEnumValue(String kind) {
+		if(kind == null) {
+			return null;
+		}
+
 		List<PottyType> pottyTypes = new ArrayList<>();
 		pottyTypes.add(PottyType.URINE);
 		pottyTypes.add(PottyType.FECES);

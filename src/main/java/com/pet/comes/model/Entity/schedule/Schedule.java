@@ -3,8 +3,11 @@ package com.pet.comes.model.Entity.schedule;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -14,20 +17,22 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
+import com.pet.comes.dto.Req.ScheduleDto;
+import com.pet.comes.model.Entity.Dog;
 import com.pet.comes.model.Entity.User;
 import com.pet.comes.model.Timestamped;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "d_type")
-public abstract class Schedule extends Timestamped {
+public class Schedule extends Timestamped {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,15 +42,27 @@ public abstract class Schedule extends Timestamped {
 	@JoinColumn(name = "user_id")
 	private User user;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "dog_id")
+	private Dog dog;
+
 	private LocalDate date;
 
 	private LocalTime time;
 
 	private String memo;
 
+	/** 양방향매핑 */
+	@OneToMany(mappedBy = "schedule")
+	private List<EtcItem> etcItems = new ArrayList<>();
+
 	/** setter */
 	protected void setUser(User user) {
 		this.user = user;
+	}
+
+	protected void setDog(Dog dog) {
+		this.dog = dog;
 	}
 
 	protected void setDate(String date) {
@@ -59,4 +76,21 @@ public abstract class Schedule extends Timestamped {
 	protected void setMemo(String memo) {
 		this.memo = memo;
 	}
+
+	/** 생성자 */
+	public Schedule(User user, ScheduleDto scheduleDto) {
+		this.user = user;
+		this.date = LocalDate.parse(scheduleDto.getDate(), DateTimeFormatter.ISO_LOCAL_DATE);
+		this.time = LocalTime.parse(scheduleDto.getTime(), DateTimeFormatter.ISO_LOCAL_TIME);
+		this.memo = scheduleDto.getMemo();
+	}
+
+	public Schedule(User user, Dog dog, ScheduleDto scheduleDto) {
+		this.user = user;
+		this.dog = dog;
+		this.date = LocalDate.parse(scheduleDto.getDate(), DateTimeFormatter.ISO_LOCAL_DATE);
+		this.time = LocalTime.parse(scheduleDto.getTime(), DateTimeFormatter.ISO_LOCAL_TIME);
+		this.memo = scheduleDto.getMemo();
+	}
+
 }

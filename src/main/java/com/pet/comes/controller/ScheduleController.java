@@ -1,5 +1,8 @@
 package com.pet.comes.controller;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +27,7 @@ public class ScheduleController {
 
 	@PostMapping("/schedule")
 	public ResponseEntity<DataResponse> registerSchedule(@RequestBody ScheduleDto scheduleDto) {
+		checkDateAndTime(scheduleDto);
 		long scheduleId = scheduleService.registerSchedule(scheduleDto);
 		if (scheduleId == 0) {
 			return new ResponseEntity<>(
@@ -32,5 +36,19 @@ public class ScheduleController {
 		}
 		return new ResponseEntity<>(DataResponse.response(Status.SUCCESS, ResponseMessage.SUCCESS, scheduleId),
 			HttpStatus.OK);
+	}
+
+	public void checkDateAndTime(ScheduleDto scheduleDto) {
+		if(scheduleDto.getDate() == null) {
+			scheduleDto.setDate(String.valueOf(LocalDate.now()));
+		}
+		if(scheduleDto.getTime() == null) {
+			scheduleDto.setTime(makeCurrentTime(LocalTime.now()));
+		}
+	}
+
+	public String makeCurrentTime(LocalTime now) {
+		String currentTime = String.valueOf(now);
+		return currentTime.substring(0,6) + "00";
 	}
 }

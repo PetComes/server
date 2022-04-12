@@ -9,7 +9,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 public class ScheduleDto {
 	private int iconId;
@@ -39,4 +38,5 @@ public class ScheduleDto {
 
 	private int additionalItemNo;
 	private Map<String, String> etcMap;
+
 }
