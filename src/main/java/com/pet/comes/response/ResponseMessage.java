@@ -10,8 +10,8 @@ public class ResponseMessage {
 
     public static String SUCCESS = "성공";
     public static String ILLEGAL_ARGUMENT = "잘못된 입력입니다.";
-    public static String ILLEGAL_STATE = "잘못된 상태입니다.";
-    public static String INTERNAL_SERVER_ERROR = "예상치못한 예외가 발생했습니다.";
+    public static String ILLEGAL_STATE = "잘못된 상태의 호출입니다.";
+    public static String INTERNAL_SERVER_ERROR = "예상치 못한 예외가 발생했습니다.";
 
     public String DUPLICATED_EMAIL = "사용할 수 없는 이메일입니다.(중복)";
     public String NOT_ENTERED = "입력되지 않은 필수 항목이 있습니다.";
@@ -27,8 +27,8 @@ public class ResponseMessage {
     public String NO_ALARMS = "알림이 없습니다.";
     public String INVALID_USER = "유효하지 않은 userId 입니다.";
     public String NO_COMMUNITY_CONTENTS = "공유다이어리에 게시된 다이어리가 없습니다.";
-    public String SUCCESS_REGISTER_SCHEDULE = "schedule 등록 성공";
-    public String SUCCESS_MODIFY_SCHEDULE = "schedule 수정 성공";
+    public static String SUCCESS_REGISTER_SCHEDULE = "schedule 등록 성공";
+    public static String SUCCESS_MODIFY_SCHEDULE = "schedule 수정 성공";
     public String EMPTY_VALUE = "값이 없습니다.";
     public String SUCCESS_DELETE_SCHEDULE = "schedule 삭제 성공";
 }

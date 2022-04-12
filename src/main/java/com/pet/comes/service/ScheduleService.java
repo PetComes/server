@@ -186,7 +186,9 @@ public class ScheduleService {
 			return etc.getId();
 		}
 
-		return 0;
+		NoSuchElementException noSuchElementException = new NoSuchElementException("iconId 값이 입력되지 않았습니다.");
+		log.error("ScheduleService - registerSchedule : iconId 값이 0입니다.", noSuchElementException);
+		throw noSuchElementException;
 	}
 
 	public User getValidateUser(long userId) {
@@ -197,7 +199,7 @@ public class ScheduleService {
 	public void validateUser(long userId) {
 		if (userId == 0) {
 			IllegalArgumentException illegalArgumentException = new IllegalArgumentException("userId 값이 0입니다.");
-			log.error("SchedulerService - validateUser : userId 값이 0입니다.", illegalArgumentException);
+			log.error("ScheduleService - validateUser : userId 값이 0입니다.", illegalArgumentException);
 			throw illegalArgumentException;
 		}
 	}
@@ -307,6 +309,14 @@ public class ScheduleService {
 		}
 
 		return new Address(scheduleDto);
+	}
+
+	/**
+	 * W2 일정 수정
+	 * */
+	@Transactional
+	public void modifySchedule(ScheduleDto scheduleDto) {
+
 	}
 
 }
