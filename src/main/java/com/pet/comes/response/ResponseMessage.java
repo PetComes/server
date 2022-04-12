@@ -30,5 +30,5 @@ public class ResponseMessage {
     public static String SUCCESS_REGISTER_SCHEDULE = "schedule 등록 성공";
     public static String SUCCESS_MODIFY_SCHEDULE = "schedule 수정 성공";
     public String EMPTY_VALUE = "값이 없습니다.";
-    public String SUCCESS_DELETE_SCHEDULE = "schedule 삭제 성공";
+    public static String SUCCESS_DELETE_SCHEDULE = "schedule 삭제 성공";
 }

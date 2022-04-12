@@ -617,4 +617,25 @@ public class ScheduleService {
 		return optionalEtcItem.get();
 	}
 
+	/**
+	 * W4 일정 삭제
+	 **/
+	public void deleteSchedule(ScheduleDto scheduleDto) {
+		long scheduleId = scheduleDto.getScheduleId();
+		User user = getValidateUser(scheduleDto.getUserId());
+		long userFamilyId = user.getFamily().getId();
+
+		Optional<Schedule> optionalSchedule = scheduleRepository.findById(scheduleId);
+		Schedule schedule = validateSchedule(optionalSchedule, scheduleId);
+
+		long scheduleUserFamilyId = schedule.getUser().getFamily().getId();
+		if (scheduleUserFamilyId != userFamilyId) {
+			IllegalStateException illegalStateException = new IllegalStateException(
+				"삭제 권한이 없습니다. (userId : " + scheduleDto.getUserId() + ")");
+			log.error("ScheduleService - deleteSchedule : NOT SAME the familyId", illegalStateException);
+			throw illegalStateException;
+		}
+
+		scheduleRepository.delete(schedule);
+	}
 }

@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -54,7 +55,7 @@ public class Schedule extends Timestamped {
 	private String memo;
 
 	/** 양방향매핑 */
-	@OneToMany(mappedBy = "schedule")
+	@OneToMany(mappedBy = "schedule", cascade = CascadeType.REMOVE)
 	private List<EtcItem> etcItems = new ArrayList<>();
 
 	/** setter */

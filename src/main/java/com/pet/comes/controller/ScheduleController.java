@@ -5,9 +5,11 @@ import java.time.LocalTime;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pet.comes.dto.Req.ScheduleDto;
@@ -40,6 +42,14 @@ public class ScheduleController {
 		scheduleService.modifySchedule(scheduleDto);
 		return new ResponseEntity<>(
 			NoDataResponse.response(Status.SUCCESS, ResponseMessage.SUCCESS_MODIFY_SCHEDULE), HttpStatus.OK
+		);
+	}
+
+	@DeleteMapping("/schedule")
+	public ResponseEntity<NoDataResponse> deleteSchedule(@RequestBody ScheduleDto scheduleDto) {
+		scheduleService.deleteSchedule(scheduleDto);
+		return new ResponseEntity<>(
+			NoDataResponse.response(Status.SUCCESS, ResponseMessage.SUCCESS_DELETE_SCHEDULE), HttpStatus.OK
 		);
 	}
 
