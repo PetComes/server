@@ -35,4 +35,17 @@ public class Walk extends Schedule {
 		this.startTime = LocalTime.parse(scheduleDto.getStartTime(), DateTimeFormatter.ISO_LOCAL_TIME);
 		this.endTime = LocalTime.parse(scheduleDto.getEndTime(), DateTimeFormatter.ISO_LOCAL_TIME);
 	}
+
+	/** 수정자 */
+	public void modifyStartTime(String startTime) {
+		if(startTime != null) {
+			this.startTime = LocalTime.parse(startTime, DateTimeFormatter.ISO_LOCAL_TIME);
+		}
+	}
+
+	public void modifyEndTime(String endTime) {
+		if(endTime != null) {
+			this.endTime = LocalTime.parse(endTime, DateTimeFormatter.ISO_LOCAL_TIME);
+		}
+	}
 }

@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @DiscriminatorValue("POTTY")
 @PrimaryKeyJoinColumn(name = "schedule_id")
 @NoArgsConstructor
-public class Potty extends Schedule{
+public class Potty extends Schedule {
 
 	@Enumerated(EnumType.STRING)
 	private PottyType kind;
@@ -31,6 +31,13 @@ public class Potty extends Schedule{
 		setDate(scheduleDto.getDate());
 		setTime(scheduleDto.getTime());
 		setMemo(scheduleDto.getMemo());
-		this.kind = PottyType.checkEnumValue(scheduleDto.getKind());
+		this.kind = PottyType.getValidatedEnumValue(scheduleDto.getKind());
+	}
+
+	/** 수정자 */
+	public void modifyKind(String kind) {
+		if(kind != null) {
+			this.kind = PottyType.getValidatedEnumValue(kind);
+		}
 	}
 }

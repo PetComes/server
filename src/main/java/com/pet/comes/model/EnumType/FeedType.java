@@ -18,7 +18,7 @@ public enum FeedType {
 		}
 	};
 
-	public static FeedType checkEnumValue(String type) {
+	public static FeedType getValidatedEnumValue(String type) {
 		if(type == null) {
 			return null;
 		}

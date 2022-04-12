@@ -1,7 +1,12 @@
 package com.pet.comes.model.Entity;
 
-
-import java.util.Map;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 import com.pet.comes.dto.Req.DiaryReqDto;
 import com.pet.comes.dto.Req.ScheduleDto;
@@ -9,8 +14,6 @@ import com.pet.comes.dto.Req.ScheduleDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.persistence.*;
 
 @Entity
 @Getter

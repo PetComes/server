@@ -50,4 +50,9 @@ public class EtcItem {
 		this.key = key;
 		this.value = value;
 	}
+
+	/** 수정자 */
+	public void modifyValue(String value) {
+		this.value = value;
+	}
 }

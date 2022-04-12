@@ -2,7 +2,6 @@ package com.pet.comes.dto.Req;
 
 import java.util.Map;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

@@ -1,5 +1,6 @@
 package com.pet.comes.service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -117,12 +118,14 @@ public class ScheduleService {
 		}
 
 		if (iconId == IconId.HOSPITAL) {
+			Address address = getValidAddress(scheduleDto);
+			Hospital hospital = new Hospital(user, dog, address, scheduleDto);
 			if (scheduleDto.getWeight() != 0.0) {
 				validateDog(dog);
 				writeDogWeightLog(dog, scheduleDto.getWeight());
+				hospital.modifyWeight(scheduleDto.getWeight());
 			}
-			Address address = getValidAddress(scheduleDto);
-			Hospital hospital = new Hospital(user, dog, address, scheduleDto);
+
 			hospitalRepository.save(hospital);
 			return hospital.getId();
 		}
@@ -297,26 +300,321 @@ public class ScheduleService {
 	}
 
 	public Address getValidAddress(ScheduleDto scheduleDto) {
-		if (scheduleDto.getAddress() == null && scheduleDto.getX() == null && scheduleDto.getY() == null
-			&& scheduleDto.getLocationName() == null) {
+		if ((scheduleDto.getAddress() == null) && (scheduleDto.getX() == null) && (scheduleDto.getY() == null) && (
+			scheduleDto.getLocationName() == null)) {
 			return null;
+		} else {
+			Optional<Address> address = addressRepository.findByLocationName(scheduleDto.getLocationName());
+			return address.orElseGet(() -> new Address(scheduleDto));
 		}
-
-		Optional<Address> optionalAddress = addressRepository.findByLocationName(scheduleDto.getLocationName());
-		if (optionalAddress.isPresent()) {
-			addressRepository.save(optionalAddress.get());
-			return optionalAddress.get();
-		}
-
-		return new Address(scheduleDto);
 	}
 
 	/**
-	 * W2 일정 수정
+	 * W3 일정 수정
 	 * */
 	@Transactional
 	public void modifySchedule(ScheduleDto scheduleDto) {
+		int iconId = scheduleDto.getIconId();
+		if (iconId == 0) {
+			NoSuchElementException noSuchElementException = new NoSuchElementException("iconId 값이 입력되지 않았습니다.");
+			log.error("ScheduleService - modifySchedule : iconId 값이 0입니다.", noSuchElementException);
+			throw noSuchElementException;
+		}
 
+		long scheduleId = scheduleDto.getScheduleId();
+		User user = getValidateUser(scheduleDto.getUserId());
+		long userFamilyId = user.getFamily().getId();
+
+		Dog dog = null;
+		if (scheduleDto.getDogId() != 0) {
+			dog = getValidateDog(scheduleDto.getDogId(), user);
+		}
+
+		/* 공통사항 수정 */
+		Optional<Schedule> optionalSchedule = scheduleRepository.findById(scheduleId);
+		Schedule schedule = validateSchedule(optionalSchedule, scheduleId);
+
+		long scheduleUserFamilyId = schedule.getUser().getFamily().getId();
+		if (scheduleUserFamilyId != userFamilyId) {
+			IllegalStateException illegalStateException = new IllegalStateException(
+				"수정 권한이 없습니다. (userId : " + scheduleDto.getUserId() + ")");
+			log.error("ScheduleService - modifySchedule : NOT SAME the familyId", illegalStateException);
+			throw illegalStateException;
+		}
+
+		modifyCommonItems(schedule, user, dog, scheduleDto);
+		scheduleRepository.save(schedule);
+
+		if ((iconId == IconId.FEED) && (isExistItemsToModified(iconId, scheduleDto))) {
+			Optional<Feed> optionalFeed = feedRepository.findById(scheduleId);
+
+			Feed feed = validateFeed(optionalFeed, scheduleId);
+			feed.modifyKind(scheduleDto.getKind());
+			feed.modifyType(scheduleDto.getType());
+			feed.modifyAmount(scheduleDto.getAmount());
+
+			feedRepository.save(feed);
+		}
+
+		if (iconId == IconId.SNACK && (isExistItemsToModified(iconId, scheduleDto))) {
+			Optional<Snack> optionalSnack = snackRepository.findById(scheduleId);
+			Snack snack = validateSnack(optionalSnack, scheduleId);
+			snack.modifyKind(scheduleDto.getKind());
+			snackRepository.save(snack);
+		}
+
+		if (iconId == IconId.POTTY && (isExistItemsToModified(iconId, scheduleDto))) {
+			Optional<Potty> optionalPotty = pottyRepository.findById(scheduleId);
+			Potty potty = validatePotty(optionalPotty, scheduleId);
+			potty.modifyKind(scheduleDto.getKind());
+			pottyRepository.save(potty);
+		}
+
+		if (iconId == IconId.DRUG && (isExistItemsToModified(iconId, scheduleDto))) {
+			Optional<Drug> optionalDrug = drugRepository.findById(scheduleId);
+
+			Drug drug = validateDrug(optionalDrug, scheduleId);
+			drug.modifyKind(scheduleDto.getKind());
+			drug.modifyPrescriptionUrl(scheduleDto.getPrescriptionUrl());
+			drug.modifyExpenses(scheduleDto.getExpenses());
+
+			drugRepository.save(drug);
+		}
+
+		if (iconId == IconId.HOSPITAL && (isExistItemsToModified(iconId, scheduleDto))) {
+			Optional<Hospital> optionalHospital = hospitalRepository.findById(scheduleId);
+
+			Hospital hospital = validateHospital(optionalHospital, scheduleId);
+			hospital.modifyDisease(scheduleDto.getDisease());
+			hospital.modifyKind(scheduleDto.getKind());
+			hospital.modifyPrescriptionUrl(scheduleDto.getPrescriptionUrl());
+			hospital.modifyExpenses(scheduleDto.getExpenses());
+
+			Address address = getValidAddress(scheduleDto);
+			if ((address != null) && ((address.getAddressId() == null))) {
+				addressRepository.save(address);
+			}
+			hospital.modifyAddress(address);
+
+			if (scheduleDto.getWeight() != 0.0) {
+				validateDog(dog);
+				writeDogWeightLog(dog, scheduleDto.getWeight());
+				hospital.modifyWeight(scheduleDto.getWeight());
+			}
+
+			hospitalRepository.save(hospital);
+		}
+
+		if (iconId == IconId.SALON && (isExistItemsToModified(iconId, scheduleDto))) {
+			Optional<Salon> optionalSalon = salonRepository.findById(scheduleId);
+			Salon salon = validateSalon(optionalSalon, scheduleId);
+			salon.modifyExpenses(scheduleDto.getExpenses());
+
+			Address address = getValidAddress(scheduleDto);
+			if ((address != null) && (address.getAddressId() == null)) {
+				addressRepository.save(address);
+			}
+			salon.modifyAddress(address);
+
+			salonRepository.save(salon);
+		}
+
+		if (iconId == IconId.WALK && (isExistItemsToModified(iconId, scheduleDto))) {
+			Optional<Walk> optionalWalk = walkRepository.findById(scheduleId);
+			Walk walk = validateWalk(optionalWalk, scheduleId);
+			walk.modifyStartTime(scheduleDto.getStartTime());
+			walk.modifyEndTime(scheduleDto.getEndTime());
+			walkRepository.save(walk);
+		}
+
+		if (iconId == IconId.ETC && (isExistItemsToModified(iconId, scheduleDto))) {
+			List<EtcItem> etcItems = schedule.getEtcItems();
+			Map<String, String> itemMap = scheduleDto.getEtcMap();
+
+			Optional<EtcItem> optionalEtcItem;
+			EtcItem etcItem;
+			int i = 0;
+			for (String key : itemMap.keySet()) {
+				optionalEtcItem = etcItems.stream().filter(x -> x.getKey().equals(itemMap.get(key))).findFirst();
+				if (!key.contains("value")) {
+					etcItem = validateEtcItem(optionalEtcItem, itemMap.get(key));
+					etcItem.modifyValue(itemMap.get("value" + i++));
+				}
+			}
+
+			scheduleRepository.save(schedule);
+		}
+
+	}
+
+	public Schedule validateSchedule(Optional<Schedule> optionalSchedule, long scheduleId) {
+		if (optionalSchedule.isEmpty()) {
+			IllegalArgumentException illegalArgumentException = new IllegalArgumentException(
+				"유효하지 않은 scheduleId입니다. (scheduleId : " + scheduleId + ")");
+			log.error("SchedulerService - modifySchedule - IconId.FEED : 유효하지 않은 scheduleId입니다. (scheduleId : "
+				+ scheduleId + ")", illegalArgumentException);
+			throw illegalArgumentException;
+		}
+		return optionalSchedule.get();
+	}
+
+	public void modifyCommonItems(Schedule schedule, User user, Dog dog, ScheduleDto scheduleDto) {
+		User newUser = schedule.getUser();
+		Dog newDog = schedule.getDog();
+		String newDate = String.valueOf(schedule.getDate());
+		String newTime = String.valueOf(schedule.getTime());
+		String newMemo = schedule.getMemo();
+
+		if (user != null) {
+			newUser = user;
+		}
+		if (dog != null) {
+			newDog = dog;
+		}
+		if (scheduleDto.getDate() != null) {
+			validateDate(scheduleDto.getDate());
+			newDate = scheduleDto.getDate();
+		}
+		if (scheduleDto.getTime() != null) {
+			validateTime(scheduleDto.getTime());
+			newTime = scheduleDto.getTime();
+		}
+		if (scheduleDto.getMemo() != null) {
+			newMemo = scheduleDto.getMemo();
+		}
+
+		schedule.changeCommonItems(newUser, newDog, newDate, newTime, newMemo);
+	}
+
+	public boolean isExistItemsToModified(int iconId, ScheduleDto scheduleDto) {
+		if (iconId == IconId.FEED) {
+			if ((scheduleDto.getKind() != null) || (scheduleDto.getType() != null) || (scheduleDto.getAmount() != null))
+				return true;
+		}
+		if (iconId == IconId.SNACK) {
+			if (scheduleDto.getKind() != null)
+				return true;
+		}
+		if (iconId == IconId.POTTY) {
+			if (scheduleDto.getKind() != null)
+				return true;
+		}
+		if (iconId == IconId.DRUG) {
+			if ((scheduleDto.getKind() != null) || (scheduleDto.getPrescriptionUrl() != null) ||
+				(scheduleDto.getExpenses() != 0))
+				return true;
+		}
+		if (iconId == IconId.HOSPITAL) {
+			if ((scheduleDto.getKind() != null) || (scheduleDto.getPrescriptionUrl() != null) ||
+				(scheduleDto.getExpenses() != 0) || (scheduleDto.getWeight() != 0.0) ||
+				(scheduleDto.getDisease() != null) || (scheduleDto.getAddress() != null) ||
+				(scheduleDto.getX() != null) || (scheduleDto.getY() != null) || (scheduleDto.getLocationName() != null))
+				return true;
+		}
+		if (iconId == IconId.SALON) {
+			if((scheduleDto.getExpenses() != 0) || (scheduleDto.getDisease() != null) ||
+				(scheduleDto.getAddress() != null) || (scheduleDto.getX() != null) ||
+				(scheduleDto.getY() != null) || (scheduleDto.getLocationName() != null))
+				return true;
+		}
+		if (iconId == IconId.WALK) {
+			if ((scheduleDto.getStartTime() != null) || (scheduleDto.getEndTime() != null))
+				return true;
+		}
+		if (iconId == IconId.ETC) {
+			if (scheduleDto.getEtcMap() != null)
+				return true;
+		}
+
+		return false;
+	}
+
+	public Feed validateFeed(Optional<Feed> optionalFeed, long scheduleId) {
+		if (optionalFeed.isEmpty()) {
+			IllegalArgumentException illegalArgumentException = new IllegalArgumentException(
+				"유효하지 않은 scheduleId입니다. (scheduleId : " + scheduleId + ")");
+			log.error("SchedulerService - validateFeed : 유효하지 않은 scheduleId입니다. (scheduleId : "
+				+ scheduleId + ")", illegalArgumentException);
+			throw illegalArgumentException;
+		}
+		return optionalFeed.get();
+	}
+
+	public Snack validateSnack(Optional<Snack> optionalSnack, long scheduleId) {
+		if (optionalSnack.isEmpty()) {
+			IllegalArgumentException illegalArgumentException = new IllegalArgumentException(
+				"유효하지 않은 scheduleId입니다. (scheduleId : " + scheduleId + ")");
+			log.error("SchedulerService - validateFeed : 유효하지 않은 scheduleId입니다. (scheduleId : "
+				+ scheduleId + ")", illegalArgumentException);
+			throw illegalArgumentException;
+		}
+		return optionalSnack.get();
+	}
+
+	public Potty validatePotty(Optional<Potty> optionalPotty, long scheduleId) {
+		if (optionalPotty.isEmpty()) {
+			IllegalArgumentException illegalArgumentException = new IllegalArgumentException(
+				"유효하지 않은 scheduleId입니다. (scheduleId : " + scheduleId + ")");
+			log.error("SchedulerService - validatePotty : 유효하지 않은 scheduleId입니다. (scheduleId : "
+				+ scheduleId + ")", illegalArgumentException);
+			throw illegalArgumentException;
+		}
+		return optionalPotty.get();
+	}
+
+	public Drug validateDrug(Optional<Drug> optionalDrug, long scheduleId) {
+		if (optionalDrug.isEmpty()) {
+			IllegalArgumentException illegalArgumentException = new IllegalArgumentException(
+				"유효하지 않은 scheduleId입니다. (scheduleId : " + scheduleId + ")");
+			log.error("SchedulerService - validateDrug : 유효하지 않은 scheduleId입니다. (scheduleId : "
+				+ scheduleId + ")", illegalArgumentException);
+			throw illegalArgumentException;
+		}
+		return optionalDrug.get();
+	}
+
+	public Hospital validateHospital(Optional<Hospital> optionalHospital, long scheduleId) {
+		if (optionalHospital.isEmpty()) {
+			IllegalArgumentException illegalArgumentException = new IllegalArgumentException(
+				"유효하지 않은 scheduleId입니다. (scheduleId : " + scheduleId + ")");
+			log.error("SchedulerService - validateHospital : 유효하지 않은 scheduleId입니다. (scheduleId : "
+				+ scheduleId + ")", illegalArgumentException);
+			throw illegalArgumentException;
+		}
+		return optionalHospital.get();
+	}
+
+	public Salon validateSalon(Optional<Salon> optionalSalon, long scheduleId) {
+		if (optionalSalon.isEmpty()) {
+			IllegalArgumentException illegalArgumentException = new IllegalArgumentException(
+				"유효하지 않은 scheduleId입니다. (scheduleId : " + scheduleId + ")");
+			log.error("SchedulerService - validateSalon : 유효하지 않은 scheduleId입니다. (scheduleId : "
+				+ scheduleId + ")", illegalArgumentException);
+			throw illegalArgumentException;
+		}
+		return optionalSalon.get();
+	}
+
+	public Walk validateWalk(Optional<Walk> optionalWalk, long scheduleId) {
+		if (optionalWalk.isEmpty()) {
+			IllegalArgumentException illegalArgumentException = new IllegalArgumentException(
+				"유효하지 않은 scheduleId입니다. (scheduleId : " + scheduleId + ")");
+			log.error("SchedulerService - validateWalk : 유효하지 않은 scheduleId입니다. (scheduleId : "
+				+ scheduleId + ")", illegalArgumentException);
+			throw illegalArgumentException;
+		}
+		return optionalWalk.get();
+	}
+
+	public EtcItem validateEtcItem(Optional<EtcItem> optionalEtcItem, String item) {
+		if (optionalEtcItem.isEmpty()) {
+			IllegalArgumentException illegalArgumentException = new IllegalArgumentException(
+				"유효하지 않은 item입니다. (item : " + item + ")");
+			log.error("SchedulerService - validateEtcItem : 유효하지 않은 item입니다. (item : "
+				+ item + ")", illegalArgumentException);
+			throw illegalArgumentException;
+		}
+		return optionalEtcItem.get();
 	}
 
 }

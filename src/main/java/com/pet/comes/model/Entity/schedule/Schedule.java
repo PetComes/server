@@ -32,6 +32,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "d_type")
+@DiscriminatorValue(value = "ETC")
 public class Schedule extends Timestamped {
 
 	@Id
@@ -93,4 +94,22 @@ public class Schedule extends Timestamped {
 		this.memo = scheduleDto.getMemo();
 	}
 
+	/** update method */
+	public void changeCommonItems(User user, Dog dog, String date, String time, String memo) {
+		if(!user.equals(this.user)) {
+			this.setUser(user);
+		}
+		if(!dog.equals(this.dog)) {
+			this.setDog(dog);
+		}
+		if(!date.equals(String.valueOf(this.date))) {
+			this.setDate(date);
+		}
+		if(!time.equals(String.valueOf(this.time))) {
+			this.setTime(time);
+		}
+		if((memo != null) && (!memo.equals(this.memo))) {
+			this.setMemo(memo);
+		}
+	}
 }

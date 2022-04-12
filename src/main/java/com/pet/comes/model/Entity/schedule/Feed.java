@@ -36,7 +36,26 @@ public class Feed extends Schedule {
 		setTime(scheduleDto.getTime());
 		setMemo(scheduleDto.getMemo());
 		this.kind = scheduleDto.getKind();
-		this.type = FeedType.checkEnumValue(scheduleDto.getType());
+		this.type = FeedType.getValidatedEnumValue(scheduleDto.getType());
 		this.amount = scheduleDto.getAmount();
+	}
+
+	/** 수정자 */
+	public void modifyKind(String kind) {
+		if(kind != null) {
+			this.kind = kind;
+		}
+	}
+
+	public void modifyType(String type) {
+		if(type != null) {
+			this.type = FeedType.getValidatedEnumValue(type);
+		}
+	}
+
+	public void modifyAmount(String amount) {
+		if(amount != null) {
+			this.amount = amount;
+		}
 	}
 }

@@ -38,4 +38,17 @@ public class Salon extends Schedule {
 		this.address = address;
 		this.expenses = scheduleDto.getExpenses();
 	}
+
+	/** 수정자 */
+	public void modifyExpenses(int expenses) {
+		if(expenses != 0) {
+			this.expenses = expenses;
+		}
+	}
+
+	public void modifyAddress(Address address) {
+		if(address != null) {
+			this.address = address;
+		}
+	}
 }

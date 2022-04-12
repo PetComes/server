@@ -19,7 +19,7 @@ public enum PottyType {
 		}
 	};
 
-	public static PottyType checkEnumValue(String kind) {
+	public static PottyType getValidatedEnumValue(String kind) {
 		if(kind == null) {
 			return null;
 		}

@@ -43,11 +43,52 @@ public class Hospital extends Schedule {
 		setDate(scheduleDto.getDate());
 		setTime(scheduleDto.getTime());
 		setMemo(scheduleDto.getMemo());
+
 		this.address = address;
 		this.disease = scheduleDto.getDisease();
 		this.kind = scheduleDto.getKind();
 		this.prescriptionUrl = scheduleDto.getPrescriptionUrl();
 		this.expenses = scheduleDto.getExpenses();
-		this.weight = scheduleDto.getWeight();
+
+		if(scheduleDto.getWeight() != 0.0) {
+			this.weight = scheduleDto.getWeight();
+		}
+	}
+
+	/** 수정자 */
+	public void modifyDisease(String disease) {
+		if(disease != null) {
+			this.disease = disease;
+		}
+	}
+
+	public void modifyKind(String kind) {
+		if(kind != null) {
+			this.kind = kind;
+		}
+	}
+
+	public void modifyPrescriptionUrl(String url) {
+		if(url != null) {
+			this.prescriptionUrl = url;
+		}
+	}
+
+	public void modifyExpenses(int expenses) {
+		if(expenses != 0) {
+			this.expenses = expenses;
+		}
+	}
+
+	public void modifyAddress(Address address) {
+		if(address != null) {
+			this.address = address;
+		}
+	}
+
+	public void modifyWeight(double weight) {
+		if(weight != 0.0) {
+			this.weight = weight;
+		}
 	}
 }

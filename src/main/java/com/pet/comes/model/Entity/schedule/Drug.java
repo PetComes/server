@@ -37,4 +37,23 @@ public class Drug extends Schedule {
 		this.prescriptionUrl = scheduleDto.getPrescriptionUrl();
 		this.expenses = scheduleDto.getExpenses();
 	}
+
+	/** 생성자 */
+	public void modifyKind(String kind) {
+		if(kind != null) {
+			this.kind = kind;
+		}
+	}
+
+	public void modifyPrescriptionUrl(String url) {
+		if(url != null) {
+			this.prescriptionUrl = url;
+		}
+	}
+
+	public void modifyExpenses(Integer expenses) {
+		if(expenses != null) {
+			this.expenses = expenses;
+		}
+	}
 }

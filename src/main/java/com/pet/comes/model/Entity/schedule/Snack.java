@@ -29,4 +29,11 @@ public class Snack extends Schedule {
 		setMemo(scheduleDto.getMemo());
 		this.kind = scheduleDto.getKind();
 	}
+
+	/** 수정자 */
+	public void modifyKind(String kind) {
+		if(kind != null) {
+			this.kind = kind;
+		}
+	}
 }
