@@ -6,7 +6,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.PrimaryKeyJoinColumn;
 
-import com.pet.comes.dto.Req.ScheduleDto;
+import com.pet.comes.dto.Req.ScheduleReqDto;
 import com.pet.comes.model.Entity.Dog;
 import com.pet.comes.model.Entity.User;
 import com.pet.comes.model.EnumType.PottyType;
@@ -25,13 +25,13 @@ public class Potty extends Schedule {
 	private PottyType kind;
 
 	/** 생성자 */
-	public Potty(User user, Dog dog, ScheduleDto scheduleDto) {
+	public Potty(User user, Dog dog, ScheduleReqDto scheduleReqDto) {
 		setUser(user);
 		setDog(dog);
-		setDate(scheduleDto.getDate());
-		setTime(scheduleDto.getTime());
-		setMemo(scheduleDto.getMemo());
-		this.kind = PottyType.getValidatedEnumValue(scheduleDto.getKind());
+		setDate(scheduleReqDto.getDate());
+		setTime(scheduleReqDto.getTime());
+		setMemo(scheduleReqDto.getMemo());
+		this.kind = PottyType.getValidatedEnumValue(scheduleReqDto.getKind());
 	}
 
 	/** 수정자 */

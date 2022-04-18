@@ -1,20 +1,22 @@
 package com.pet.comes.service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pet.comes.dto.Req.ScheduleDto;
+import com.pet.comes.dto.Rep.ScheduleDto;
+import com.pet.comes.dto.Req.ScheduleConditionDto;
+import com.pet.comes.dto.Req.ScheduleReqDto;
 import com.pet.comes.dto.etc.IconId;
 import com.pet.comes.model.Entity.Address;
 import com.pet.comes.model.Entity.Dog;
 import com.pet.comes.model.Entity.DogLog;
-import com.pet.comes.model.Entity.Family;
 import com.pet.comes.model.Entity.User;
 import com.pet.comes.model.Entity.schedule.Bath;
 import com.pet.comes.model.Entity.schedule.Drug;
@@ -81,49 +83,49 @@ public class ScheduleService {
 	 * W1 일정 등록
 	 * */
 	@Transactional
-	public long registerSchedule(ScheduleDto scheduleDto) {
-		int iconId = scheduleDto.getIconId();
-		User user = getValidateUser(scheduleDto.getUserId());
+	public long registerSchedule(ScheduleReqDto scheduleReqDto) {
+		int iconId = scheduleReqDto.getIconId();
+		User user = getValidUser(scheduleReqDto.getUserId());
 		Dog dog = null;
 
-		validateDate(scheduleDto.getDate());
-		validateTime(scheduleDto.getTime());
+		validateDate(scheduleReqDto.getDate());
+		validateTime(scheduleReqDto.getTime());
 
-		if (scheduleDto.getDogId() != 0) {
-			dog = getValidateDog(scheduleDto.getDogId(), user);
+		if (scheduleReqDto.getDogId() != 0) {
+			dog = getValidateDog(scheduleReqDto.getDogId(), user);
 		}
 
 		if (iconId == IconId.FEED) {
-			Feed feed = new Feed(user, dog, scheduleDto);
+			Feed feed = new Feed(user, dog, scheduleReqDto);
 			feedRepository.save(feed);
 			return feed.getId();
 		}
 
 		if (iconId == IconId.SNACK) {
-			Snack snack = new Snack(user, dog, scheduleDto);
+			Snack snack = new Snack(user, dog, scheduleReqDto);
 			snackRepository.save(snack);
 			return snack.getId();
 		}
 
 		if (iconId == IconId.POTTY) {
-			Potty potty = new Potty(user, dog, scheduleDto);
+			Potty potty = new Potty(user, dog, scheduleReqDto);
 			pottyRepository.save(potty);
 			return potty.getId();
 		}
 
 		if (iconId == IconId.DRUG) {
-			Drug drug = new Drug(user, dog, scheduleDto);
+			Drug drug = new Drug(user, dog, scheduleReqDto);
 			drugRepository.save(drug);
 			return drug.getId();
 		}
 
 		if (iconId == IconId.HOSPITAL) {
-			Address address = getValidAddress(scheduleDto);
-			Hospital hospital = new Hospital(user, dog, address, scheduleDto);
-			if (scheduleDto.getWeight() != 0.0) {
+			Address address = getValidAddress(scheduleReqDto);
+			Hospital hospital = new Hospital(user, dog, address, scheduleReqDto);
+			if (scheduleReqDto.getWeight() != 0.0) {
 				validateDog(dog);
-				writeDogWeightLog(dog, scheduleDto.getWeight());
-				hospital.modifyWeight(scheduleDto.getWeight());
+				writeDogWeightLog(dog, scheduleReqDto.getWeight());
+				hospital.modifyWeight(scheduleReqDto.getWeight());
 			}
 
 			hospitalRepository.save(hospital);
@@ -131,52 +133,52 @@ public class ScheduleService {
 		}
 
 		if (iconId == IconId.SALON) {
-			Address address = getValidAddress(scheduleDto);
-			Salon salon = new Salon(user, dog, address, scheduleDto);
+			Address address = getValidAddress(scheduleReqDto);
+			Salon salon = new Salon(user, dog, address, scheduleReqDto);
 			salonRepository.save(salon);
 			return salon.getId();
 		}
 
 		if (iconId == IconId.BATH) {
-			Bath bath = new Bath(user, dog, scheduleDto);
+			Bath bath = new Bath(user, dog, scheduleReqDto);
 			bathRepository.save(bath);
 			return bath.getId();
 		}
 
 		if (iconId == IconId.SLEEP) {
-			Sleep sleep = new Sleep(user, dog, scheduleDto);
+			Sleep sleep = new Sleep(user, dog, scheduleReqDto);
 			sleepRepository.save(sleep);
 			return sleep.getId();
 		}
 
 		if (iconId == IconId.PLAY) {
-			Play play = new Play(user, dog, scheduleDto);
+			Play play = new Play(user, dog, scheduleReqDto);
 			playRepository.save(play);
 			return play.getId();
 		}
 
 		if (iconId == IconId.TRAINING) {
-			Training training = new Training(user, dog, scheduleDto);
+			Training training = new Training(user, dog, scheduleReqDto);
 			trainingRepository.save(training);
 			return training.getId();
 		}
 
 		if (iconId == IconId.MENSTRUATION) {
-			Menstruation menstruation = new Menstruation(user, dog, scheduleDto);
+			Menstruation menstruation = new Menstruation(user, dog, scheduleReqDto);
 			menstruationRepository.save(menstruation);
 			return menstruation.getId();
 		}
 
 		if (iconId == IconId.WALK) {
-			Walk walk = new Walk(user, dog, scheduleDto);
+			Walk walk = new Walk(user, dog, scheduleReqDto);
 			walkRepository.save(walk);
 			return walk.getId();
 		}
 
 		if (iconId == IconId.ETC) {
-			Map<String, String> etcItems = scheduleDto.getEtcMap();
-			int numberOfItems = scheduleDto.getAdditionalItemNo();
-			Schedule etc = new Schedule(user, dog, scheduleDto);
+			Map<String, String> etcItems = scheduleReqDto.getEtcMap();
+			int numberOfItems = scheduleReqDto.getAdditionalItemNo();
+			Schedule etc = new Schedule(user, dog, scheduleReqDto);
 			scheduleRepository.save(etc);
 			EtcItem etcItem;
 			String item, value;
@@ -194,7 +196,7 @@ public class ScheduleService {
 		throw noSuchElementException;
 	}
 
-	public User getValidateUser(long userId) {
+	public User getValidUser(long userId) {
 		validateUser(userId);
 		return getUser(userId);
 	}
@@ -299,13 +301,13 @@ public class ScheduleService {
 		dogRepository.save(dog);
 	}
 
-	public Address getValidAddress(ScheduleDto scheduleDto) {
-		if ((scheduleDto.getAddress() == null) && (scheduleDto.getX() == null) && (scheduleDto.getY() == null) && (
-			scheduleDto.getLocationName() == null)) {
+	public Address getValidAddress(ScheduleReqDto scheduleReqDto) {
+		if ((scheduleReqDto.getAddress() == null) && (scheduleReqDto.getX() == null) && (scheduleReqDto.getY() == null) && (
+			scheduleReqDto.getLocationName() == null)) {
 			return null;
 		} else {
-			Optional<Address> address = addressRepository.findByLocationName(scheduleDto.getLocationName());
-			return address.orElseGet(() -> new Address(scheduleDto));
+			Optional<Address> address = addressRepository.findByLocationName(scheduleReqDto.getLocationName());
+			return address.orElseGet(() -> new Address(scheduleReqDto));
 		}
 	}
 
@@ -313,21 +315,21 @@ public class ScheduleService {
 	 * W3 일정 수정
 	 * */
 	@Transactional
-	public void modifySchedule(ScheduleDto scheduleDto) {
-		int iconId = scheduleDto.getIconId();
+	public void modifySchedule(ScheduleReqDto scheduleReqDto) {
+		int iconId = scheduleReqDto.getIconId();
 		if (iconId == 0) {
 			NoSuchElementException noSuchElementException = new NoSuchElementException("iconId 값이 입력되지 않았습니다.");
 			log.error("ScheduleService - modifySchedule : iconId 값이 0입니다.", noSuchElementException);
 			throw noSuchElementException;
 		}
 
-		long scheduleId = scheduleDto.getScheduleId();
-		User user = getValidateUser(scheduleDto.getUserId());
+		long scheduleId = scheduleReqDto.getScheduleId();
+		User user = getValidUser(scheduleReqDto.getUserId());
 		long userFamilyId = user.getFamily().getId();
 
 		Dog dog = null;
-		if (scheduleDto.getDogId() != 0) {
-			dog = getValidateDog(scheduleDto.getDogId(), user);
+		if (scheduleReqDto.getDogId() != 0) {
+			dog = getValidateDog(scheduleReqDto.getDogId(), user);
 		}
 
 		/* 공통사항 수정 */
@@ -337,80 +339,80 @@ public class ScheduleService {
 		long scheduleUserFamilyId = schedule.getUser().getFamily().getId();
 		if (scheduleUserFamilyId != userFamilyId) {
 			IllegalStateException illegalStateException = new IllegalStateException(
-				"수정 권한이 없습니다. (userId : " + scheduleDto.getUserId() + ")");
+				"수정 권한이 없습니다. (userId : " + scheduleReqDto.getUserId() + ")");
 			log.error("ScheduleService - modifySchedule : NOT SAME the familyId", illegalStateException);
 			throw illegalStateException;
 		}
 
-		modifyCommonItems(schedule, user, dog, scheduleDto);
+		modifyCommonItems(schedule, user, dog, scheduleReqDto);
 		scheduleRepository.save(schedule);
 
-		if ((iconId == IconId.FEED) && (isExistItemsToModified(iconId, scheduleDto))) {
+		if ((iconId == IconId.FEED) && (isExistItemsToModified(iconId, scheduleReqDto))) {
 			Optional<Feed> optionalFeed = feedRepository.findById(scheduleId);
 
 			Feed feed = validateFeed(optionalFeed, scheduleId);
-			feed.modifyKind(scheduleDto.getKind());
-			feed.modifyType(scheduleDto.getType());
-			feed.modifyAmount(scheduleDto.getAmount());
+			feed.modifyKind(scheduleReqDto.getKind());
+			feed.modifyType(scheduleReqDto.getType());
+			feed.modifyAmount(scheduleReqDto.getAmount());
 
 			feedRepository.save(feed);
 		}
 
-		if (iconId == IconId.SNACK && (isExistItemsToModified(iconId, scheduleDto))) {
+		if (iconId == IconId.SNACK && (isExistItemsToModified(iconId, scheduleReqDto))) {
 			Optional<Snack> optionalSnack = snackRepository.findById(scheduleId);
 			Snack snack = validateSnack(optionalSnack, scheduleId);
-			snack.modifyKind(scheduleDto.getKind());
+			snack.modifyKind(scheduleReqDto.getKind());
 			snackRepository.save(snack);
 		}
 
-		if (iconId == IconId.POTTY && (isExistItemsToModified(iconId, scheduleDto))) {
+		if (iconId == IconId.POTTY && (isExistItemsToModified(iconId, scheduleReqDto))) {
 			Optional<Potty> optionalPotty = pottyRepository.findById(scheduleId);
 			Potty potty = validatePotty(optionalPotty, scheduleId);
-			potty.modifyKind(scheduleDto.getKind());
+			potty.modifyKind(scheduleReqDto.getKind());
 			pottyRepository.save(potty);
 		}
 
-		if (iconId == IconId.DRUG && (isExistItemsToModified(iconId, scheduleDto))) {
+		if (iconId == IconId.DRUG && (isExistItemsToModified(iconId, scheduleReqDto))) {
 			Optional<Drug> optionalDrug = drugRepository.findById(scheduleId);
 
 			Drug drug = validateDrug(optionalDrug, scheduleId);
-			drug.modifyKind(scheduleDto.getKind());
-			drug.modifyPrescriptionUrl(scheduleDto.getPrescriptionUrl());
-			drug.modifyExpenses(scheduleDto.getExpenses());
+			drug.modifyKind(scheduleReqDto.getKind());
+			drug.modifyPrescriptionUrl(scheduleReqDto.getPrescriptionUrl());
+			drug.modifyExpenses(scheduleReqDto.getExpenses());
 
 			drugRepository.save(drug);
 		}
 
-		if (iconId == IconId.HOSPITAL && (isExistItemsToModified(iconId, scheduleDto))) {
+		if (iconId == IconId.HOSPITAL && (isExistItemsToModified(iconId, scheduleReqDto))) {
 			Optional<Hospital> optionalHospital = hospitalRepository.findById(scheduleId);
 
 			Hospital hospital = validateHospital(optionalHospital, scheduleId);
-			hospital.modifyDisease(scheduleDto.getDisease());
-			hospital.modifyKind(scheduleDto.getKind());
-			hospital.modifyPrescriptionUrl(scheduleDto.getPrescriptionUrl());
-			hospital.modifyExpenses(scheduleDto.getExpenses());
+			hospital.modifyDisease(scheduleReqDto.getDisease());
+			hospital.modifyKind(scheduleReqDto.getKind());
+			hospital.modifyPrescriptionUrl(scheduleReqDto.getPrescriptionUrl());
+			hospital.modifyExpenses(scheduleReqDto.getExpenses());
 
-			Address address = getValidAddress(scheduleDto);
+			Address address = getValidAddress(scheduleReqDto);
 			if ((address != null) && ((address.getAddressId() == null))) {
 				addressRepository.save(address);
 			}
 			hospital.modifyAddress(address);
 
-			if (scheduleDto.getWeight() != 0.0) {
+			if (scheduleReqDto.getWeight() != 0.0) {
 				validateDog(dog);
-				writeDogWeightLog(dog, scheduleDto.getWeight());
-				hospital.modifyWeight(scheduleDto.getWeight());
+				writeDogWeightLog(dog, scheduleReqDto.getWeight());
+				hospital.modifyWeight(scheduleReqDto.getWeight());
 			}
 
 			hospitalRepository.save(hospital);
 		}
 
-		if (iconId == IconId.SALON && (isExistItemsToModified(iconId, scheduleDto))) {
+		if (iconId == IconId.SALON && (isExistItemsToModified(iconId, scheduleReqDto))) {
 			Optional<Salon> optionalSalon = salonRepository.findById(scheduleId);
 			Salon salon = validateSalon(optionalSalon, scheduleId);
-			salon.modifyExpenses(scheduleDto.getExpenses());
+			salon.modifyExpenses(scheduleReqDto.getExpenses());
 
-			Address address = getValidAddress(scheduleDto);
+			Address address = getValidAddress(scheduleReqDto);
 			if ((address != null) && (address.getAddressId() == null)) {
 				addressRepository.save(address);
 			}
@@ -419,17 +421,17 @@ public class ScheduleService {
 			salonRepository.save(salon);
 		}
 
-		if (iconId == IconId.WALK && (isExistItemsToModified(iconId, scheduleDto))) {
+		if (iconId == IconId.WALK && (isExistItemsToModified(iconId, scheduleReqDto))) {
 			Optional<Walk> optionalWalk = walkRepository.findById(scheduleId);
 			Walk walk = validateWalk(optionalWalk, scheduleId);
-			walk.modifyStartTime(scheduleDto.getStartTime());
-			walk.modifyEndTime(scheduleDto.getEndTime());
+			walk.modifyStartTime(scheduleReqDto.getStartTime());
+			walk.modifyEndTime(scheduleReqDto.getEndTime());
 			walkRepository.save(walk);
 		}
 
-		if (iconId == IconId.ETC && (isExistItemsToModified(iconId, scheduleDto))) {
+		if (iconId == IconId.ETC && (isExistItemsToModified(iconId, scheduleReqDto))) {
 			List<EtcItem> etcItems = schedule.getEtcItems();
-			Map<String, String> itemMap = scheduleDto.getEtcMap();
+			Map<String, String> itemMap = scheduleReqDto.getEtcMap();
 
 			Optional<EtcItem> optionalEtcItem;
 			EtcItem etcItem;
@@ -458,7 +460,7 @@ public class ScheduleService {
 		return optionalSchedule.get();
 	}
 
-	public void modifyCommonItems(Schedule schedule, User user, Dog dog, ScheduleDto scheduleDto) {
+	public void modifyCommonItems(Schedule schedule, User user, Dog dog, ScheduleReqDto scheduleReqDto) {
 		User newUser = schedule.getUser();
 		Dog newDog = schedule.getDog();
 		String newDate = String.valueOf(schedule.getDate());
@@ -471,58 +473,58 @@ public class ScheduleService {
 		if (dog != null) {
 			newDog = dog;
 		}
-		if (scheduleDto.getDate() != null) {
-			validateDate(scheduleDto.getDate());
-			newDate = scheduleDto.getDate();
+		if (scheduleReqDto.getDate() != null) {
+			validateDate(scheduleReqDto.getDate());
+			newDate = scheduleReqDto.getDate();
 		}
-		if (scheduleDto.getTime() != null) {
-			validateTime(scheduleDto.getTime());
-			newTime = scheduleDto.getTime();
+		if (scheduleReqDto.getTime() != null) {
+			validateTime(scheduleReqDto.getTime());
+			newTime = scheduleReqDto.getTime();
 		}
-		if (scheduleDto.getMemo() != null) {
-			newMemo = scheduleDto.getMemo();
+		if (scheduleReqDto.getMemo() != null) {
+			newMemo = scheduleReqDto.getMemo();
 		}
 
 		schedule.changeCommonItems(newUser, newDog, newDate, newTime, newMemo);
 	}
 
-	public boolean isExistItemsToModified(int iconId, ScheduleDto scheduleDto) {
+	public boolean isExistItemsToModified(int iconId, ScheduleReqDto scheduleReqDto) {
 		if (iconId == IconId.FEED) {
-			if ((scheduleDto.getKind() != null) || (scheduleDto.getType() != null) || (scheduleDto.getAmount() != null))
+			if ((scheduleReqDto.getKind() != null) || (scheduleReqDto.getType() != null) || (scheduleReqDto.getAmount() != null))
 				return true;
 		}
 		if (iconId == IconId.SNACK) {
-			if (scheduleDto.getKind() != null)
+			if (scheduleReqDto.getKind() != null)
 				return true;
 		}
 		if (iconId == IconId.POTTY) {
-			if (scheduleDto.getKind() != null)
+			if (scheduleReqDto.getKind() != null)
 				return true;
 		}
 		if (iconId == IconId.DRUG) {
-			if ((scheduleDto.getKind() != null) || (scheduleDto.getPrescriptionUrl() != null) ||
-				(scheduleDto.getExpenses() != 0))
+			if ((scheduleReqDto.getKind() != null) || (scheduleReqDto.getPrescriptionUrl() != null) ||
+				(scheduleReqDto.getExpenses() != 0))
 				return true;
 		}
 		if (iconId == IconId.HOSPITAL) {
-			if ((scheduleDto.getKind() != null) || (scheduleDto.getPrescriptionUrl() != null) ||
-				(scheduleDto.getExpenses() != 0) || (scheduleDto.getWeight() != 0.0) ||
-				(scheduleDto.getDisease() != null) || (scheduleDto.getAddress() != null) ||
-				(scheduleDto.getX() != null) || (scheduleDto.getY() != null) || (scheduleDto.getLocationName() != null))
+			if ((scheduleReqDto.getKind() != null) || (scheduleReqDto.getPrescriptionUrl() != null) ||
+				(scheduleReqDto.getExpenses() != 0) || (scheduleReqDto.getWeight() != 0.0) ||
+				(scheduleReqDto.getDisease() != null) || (scheduleReqDto.getAddress() != null) ||
+				(scheduleReqDto.getX() != null) || (scheduleReqDto.getY() != null) || (scheduleReqDto.getLocationName() != null))
 				return true;
 		}
 		if (iconId == IconId.SALON) {
-			if((scheduleDto.getExpenses() != 0) || (scheduleDto.getDisease() != null) ||
-				(scheduleDto.getAddress() != null) || (scheduleDto.getX() != null) ||
-				(scheduleDto.getY() != null) || (scheduleDto.getLocationName() != null))
+			if((scheduleReqDto.getExpenses() != 0) || (scheduleReqDto.getDisease() != null) ||
+				(scheduleReqDto.getAddress() != null) || (scheduleReqDto.getX() != null) ||
+				(scheduleReqDto.getY() != null) || (scheduleReqDto.getLocationName() != null))
 				return true;
 		}
 		if (iconId == IconId.WALK) {
-			if ((scheduleDto.getStartTime() != null) || (scheduleDto.getEndTime() != null))
+			if ((scheduleReqDto.getStartTime() != null) || (scheduleReqDto.getEndTime() != null))
 				return true;
 		}
 		if (iconId == IconId.ETC) {
-			if (scheduleDto.getEtcMap() != null)
+			if (scheduleReqDto.getEtcMap() != null)
 				return true;
 		}
 
@@ -620,9 +622,9 @@ public class ScheduleService {
 	/**
 	 * W4 일정 삭제
 	 **/
-	public void deleteSchedule(ScheduleDto scheduleDto) {
-		long scheduleId = scheduleDto.getScheduleId();
-		User user = getValidateUser(scheduleDto.getUserId());
+	public void deleteSchedule(ScheduleReqDto scheduleReqDto) {
+		long scheduleId = scheduleReqDto.getScheduleId();
+		User user = getValidUser(scheduleReqDto.getUserId());
 		long userFamilyId = user.getFamily().getId();
 
 		Optional<Schedule> optionalSchedule = scheduleRepository.findById(scheduleId);
@@ -631,11 +633,47 @@ public class ScheduleService {
 		long scheduleUserFamilyId = schedule.getUser().getFamily().getId();
 		if (scheduleUserFamilyId != userFamilyId) {
 			IllegalStateException illegalStateException = new IllegalStateException(
-				"삭제 권한이 없습니다. (userId : " + scheduleDto.getUserId() + ")");
+				"삭제 권한이 없습니다. (userId : " + scheduleReqDto.getUserId() + ")");
 			log.error("ScheduleService - deleteSchedule : NOT SAME the familyId", illegalStateException);
 			throw illegalStateException;
 		}
 
 		scheduleRepository.delete(schedule);
+	}
+
+	/**
+	 * W5 일정 조회
+	 */
+	public List<ScheduleDto> getSchedules(ScheduleConditionDto scheduleConditionDto) {
+		User user = getValidUser(scheduleConditionDto.getUserId());
+		List<User> userFamily = user.getFamily().getUsers();
+
+		LocalDate start = LocalDate.parse(scheduleConditionDto.getDate(), DateTimeFormatter.ISO_LOCAL_DATE);
+		LocalDate end = start.plusMonths(1);
+
+		List<ScheduleDto> schedules;
+		// Monthly
+		schedules = scheduleRepository.findAllFamilyMonthlyByUserAndDate(user, start, end);
+		// Daily
+
+		// if(scheduleConditionDto.getFlag() == 'M') {
+		// 	schedules = getMonthlySchedules(user, scheduleConditionDto.getDate());
+		// }
+		// else {
+		// 	schedules = getDailySchedules(user, scheduleConditionDto.getDate());
+		// }
+
+		return schedules;
+	}
+
+	public List<Schedule> getMonthlySchedules(User user, String date) {
+		LocalDate start = LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE);
+		LocalDate end = start.plusMonths(1);
+		return scheduleRepository.findAllByUserAndDateBetweenOrderByDateAscTimeAsc(user, start, end);
+	}
+
+	public List<Schedule> getDailySchedules(User user, String date) {
+		LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE);
+		return scheduleRepository.findAllByUserAndDateOrderByTimeAsc(user, localDate);
 	}
 }

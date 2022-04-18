@@ -4,7 +4,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 
-import com.pet.comes.dto.Req.ScheduleDto;
+import com.pet.comes.dto.Req.ScheduleReqDto;
 import com.pet.comes.model.Entity.Dog;
 import com.pet.comes.model.Entity.User;
 
@@ -21,13 +21,13 @@ public class Snack extends Schedule {
 	private String kind;
 
 	/** 생성자 */
-	public Snack(User user, Dog dog, ScheduleDto scheduleDto) {
+	public Snack(User user, Dog dog, ScheduleReqDto scheduleReqDto) {
 		setUser(user);
 		setDog(dog);
-		setDate(scheduleDto.getDate());
-		setTime(scheduleDto.getTime());
-		setMemo(scheduleDto.getMemo());
-		this.kind = scheduleDto.getKind();
+		setDate(scheduleReqDto.getDate());
+		setTime(scheduleReqDto.getTime());
+		setMemo(scheduleReqDto.getMemo());
+		this.kind = scheduleReqDto.getKind();
 	}
 
 	/** 수정자 */

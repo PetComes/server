@@ -7,7 +7,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 
-import com.pet.comes.dto.Req.ScheduleDto;
+import com.pet.comes.dto.Req.ScheduleReqDto;
 import com.pet.comes.model.Entity.Address;
 import com.pet.comes.model.Entity.Dog;
 import com.pet.comes.model.Entity.User;
@@ -29,14 +29,14 @@ public class Salon extends Schedule {
 	private Integer expenses;
 
 	/** 생성자 */
-	public Salon(User user, Dog dog, Address address, ScheduleDto scheduleDto) {
+	public Salon(User user, Dog dog, Address address, ScheduleReqDto scheduleReqDto) {
 		setUser(user);
 		setDog(dog);
-		setDate(scheduleDto.getDate());
-		setTime(scheduleDto.getTime());
-		setMemo(scheduleDto.getMemo());
+		setDate(scheduleReqDto.getDate());
+		setTime(scheduleReqDto.getTime());
+		setMemo(scheduleReqDto.getMemo());
 		this.address = address;
-		this.expenses = scheduleDto.getExpenses();
+		this.expenses = scheduleReqDto.getExpenses();
 	}
 
 	/** 수정자 */

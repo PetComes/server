@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ScheduleDto {
+public class ScheduleReqDto {
 	private int iconId;
 	private long scheduleId;
 	private long userId;

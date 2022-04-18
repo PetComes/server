@@ -23,7 +23,7 @@ public class BeforeScheduleController {
     // }
     //
     // @DeleteMapping
-    // public ResponseEntity<String> deleteSchedule(@RequestBody ScheduleDto scheduleDto) {
+    // public ResponseEntity<String> deleteSchedule(@RequestBody ScheduleReqDto scheduleDto) {
     //     return scheduleService.deleteSchedule(scheduleDto);
     // }
     //

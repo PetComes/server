@@ -20,7 +20,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-import com.pet.comes.dto.Req.ScheduleDto;
+import com.pet.comes.dto.Req.ScheduleReqDto;
 import com.pet.comes.model.Entity.Dog;
 import com.pet.comes.model.Entity.User;
 import com.pet.comes.model.Timestamped;
@@ -80,19 +80,19 @@ public class Schedule extends Timestamped {
 	}
 
 	/** 생성자 */
-	public Schedule(User user, ScheduleDto scheduleDto) {
+	public Schedule(User user, ScheduleReqDto scheduleReqDto) {
 		this.user = user;
-		this.date = LocalDate.parse(scheduleDto.getDate(), DateTimeFormatter.ISO_LOCAL_DATE);
-		this.time = LocalTime.parse(scheduleDto.getTime(), DateTimeFormatter.ISO_LOCAL_TIME);
-		this.memo = scheduleDto.getMemo();
+		this.date = LocalDate.parse(scheduleReqDto.getDate(), DateTimeFormatter.ISO_LOCAL_DATE);
+		this.time = LocalTime.parse(scheduleReqDto.getTime(), DateTimeFormatter.ISO_LOCAL_TIME);
+		this.memo = scheduleReqDto.getMemo();
 	}
 
-	public Schedule(User user, Dog dog, ScheduleDto scheduleDto) {
+	public Schedule(User user, Dog dog, ScheduleReqDto scheduleReqDto) {
 		this.user = user;
 		this.dog = dog;
-		this.date = LocalDate.parse(scheduleDto.getDate(), DateTimeFormatter.ISO_LOCAL_DATE);
-		this.time = LocalTime.parse(scheduleDto.getTime(), DateTimeFormatter.ISO_LOCAL_TIME);
-		this.memo = scheduleDto.getMemo();
+		this.date = LocalDate.parse(scheduleReqDto.getDate(), DateTimeFormatter.ISO_LOCAL_DATE);
+		this.time = LocalTime.parse(scheduleReqDto.getTime(), DateTimeFormatter.ISO_LOCAL_TIME);
+		this.memo = scheduleReqDto.getMemo();
 	}
 
 	/** update method */

@@ -7,7 +7,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 
-import com.pet.comes.dto.Req.ScheduleDto;
+import com.pet.comes.dto.Req.ScheduleReqDto;
 import com.pet.comes.model.Entity.Address;
 import com.pet.comes.model.Entity.Dog;
 import com.pet.comes.model.Entity.User;
@@ -37,21 +37,21 @@ public class Hospital extends Schedule {
 	private Double weight;
 
 	/** 생성자 */
-	public Hospital(User user, Dog dog, Address address, ScheduleDto scheduleDto) {
+	public Hospital(User user, Dog dog, Address address, ScheduleReqDto scheduleReqDto) {
 		setUser(user);
 		setDog(dog);
-		setDate(scheduleDto.getDate());
-		setTime(scheduleDto.getTime());
-		setMemo(scheduleDto.getMemo());
+		setDate(scheduleReqDto.getDate());
+		setTime(scheduleReqDto.getTime());
+		setMemo(scheduleReqDto.getMemo());
 
 		this.address = address;
-		this.disease = scheduleDto.getDisease();
-		this.kind = scheduleDto.getKind();
-		this.prescriptionUrl = scheduleDto.getPrescriptionUrl();
-		this.expenses = scheduleDto.getExpenses();
+		this.disease = scheduleReqDto.getDisease();
+		this.kind = scheduleReqDto.getKind();
+		this.prescriptionUrl = scheduleReqDto.getPrescriptionUrl();
+		this.expenses = scheduleReqDto.getExpenses();
 
-		if(scheduleDto.getWeight() != 0.0) {
-			this.weight = scheduleDto.getWeight();
+		if(scheduleReqDto.getWeight() != 0.0) {
+			this.weight = scheduleReqDto.getWeight();
 		}
 	}
 

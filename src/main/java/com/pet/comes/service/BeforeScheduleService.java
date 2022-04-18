@@ -15,7 +15,7 @@
 // import org.springframework.stereotype.Service;
 // import org.springframework.transaction.annotation.Transactional;
 //
-// import com.pet.comes.dto.Req.ScheduleDto;
+// import com.pet.comes.dto.Req.ScheduleReqDto;
 // import com.pet.comes.dto.Req.ScheduleListDto;
 // import com.pet.comes.model.Entity.Address;
 // import com.pet.comes.model.Entity.Dog;
@@ -1007,7 +1007,7 @@
 // 	/**
 // 	 * W4 : 일정 삭제
 // 	 * */
-// 	public ResponseEntity<String> deleteSchedule(ScheduleDto scheduleDto) {
+// 	public ResponseEntity<String> deleteSchedule(ScheduleReqDto scheduleDto) {
 // 		if (scheduleDto.getUserId() == null) {
 // 			return new ResponseEntity(
 // 				NoDataResponse.response(status.EMPTY_VALUE, "userId가 입력되지 않았습니다."),

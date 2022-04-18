@@ -1,6 +1,5 @@
 package com.pet.comes.model.Entity.schedule;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
@@ -8,7 +7,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 
-import com.pet.comes.dto.Req.ScheduleDto;
+import com.pet.comes.dto.Req.ScheduleReqDto;
 import com.pet.comes.model.Entity.Dog;
 import com.pet.comes.model.Entity.User;
 
@@ -26,14 +25,14 @@ public class Walk extends Schedule {
 	private LocalTime endTime;
 
 	/** 생성자 */
-	public Walk(User user, Dog dog, ScheduleDto scheduleDto) {
+	public Walk(User user, Dog dog, ScheduleReqDto scheduleReqDto) {
 		setUser(user);
 		setDog(dog);
-		setDate(scheduleDto.getDate());
-		setTime(scheduleDto.getTime());
-		setMemo(scheduleDto.getMemo());
-		this.startTime = LocalTime.parse(scheduleDto.getStartTime(), DateTimeFormatter.ISO_LOCAL_TIME);
-		this.endTime = LocalTime.parse(scheduleDto.getEndTime(), DateTimeFormatter.ISO_LOCAL_TIME);
+		setDate(scheduleReqDto.getDate());
+		setTime(scheduleReqDto.getTime());
+		setMemo(scheduleReqDto.getMemo());
+		this.startTime = LocalTime.parse(scheduleReqDto.getStartTime(), DateTimeFormatter.ISO_LOCAL_TIME);
+		this.endTime = LocalTime.parse(scheduleReqDto.getEndTime(), DateTimeFormatter.ISO_LOCAL_TIME);
 	}
 
 	/** 수정자 */

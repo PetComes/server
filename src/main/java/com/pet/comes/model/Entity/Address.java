@@ -9,7 +9,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.pet.comes.dto.Req.DiaryReqDto;
-import com.pet.comes.dto.Req.ScheduleDto;
+import com.pet.comes.dto.Req.ScheduleReqDto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -57,10 +57,10 @@ public class Address {
             this.diary = diary;
     }
 
-    public Address(ScheduleDto scheduleDto) {
-        this.address = scheduleDto.getAddress();
-        this.locationName = scheduleDto.getLocationName();
-        this.x = scheduleDto.getX();
-        this.y = scheduleDto.getY();
+    public Address(ScheduleReqDto scheduleReqDto) {
+        this.address = scheduleReqDto.getAddress();
+        this.locationName = scheduleReqDto.getLocationName();
+        this.x = scheduleReqDto.getX();
+        this.y = scheduleReqDto.getY();
     }
 }
