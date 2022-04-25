@@ -646,34 +646,16 @@ public class ScheduleService {
 	 */
 	public List<ScheduleDto> getSchedules(ScheduleConditionDto scheduleConditionDto) {
 		User user = getValidUser(scheduleConditionDto.getUserId());
-		List<User> userFamily = user.getFamily().getUsers();
-
 		LocalDate start = LocalDate.parse(scheduleConditionDto.getDate(), DateTimeFormatter.ISO_LOCAL_DATE);
-		LocalDate end = start.plusMonths(1);
 
 		List<ScheduleDto> schedules;
-		// Monthly
-		schedules = scheduleRepository.findAllFamilyMonthlyByUserAndDate(user, start, end);
-		// Daily
+		if(scheduleConditionDto.getFlag() == 'M') {
+			LocalDate end = start.plusMonths(1);
+			return scheduleRepository.findAllMonthlyByFamilyAndDateBetween(user.getFamily(), start, end);
+		}
 
-		// if(scheduleConditionDto.getFlag() == 'M') {
-		// 	schedules = getMonthlySchedules(user, scheduleConditionDto.getDate());
-		// }
-		// else {
-		// 	schedules = getDailySchedules(user, scheduleConditionDto.getDate());
-		// }
-
+		schedules = scheduleRepository.findAllDailyByFamilyAndDate(user.getFamily(), start);
 		return schedules;
 	}
 
-	public List<Schedule> getMonthlySchedules(User user, String date) {
-		LocalDate start = LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE);
-		LocalDate end = start.plusMonths(1);
-		return scheduleRepository.findAllByUserAndDateBetweenOrderByDateAscTimeAsc(user, start, end);
-	}
-
-	public List<Schedule> getDailySchedules(User user, String date) {
-		LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE);
-		return scheduleRepository.findAllByUserAndDateOrderByTimeAsc(user, localDate);
-	}
 }

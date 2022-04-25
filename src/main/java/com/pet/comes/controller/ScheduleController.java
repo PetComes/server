@@ -36,7 +36,7 @@ public class ScheduleController {
 	public ResponseEntity<DataResponse> getSchedules(@RequestBody ScheduleConditionDto scheduleConditionDto) {
 		List<ScheduleDto> schedules = scheduleService.getSchedules(scheduleConditionDto);
 		return new ResponseEntity<>(
-			DataResponse.response(Status.SUCCESS, ResponseMessage.SUCCESS_REGISTER_SCHEDULE, schedules),
+			DataResponse.response(Status.SUCCESS, ResponseMessage.SUCCESS_GET_SCHEDULE, schedules),
 			HttpStatus.OK);
 	}
 

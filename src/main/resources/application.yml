@@ -30,6 +30,7 @@ spring:
     activate:
       on-profile: "devdb"
   jpa:
+    open-in-view: false
     properties:
       hibernate:
         show_sql: true   # sql문 로그 찍어주기

@@ -27,8 +27,8 @@ public class ResponseMessage {
     public String NO_ALARMS = "알림이 없습니다.";
     public String INVALID_USER = "유효하지 않은 userId 입니다.";
     public String NO_COMMUNITY_CONTENTS = "공유다이어리에 게시된 다이어리가 없습니다.";
+    public static String SUCCESS_GET_SCHEDULE = "schedule 조회 성공";
     public static String SUCCESS_REGISTER_SCHEDULE = "schedule 등록 성공";
     public static String SUCCESS_MODIFY_SCHEDULE = "schedule 수정 성공";
-    public String EMPTY_VALUE = "값이 없습니다.";
     public static String SUCCESS_DELETE_SCHEDULE = "schedule 삭제 성공";
 }
