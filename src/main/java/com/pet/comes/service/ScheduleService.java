@@ -644,12 +644,12 @@ public class ScheduleService {
 	/**
 	 * W5 일정 조회
 	 */
-	public List<ScheduleDto> getSchedules(ScheduleConditionDto scheduleConditionDto) {
-		User user = getValidUser(scheduleConditionDto.getUserId());
-		LocalDate start = LocalDate.parse(scheduleConditionDto.getDate(), DateTimeFormatter.ISO_LOCAL_DATE);
+	public List<ScheduleDto> getSchedules(Long userId, char type, String date) {
+		User user = getValidUser(userId);
+		LocalDate start = LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE);
 
 		List<ScheduleDto> schedules;
-		if(scheduleConditionDto.getFlag() == 'M') {
+		if(type == 'M') {
 			LocalDate end = start.plusMonths(1);
 			return scheduleRepository.findAllMonthlyByFamilyAndDateBetween(user.getFamily(), start, end);
 		}
@@ -658,4 +658,10 @@ public class ScheduleService {
 		return schedules;
 	}
 
+	/**
+	 * W6 세부 일정 조회
+	 * */
+	// public ScheduleDto getOneSchedule(Long scheduleId, Long userId) {
+	// 	return new ScheduleDto();
+	// }
 }

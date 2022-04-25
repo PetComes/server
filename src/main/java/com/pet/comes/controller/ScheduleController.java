@@ -9,14 +9,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pet.comes.dto.Rep.ScheduleDto;
 import com.pet.comes.dto.Req.ScheduleConditionDto;
 import com.pet.comes.dto.Req.ScheduleReqDto;
-import com.pet.comes.model.Entity.schedule.Schedule;
 import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
@@ -32,13 +33,23 @@ public class ScheduleController {
 	private final ScheduleService scheduleService;
 	private static final NoDataResponse success = new NoDataResponse(Status.SUCCESS, ResponseMessage.SUCCESS);
 
-	@GetMapping("/schedule")
-	public ResponseEntity<DataResponse> getSchedules(@RequestBody ScheduleConditionDto scheduleConditionDto) {
-		List<ScheduleDto> schedules = scheduleService.getSchedules(scheduleConditionDto);
+	@GetMapping("/schedule/user/{userId}")
+	public ResponseEntity<DataResponse> getSchedules(@RequestParam char type,
+												  	 @RequestParam String date,
+													 @PathVariable Long userId) {
+		List<ScheduleDto> schedules = scheduleService.getSchedules(userId, type, date);
 		return new ResponseEntity<>(
 			DataResponse.response(Status.SUCCESS, ResponseMessage.SUCCESS_GET_SCHEDULE, schedules),
 			HttpStatus.OK);
 	}
+
+	// @GetMapping("/schedule/{scheduleId}/user/{userId}")
+	// public ResponseEntity<DataResponse> getOneSchedule(@PathVariable Long scheduleId, @PathVariable Long userId) {
+	// 	ScheduleDto schedule = scheduleService.getOneSchedule(scheduleId, userId);
+	// 	return new ResponseEntity<>(
+	// 		DataResponse.response(Status.SUCCESS, ResponseMessage.SUCCESS_GET_SCHEDULE, schedule),
+	// 		HttpStatus.OK);
+	// }
 
 	@PostMapping("/schedule")
 	public ResponseEntity<DataResponse> registerSchedule(@RequestBody ScheduleReqDto scheduleReqDto) {
