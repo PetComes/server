@@ -55,8 +55,9 @@ public class CommentService {
             LocalDateTime date = (LocalDateTime) comments[3];
             String commentedAt = date.format(DateTimeFormatter.ofPattern("yyyMMdd"));
             Long commentCommentId = (Long) comments[4];
+            Long commentId = (Long) comments[5];
 
-            CommentListRepDto commentListRepDto = new CommentListRepDto(nickname, imageUrl, text, commentedAt, commentCommentId);
+            CommentListRepDto commentListRepDto = new CommentListRepDto(nickname, imageUrl, text, commentedAt, commentCommentId,commentId);
             dtos.add(commentListRepDto);
         }
 
