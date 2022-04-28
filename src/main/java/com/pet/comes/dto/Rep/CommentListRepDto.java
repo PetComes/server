@@ -16,6 +16,8 @@ public class CommentListRepDto {
     private String text;
     private String aftertime;
     private Long commentCommentId;
+    private Long commentId;
+
 
 
 }
