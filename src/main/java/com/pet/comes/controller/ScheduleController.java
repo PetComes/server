@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pet.comes.dto.Rep.ScheduleDto;
 import com.pet.comes.dto.Req.ScheduleConditionDto;
 import com.pet.comes.dto.Req.ScheduleReqDto;
+import com.pet.comes.model.Entity.schedule.Schedule;
 import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
@@ -37,19 +38,22 @@ public class ScheduleController {
 	public ResponseEntity<DataResponse> getSchedules(@RequestParam char type,
 												  	 @RequestParam String date,
 													 @PathVariable Long userId) {
+		if(date.isBlank()) {
+			makeTodayDate();
+		}
 		List<ScheduleDto> schedules = scheduleService.getSchedules(userId, type, date);
 		return new ResponseEntity<>(
 			DataResponse.response(Status.SUCCESS, ResponseMessage.SUCCESS_GET_SCHEDULE, schedules),
 			HttpStatus.OK);
 	}
 
-	// @GetMapping("/schedule/{scheduleId}/user/{userId}")
-	// public ResponseEntity<DataResponse> getOneSchedule(@PathVariable Long scheduleId, @PathVariable Long userId) {
-	// 	ScheduleDto schedule = scheduleService.getOneSchedule(scheduleId, userId);
-	// 	return new ResponseEntity<>(
-	// 		DataResponse.response(Status.SUCCESS, ResponseMessage.SUCCESS_GET_SCHEDULE, schedule),
-	// 		HttpStatus.OK);
-	// }
+	@GetMapping("/schedule/{scheduleId}/user/{userId}")
+	public ResponseEntity<DataResponse> getOneSchedule(@PathVariable Long scheduleId, @PathVariable Long userId) {
+		Schedule schedule = scheduleService.getOneSchedule(scheduleId, userId);
+		return new ResponseEntity<>(
+			DataResponse.response(Status.SUCCESS, ResponseMessage.SUCCESS_GET_SCHEDULE, schedule),
+			HttpStatus.OK);
+	}
 
 	@PostMapping("/schedule")
 	public ResponseEntity<DataResponse> registerSchedule(@RequestBody ScheduleReqDto scheduleReqDto) {
@@ -78,7 +82,7 @@ public class ScheduleController {
 
 	public void checkDateAndTime(ScheduleReqDto scheduleReqDto) {
 		if (scheduleReqDto.getDate() == null) {
-			scheduleReqDto.setDate(String.valueOf(LocalDate.now()));
+			scheduleReqDto.setDate(makeTodayDate());
 		}
 		if (scheduleReqDto.getTime() == null) {
 			scheduleReqDto.setTime(makeCurrentTime(LocalTime.now()));
@@ -88,5 +92,10 @@ public class ScheduleController {
 	public String makeCurrentTime(LocalTime now) {
 		String currentTime = String.valueOf(now);
 		return currentTime.substring(0, 6) + "00";
+	}
+
+
+	private String makeTodayDate() {
+		return String.valueOf(LocalDate.now());
 	}
 }

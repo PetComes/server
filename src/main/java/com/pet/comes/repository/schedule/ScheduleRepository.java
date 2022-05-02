@@ -25,4 +25,5 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 		 + "WHERE u.family = :family AND s.date = :date "
 		 + "ORDER BY type(s), s.date")
 	List<ScheduleDto> findAllDailyByFamilyAndDate(Family family, LocalDate date);
+
 }

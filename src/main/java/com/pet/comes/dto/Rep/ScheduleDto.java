@@ -32,4 +32,5 @@ public class ScheduleDto {
 			this.dType = dType.getSimpleName();
 		}
 	}
+
 }

@@ -302,7 +302,8 @@ public class ScheduleService {
 	}
 
 	public Address getValidAddress(ScheduleReqDto scheduleReqDto) {
-		if ((scheduleReqDto.getAddress() == null) && (scheduleReqDto.getX() == null) && (scheduleReqDto.getY() == null) && (
+		if ((scheduleReqDto.getAddress() == null) && (scheduleReqDto.getX() == null) && (scheduleReqDto.getY() == null)
+			&& (
 			scheduleReqDto.getLocationName() == null)) {
 			return null;
 		} else {
@@ -490,7 +491,8 @@ public class ScheduleService {
 
 	public boolean isExistItemsToModified(int iconId, ScheduleReqDto scheduleReqDto) {
 		if (iconId == IconId.FEED) {
-			if ((scheduleReqDto.getKind() != null) || (scheduleReqDto.getType() != null) || (scheduleReqDto.getAmount() != null))
+			if ((scheduleReqDto.getKind() != null) || (scheduleReqDto.getType() != null) || (scheduleReqDto.getAmount()
+				!= null))
 				return true;
 		}
 		if (iconId == IconId.SNACK) {
@@ -510,11 +512,12 @@ public class ScheduleService {
 			if ((scheduleReqDto.getKind() != null) || (scheduleReqDto.getPrescriptionUrl() != null) ||
 				(scheduleReqDto.getExpenses() != 0) || (scheduleReqDto.getWeight() != 0.0) ||
 				(scheduleReqDto.getDisease() != null) || (scheduleReqDto.getAddress() != null) ||
-				(scheduleReqDto.getX() != null) || (scheduleReqDto.getY() != null) || (scheduleReqDto.getLocationName() != null))
+				(scheduleReqDto.getX() != null) || (scheduleReqDto.getY() != null) || (scheduleReqDto.getLocationName()
+				!= null))
 				return true;
 		}
 		if (iconId == IconId.SALON) {
-			if((scheduleReqDto.getExpenses() != 0) || (scheduleReqDto.getDisease() != null) ||
+			if ((scheduleReqDto.getExpenses() != 0) || (scheduleReqDto.getDisease() != null) ||
 				(scheduleReqDto.getAddress() != null) || (scheduleReqDto.getX() != null) ||
 				(scheduleReqDto.getY() != null) || (scheduleReqDto.getLocationName() != null))
 				return true;
@@ -649,7 +652,7 @@ public class ScheduleService {
 		LocalDate start = LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE);
 
 		List<ScheduleDto> schedules;
-		if(type == 'M') {
+		if (type == 'M') {
 			LocalDate end = start.plusMonths(1);
 			return scheduleRepository.findAllMonthlyByFamilyAndDateBetween(user.getFamily(), start, end);
 		}
@@ -661,7 +664,37 @@ public class ScheduleService {
 	/**
 	 * W6 세부 일정 조회
 	 * */
-	// public ScheduleDto getOneSchedule(Long scheduleId, Long userId) {
-	// 	return new ScheduleDto();
-	// }
+	public Schedule getOneSchedule(Long scheduleId, Long userId) {
+		User user = getUser(userId);
+		Schedule schedule = getValidScheduleAsScheduleDto(scheduleId);
+
+		if(checkAuthorityToGetSchedule(user, schedule)) {
+			IllegalArgumentException illegalArgumentException = new IllegalArgumentException(
+				"권한 없는 사용자입니다. (scheduleId : " + scheduleId + ", userId : " + userId + ")");
+			log.error("SchedulerService - getOneSchedule : 해당 스케줄에 대한 권한이 없는 사용자입니다. (scheduleId : " + scheduleId
+				+ ", userId : " + userId + ")", illegalArgumentException);
+			throw illegalArgumentException;
+		}
+
+		return schedule;
+	}
+
+	public Schedule getValidScheduleAsScheduleDto(Long scheduleId) {
+		if (scheduleRepository.existsById(scheduleId)) {
+			return scheduleRepository.findById(scheduleId).get();
+		}
+		IllegalArgumentException illegalArgumentException = new IllegalArgumentException(
+			"유효하지 않은 scheduleId입니다. (scheduleId : " + scheduleId + ")");
+		log.error("SchedulerService - modifySchedule - IconId.FEED : 유효하지 않은 scheduleId입니다. (scheduleId : "
+			+ scheduleId + ")", illegalArgumentException);
+		throw illegalArgumentException;
+	}
+
+	public boolean checkAuthorityToGetSchedule(User user, Schedule schedule) {
+		return schedule.getUser().getId().equals(user.getId()) &&
+			user.getFamily()
+				.getUsers()
+				.stream()
+				.noneMatch(x -> x.getId().equals(schedule.getUser().getId()));
+	}
 }

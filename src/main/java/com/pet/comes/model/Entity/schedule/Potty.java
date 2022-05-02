@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 public class Potty extends Schedule {
 
 	@Enumerated(EnumType.STRING)
-	private PottyType kind;
+	private PottyType kind = PottyType.URINE;
 
 	/** 생성자 */
 	public Potty(User user, Dog dog, ScheduleReqDto scheduleReqDto) {
