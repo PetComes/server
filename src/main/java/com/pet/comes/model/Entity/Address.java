@@ -1,14 +1,19 @@
 package com.pet.comes.model.Entity;
 
-
-import java.util.Map;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 import com.pet.comes.dto.Req.DiaryReqDto;
+import com.pet.comes.dto.Req.ScheduleReqDto;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.persistence.*;
 
 @Entity
 @Getter
@@ -52,10 +57,10 @@ public class Address {
             this.diary = diary;
     }
 
-    public Address(Map<String, String> addressMap) {
-        this.address = addressMap.get("address");
-        this.locationName = addressMap.get("locationName");
-        this.x = addressMap.get("x");
-        this.y = addressMap.get("y");
+    public Address(ScheduleReqDto scheduleReqDto) {
+        this.address = scheduleReqDto.getAddress();
+        this.locationName = scheduleReqDto.getLocationName();
+        this.x = scheduleReqDto.getX();
+        this.y = scheduleReqDto.getY();
     }
 }

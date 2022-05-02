@@ -9,35 +9,53 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import com.pet.comes.dto.Req.ScheduleReqDto;
 import com.pet.comes.model.Entity.Dog;
 import com.pet.comes.model.Entity.User;
-import com.pet.comes.model.EnumType.PottyType;
+import com.pet.comes.model.EnumType.FeedType;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@DiscriminatorValue("POTTY")
+@DiscriminatorValue("FEED")
 @PrimaryKeyJoinColumn(name = "schedule_id")
 @NoArgsConstructor
-public class Potty extends Schedule {
+public class Feed extends Schedule {
+
+	private String kind;
 
 	@Enumerated(EnumType.STRING)
-	private PottyType kind = PottyType.URINE;
+	private FeedType type;
+
+	private String amount;
 
 	/** 생성자 */
-	public Potty(User user, Dog dog, ScheduleReqDto scheduleReqDto) {
+	public Feed(User user, Dog dog, ScheduleReqDto scheduleReqDto) {
 		setUser(user);
 		setDog(dog);
 		setDate(scheduleReqDto.getDate());
 		setTime(scheduleReqDto.getTime());
 		setMemo(scheduleReqDto.getMemo());
-		this.kind = PottyType.getValidatedEnumValue(scheduleReqDto.getKind());
+		this.kind = scheduleReqDto.getKind();
+		this.type = FeedType.getValidatedEnumValue(scheduleReqDto.getType());
+		this.amount = scheduleReqDto.getAmount();
 	}
 
 	/** 수정자 */
 	public void modifyKind(String kind) {
 		if(kind != null) {
-			this.kind = PottyType.getValidatedEnumValue(kind);
+			this.kind = kind;
+		}
+	}
+
+	public void modifyType(String type) {
+		if(type != null) {
+			this.type = FeedType.getValidatedEnumValue(type);
+		}
+	}
+
+	public void modifyAmount(String amount) {
+		if(amount != null) {
+			this.amount = amount;
 		}
 	}
 }

@@ -39,7 +39,7 @@ public class Family {
         }
     }
 
-
-
+    @OneToMany(mappedBy = "family")
+    public List<User> users = new ArrayList<>();
 
 }

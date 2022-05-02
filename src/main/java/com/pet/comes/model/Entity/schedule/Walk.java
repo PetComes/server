@@ -1,64 +1,50 @@
 package com.pet.comes.model.Entity.schedule;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
 
-import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.PrimaryKeyJoinColumn;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
+import com.pet.comes.dto.Req.ScheduleReqDto;
+import com.pet.comes.model.Entity.Dog;
 import com.pet.comes.model.Entity.User;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Entity
 @Getter
-@Setter
+@Entity
+@DiscriminatorValue("WALK")
+@PrimaryKeyJoinColumn(name = "schedule_id")
 @NoArgsConstructor
-@Table(name = "walk")
-@EntityListeners(AuditingEntityListener.class)
-public class Walk {
+public class Walk extends Schedule {
 
-	@Id
-	@GeneratedValue(strategy= GenerationType.IDENTITY)
-	private Long id;
+	private LocalTime startTime;
+	private LocalTime endTime;
 
-	@ManyToOne
-	@JoinColumn(name = "user_id")
-	private User user;
+	/** 생성자 */
+	public Walk(User user, Dog dog, ScheduleReqDto scheduleReqDto) {
+		setUser(user);
+		setDog(dog);
+		setDate(scheduleReqDto.getDate());
+		setTime(scheduleReqDto.getTime());
+		setMemo(scheduleReqDto.getMemo());
+		this.startTime = LocalTime.parse(scheduleReqDto.getStartTime(), DateTimeFormatter.ISO_LOCAL_TIME);
+		this.endTime = LocalTime.parse(scheduleReqDto.getEndTime(), DateTimeFormatter.ISO_LOCAL_TIME);
+	}
 
-	private LocalDate date; // YYYY-MM-DD
-	private LocalTime startTime; // HH:mm:ss
-	private LocalTime endTime; // HH:mm:ss
+	/** 수정자 */
+	public void modifyStartTime(String startTime) {
+		if(startTime != null) {
+			this.startTime = LocalTime.parse(startTime, DateTimeFormatter.ISO_LOCAL_TIME);
+		}
+	}
 
-	@Column(columnDefinition = "TEXT")
-	private String memo;    // 자유메모
-
-	@LastModifiedDate
-	private LocalDateTime modifiedAt;
-	@CreatedDate
-	private LocalDateTime registeredAt;
-
-	public Walk(Map<String, String> walkMap, User user) {
-		this.user = user;
-		this.date = LocalDate.parse(walkMap.get("date"), DateTimeFormatter.ISO_DATE);
-		this.startTime = LocalTime.parse(walkMap.get("startTime"));
-		this.endTime = LocalTime.parse(walkMap.get("endTime"));
-		this.memo = walkMap.get("memo");
+	public void modifyEndTime(String endTime) {
+		if(endTime != null) {
+			this.endTime = LocalTime.parse(endTime, DateTimeFormatter.ISO_LOCAL_TIME);
+		}
 	}
 }

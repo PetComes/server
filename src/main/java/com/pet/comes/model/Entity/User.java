@@ -52,7 +52,7 @@ public class User extends Timestamped implements UserDetails {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "family_id")
-    private Family family;        //단방향 연관관계
+    private Family family;        //단방향 연관관계 : 양방향으로 변경 (22.04.17)
 
     @OneToMany(mappedBy = "user")
     private List<Diary> diaries = new ArrayList<Diary>();
@@ -134,5 +134,16 @@ public class User extends Timestamped implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    /** Family 양방향 연관관계 매핑 */
+    public void changeFamily(Family family) {
+        if(this.family != null) {
+            this.family.getUsers().remove(this);
+        }
+        this.family = family;
+        if(!family.getUsers().contains(this)) {
+            family.getUsers().add(this);
+        }
     }
 }
