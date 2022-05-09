@@ -4,6 +4,7 @@ import com.pet.comes.dto.Req.GetTheBadgeReqDto;
 import com.pet.comes.model.Entity.*;
 import com.pet.comes.model.EnumType.BadgeStatus;
 import com.pet.comes.repository.*;
+import com.pet.comes.repository.schedule.ScheduleRepository;
 import com.pet.comes.response.DataResponse;
 import com.pet.comes.response.NoDataResponse;
 import com.pet.comes.response.ResponseMessage;
@@ -29,11 +30,11 @@ public class BadgeService {
     private final BadgeListRepository badgeListRepository;
     private final PinRepository pinRepository;
     private final CommentRepository commentRepository;
-    //private final ScheduleRepository scheduleRepository;
+    private final ScheduleRepository scheduleRepository;
 
     private final int ICON_ID_OF_GROOMING = 1;
 
-    /*
+    /**
      * B1 : 이전에 획득한 배지 전부 조회하기
      */
     public ResponseEntity getAllAchievedBadge(Long userId) {
@@ -47,7 +48,7 @@ public class BadgeService {
         }
     }
 
-    /*
+    /**
      * B2 : 배지 획득조건 달성 확인하기
      */
     public ResponseEntity getTheBadge(GetTheBadgeReqDto badgeReqDto) {

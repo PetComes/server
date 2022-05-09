@@ -10,8 +10,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pet.comes.dto.Rep.DetailScheduleDto;
 import com.pet.comes.dto.Rep.ScheduleDto;
-import com.pet.comes.dto.Req.ScheduleConditionDto;
 import com.pet.comes.dto.Req.ScheduleReqDto;
 import com.pet.comes.dto.etc.IconId;
 import com.pet.comes.model.Entity.Address;
@@ -664,9 +664,10 @@ public class ScheduleService {
 	/**
 	 * W6 세부 일정 조회
 	 * */
-	public Schedule getOneSchedule(Long scheduleId, Long userId) {
+	@Transactional
+	public DetailScheduleDto getOneSchedule(Long scheduleId, Long userId) {
 		User user = getUser(userId);
-		Schedule schedule = getValidScheduleAsScheduleDto(scheduleId);
+		Schedule schedule = getValidSchedule(scheduleId);
 
 		if(checkAuthorityToGetSchedule(user, schedule)) {
 			IllegalArgumentException illegalArgumentException = new IllegalArgumentException(
@@ -676,10 +677,10 @@ public class ScheduleService {
 			throw illegalArgumentException;
 		}
 
-		return schedule;
+		return DetailScheduleDto.convertToDetailScheduleDto(schedule); // schedule;
 	}
 
-	public Schedule getValidScheduleAsScheduleDto(Long scheduleId) {
+	public Schedule getValidSchedule(Long scheduleId) {
 		if (scheduleRepository.existsById(scheduleId)) {
 			return scheduleRepository.findById(scheduleId).get();
 		}
