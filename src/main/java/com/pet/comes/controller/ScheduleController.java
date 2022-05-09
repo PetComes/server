@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pet.comes.dto.Rep.DetailScheduleDto;
 import com.pet.comes.dto.Rep.ScheduleDto;
 import com.pet.comes.dto.Req.ScheduleConditionDto;
 import com.pet.comes.dto.Req.ScheduleReqDto;
@@ -49,7 +50,7 @@ public class ScheduleController {
 
 	@GetMapping("/schedule/{scheduleId}/user/{userId}")
 	public ResponseEntity<DataResponse> getOneSchedule(@PathVariable Long scheduleId, @PathVariable Long userId) {
-		Schedule schedule = scheduleService.getOneSchedule(scheduleId, userId);
+		DetailScheduleDto schedule = scheduleService.getOneSchedule(scheduleId, userId);
 		return new ResponseEntity<>(
 			DataResponse.response(Status.SUCCESS, ResponseMessage.SUCCESS_GET_SCHEDULE, schedule),
 			HttpStatus.OK);
